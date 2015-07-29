@@ -1,0 +1,7 @@
+6
+ADD 1 8 1
+GET 1 4
+GET 1 2
+ADD 4 5 100
+GET 3 6
+GET 7 8

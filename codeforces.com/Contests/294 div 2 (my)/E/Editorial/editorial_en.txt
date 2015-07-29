@@ -1,0 +1,23 @@
+**Author**: [user:Bekzhan.Kassenov]
+
+In this problem we have to answer to the following queries on tree: for given pairs of vertices your program should output number of eqidistand vertices from them.
+
+**Let's denote**:
+$dist(a, b)$ as distance between vertices $a$ and $b$.
+$LCA(a, b)$ as [lowest common ancestor](https://en.wikipedia.org/wiki/Lowest_common_ancestor) of vertices $a$ and $b$.
+$depth[a]$ as distance between root of the tree and vertex $a$.
+$size[a]$ as size of subtree of vertex $a$.
+
+**Preprocessing**:
+Read edges of tree and build data structure for LCA (it is more convenient to use binary raise, becase we will use it further for other purposes). 
+Complexity:: $O(NlogN)$
+
+**Queries**:
+We have to consider several cases for each query:
+1) $a = b$. In that case answer is $n$.
+2) $dist(a, b)$ is odd. Then answer is $0$.
+3) $dist(a, l) = dist(b, l)$, where $l = LCA(a, b)$. Find children of $l$, which are ancestors of $a$ and $b$ (let's denote them as $aa$ and $bb$). Answer will be $n - size[aa] - size[bb]$.
+4) All other cases. Assume that $depth[a] > depth[b]$. Then using binary raise find $dist(a, b) / 2$-th ancestor of $a$ (let's denote it as $p1$), $dist(a, b) / 2 - 1$-th ancestor of vertex $a$ (denote it as $p2$). Answer will be $size[p1] - size[p2]$.
+Complexity:: $O(logN)$ for each query, $O(MlogN)$ for all queries.
+
+**Resulting complexity:**: $O(MlogN + NlogN)$

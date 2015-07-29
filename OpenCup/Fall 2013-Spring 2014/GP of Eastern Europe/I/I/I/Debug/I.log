@@ -1,0 +1,4 @@
+﻿  Main.cpp
+c:\бекжан\программирование\work\opencup\fall 2013\gp of europe\i\i\i\main.cpp(20): warning C4018: >=: несоответствие типов со знаком и без знака
+c:\бекжан\программирование\work\opencup\fall 2013\gp of europe\i\i\i\main.cpp(41): warning C4018: <: несоответствие типов со знаком и без знака
+  I.vcxproj -> C:\Бекжан\Программирование\Work\OpenCup\Fall 2013\GP of Europe\I\I\Debug\I.exe

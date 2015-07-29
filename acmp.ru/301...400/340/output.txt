@@ -1,0 +1,1 @@
+The first box is smaller than the second one

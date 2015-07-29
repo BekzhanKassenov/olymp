@@ -1,0 +1,11 @@
+3
+a
+<blog>
+<friend>c</friend>
+</blog>
+b
+<blog>
+<friend>b</friend>
+</blog>
+c
+<blog></blog>

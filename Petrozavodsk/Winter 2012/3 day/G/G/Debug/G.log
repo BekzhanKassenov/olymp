@@ -1,0 +1,5 @@
+﻿  Исходный код.cpp
+c:\бекжан\программирование\work\nazarbayev university\trains\ижевск, зима 2012\3 day\g\g\исходный код.cpp(9): warning C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+          c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(233): см. объявление "freopen"
+c:\бекжан\программирование\work\nazarbayev university\trains\ижевск, зима 2012\3 day\g\g\исходный код.cpp(33): warning C4018: <: несоответствие типов со знаком и без знака
+  G.vcxproj -> C:\Бекжан\Программирование\Work\Nazarbayev University\Trains\Ижевск, Зима 2012\3 day\G\Debug\G.exe

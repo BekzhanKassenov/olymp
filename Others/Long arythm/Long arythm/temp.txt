@@ -1,0 +1,57 @@
+/* C-style output
+void BigInt::print() const {
+	if (_sign == BigInt::MINUS) {
+		printf("-");
+	}
+
+	std::vector <BigInt::uint32>::const_reverse_iterator _digit;
+	_digit = _digits.rbegin();
+
+	printf("%u", *_digit);
+	_digit++;
+
+	for (; _digit != _digits.rend(); _digit++) {
+		printf(FORMAT_STRING, *_digit);
+	}
+}
+
+void BigInt::fprint(FILE* _output_file) const {
+	if (_sign == BigInt::MINUS) {
+		fprintf(_output_file, "-");
+	}
+
+	std::vector <BigInt::uint32>::const_reverse_iterator _digit;
+	_digit = _digits.rbegin();
+
+	fprintf(_output_file, "%u", *_digit);
+	_digit++;
+
+	for (; _digit != _digits.rend(); _digit++) {
+		fprintf(_output_file, FORMAT_STRING, *_digit);
+	}
+}
+
+void BigInt::sprint(char* _output_string) const {
+	if (_sign == BigInt::MINUS) {
+		sprintf(_output_string, "-");
+		while (*_output_string)
+			_output_string++;
+	}
+
+	std::vector <BigInt::uint32>::const_reverse_iterator _digit;
+	_digit = _digits.rbegin();
+
+	sprintf(_output_string, "%u", *_digit);
+	while (*_output_string)
+			_output_string++;
+	_digit++;
+
+	for (; _digit != _digits.rend(); _digit++) {
+		sprintf(_output_string, FORMAT_STRING, *_digit);
+		while (*_output_string)
+			_output_string++;
+	}
+}
+*/
+
+	

@@ -1,0 +1,15 @@
+4
+void f(int,T)
+void  f(T, T)
+ void foo123   ( int,  double,  string,string  ) 
+  void  p(T,double)
+3
+int a
+ string    s
+double x123 
+5
+f(a,  a)
+  f(s,a   )
+foo   (a,s,s)
+ f  (  s  ,x123)
+proc(a)

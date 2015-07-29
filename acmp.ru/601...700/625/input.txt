@@ -1,0 +1,10 @@
+.?!
+abc
+def
+ghi
+jkl
+mno
+pqrs
+tuv
+wxyz
+Hello. How do you do? i hope everything is fine See ya!

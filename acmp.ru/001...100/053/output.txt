@@ -1,0 +1,4 @@
+RED : 5
+GREEN : 2
+BLUE : 2
+BLACK : 1

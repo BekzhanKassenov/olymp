@@ -1,0 +1,11 @@
+(1) DC-15
+(2) DC-15A
+(3) DC-15S
+(4) DC-17m
+(5) DC-19 "Stealth"
+(6) Rocket Launcher
+(7) DC-15x
+(8) Heavy Ceremonial Rifle
+(9) Shock Gun
+(10) T-116
+(11) Vibroblades

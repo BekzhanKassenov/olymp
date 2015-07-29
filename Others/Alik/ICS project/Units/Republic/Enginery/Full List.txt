@@ -1,0 +1,225 @@
+1
+CK-6 bike
+CK-6 Freeco speeder bike
+I
+Dual Laser Cannons
+Armored
+1000
+14700
+120
+50
+60
+1000
+1
+0
+0
+2
+ISP speeder
+ISP (Infantry Support Platform) speeder
+I
+2 Dual Laser Cannons
+Armored
+4500
+11600
+240
+50
+65
+1000
+2
+0
+0
+3
+BARC speeder
+BARC (Bike Advanced Recon Commando) speeder
+I
+Light Two-barrel Cannon Blaster
+Armored
+1000
+8300
+100
+50
+45
+1000
+1
+1
+0
+4
+AT-AP
+¿“-¿– - All Terrain Attack Pod
+II
+Heavy Mass Driver Cannon, Heavy Blaster Gun (turret, Average power laser gun
+Medium Armored
+3000
+150000
+3000
+80
+70
+4000
+3
+0
+0
+5
+AT-RT
+AT-RT - All Terrain Recon Transport
+II
+Blaster or Laser cannon
+Medium Armored
+2000
+40000
+140
+40
+60
+1200
+1
+0
+0
+6
+AT-PT
+AT-PT - All Terrain Personal Transport
+I
+Two-barrel Heavy Blaster Cannon, Grenade Launcher
+Medium Armored
+2000
+60000
+1500
+60
+65
+1400
+2
+0
+0
+7
+AT-XT
+AT-XT - All Terrain Experimental Transport
+II
+Two-barrel Blaster Cannon, 2 Grenade Launcher
+Medium Armored
+2000
+14700
+120
+30
+50
+2000
+1
+0
+1
+8
+TX-130S tank
+TX-130 Saber-class fighter tank
+III
+2 Heavy Laser Cannons, Medium Twin Laser Turret, 2 Rocket Launchers
+Heavy Armored
+5000
+40000
+5800
+80
+90
+4000
+3
+0
+1
+9
+Falchion-class assault tank
+RX-200 Falchion-class assault tank
+III
+Ion Gun, Two Light Anti-blaster
+Heavy Armored
+5000
+40000
+2500
+80
+95
+2000
+2
+0
+1
+10
+TX-130“ tank
+TX-130“ tank
+III
+2 Laser Cannons, Beam Gun, 2 Rocket Launchers
+Heavy Armored
+5000
+42000
+6000
+80
+90
+3000
+2
+0
+1
+11
+UT-AT
+UT-AT - Unstable Terrain Artillery Transport
+IV
+Heavy Laser Cannon, 2 Medium Power Laser Guns, Sticky Bomb Launcher, 4 Beamers in Turrets
+Heavy Armored
+4000
+300000
+10000
+85
+90
+2000
+6
+20
+0
+12
+AT-TE
+AT-TE - All Terrain Tactical Enforcer assault walker
+IV
+Heavy Artillery, 6 Blaster Cannons
+Heavy Armored
+5000
+300000
+10000
+90
+80
+5000
+7
+22
+0
+13
+HAVw A6 Juggernaut
+Heavy Assault Vehicle/wheeled (HAVw) A6 Juggernaut
+V
+Heavy, Quick-Heavy and 2 Antipersonnel Average power Laser Cannons, 2 rocket launchers
+Heavy Armored
+5000
+350000
+8000
+97
+60
+7000
+20
+300
+0
+14
+AT-OT
+AT-OT - All Terrain Open Transport
+V
+4 Laser Cannons
+Heavy Armored
+5000
+200000
+1000
+90
+100
+1500
+1
+34
+1
+15
+SPHA
+Self-Propelled Heavy Artillery (SPHA)
+I
+Heavy Turbolaser Cannon, 12 Blaster Guns
+Heavy Armored
+8000
+700000
+16000
+98
+90
+20000
+25
+0
+0

@@ -1,0 +1,10 @@
+**Author**:[user:Bekzhan.Kassenov]
+
+This problem asked to determine whose chess position is better.
+
+**Solution**
+
+Iterate over the board and count scores of both player. Then just output the answer.
+
+**Complexity**
+$O(n * n), where n is the length of the side of the board (8 here)$

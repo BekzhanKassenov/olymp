@@ -1,0 +1,8 @@
+3 4 3
+YYYY
+YYYY
+YYYY
+
+1 5 1
+YYNNY
+

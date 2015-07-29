@@ -1,0 +1,10 @@
+9 14 5
+XXXXXXXXXXXXXX
+X....R...R...X
+X..R.........X
+X....RXR..R..X
+X..R...X.....X
+XR.R...X.....X
+X....XXR.....X
+X....R..R.R..X
+XXXXXXXXXXXXXX

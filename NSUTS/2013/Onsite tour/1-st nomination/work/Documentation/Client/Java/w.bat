@@ -1,0 +1,1 @@
+del *.exe *.pdb *.ilk *.obj *.class *.jar

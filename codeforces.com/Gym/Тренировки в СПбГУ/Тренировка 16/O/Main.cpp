@@ -1,0 +1,63 @@
+/****************************************
+**          Solution by NU #2          **
+****************************************/
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define F first
+#define S second
+#define MP make_pair
+#define all(x) (x).begin(), (x).end()
+
+typedef long long ll;
+typedef unsigned long long ull;
+typedef long double ld;
+
+const double EPS = 1e-9;
+const double PI = acos(-1.0);
+const int MOD = 1000 * 1000 * 1000 + 7;
+const int INF = 2000 * 1000 * 1000;
+
+template <typename T>
+inline T sqr(T n) {
+    return n * n;
+}
+
+long long n, p[13];
+long long a, b;
+
+int main() {
+#ifdef Local
+    freopen("in", "r", stdin);
+#endif
+
+	cin >> a >> b >> n;
+
+	for (int i = 0; i < n; i++)
+		cin >> p[i];
+
+	long long ans = 0;
+
+	for (int mask = 0; mask < (1 << n); mask++) {
+		int cnt = __builtin_popcount(mask);
+			
+	    long long mul = 1;
+
+	    for (int i = 0; i < n; i++)
+	    	if ((1 << i) & mask)
+	    		mul *= p[i];
+
+	    long long tmp = b / mul - (a - 1) / mul;
+
+	    if (cnt & 1)
+	    	ans -= tmp;
+		else
+			ans += tmp;
+	} 
+
+	cout << ans;
+
+    return 0;
+}

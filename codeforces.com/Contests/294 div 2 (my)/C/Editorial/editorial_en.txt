@@ -1,0 +1,9 @@
+**Author**: [user:ADJA]
+
+In this problem we should to split $n$ experienced participants and $m$ newbies into teams.
+
+**Solution**:
+Let's denote number teams with 2 experienced partisipants and 1 new participant as $type1$ and teams with 1 experienced participant and 2 new participants as $type2$.
+Let's fix number of teams of $type1$ and denote it as $i$. Their amount is not grater than $m$. Then number of teams of $type2$ is $min(m - 2 * i, n - i)$. Check all possible $i$' and update answer.
+
+**Complexity:** $O(N)$

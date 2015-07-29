@@ -1,0 +1,39 @@
+Rang I:
+
+(1) Clone Trooper
+
+(2) Jet Trooper
+
+(3) SCUBA Trooper
+
+(4) Blaze Trooper
+
+(5) Spaarti Clone Trooper
+
+Rang II:
+
+(6) Shock Trooper
+
+(7) Galactic Marines
+
+(8) Senate Guard
+
+Rang III:
+
+(9) Clone Assasin
+
+(10) Senate Commandos
+
+(11) Clone Shadow Trooper
+
+Rang IV:
+
+(12) ARC trooper
+
+(13) Null-class Advanced Recon Commandos
+
+(14) Alpha-class Advanced Recon Commandos
+
+Rang V:
+
+(15) Clone-Commandos

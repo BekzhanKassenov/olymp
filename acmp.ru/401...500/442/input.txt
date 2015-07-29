@@ -1,0 +1,13 @@
+<HTML>
+<BODY>
+<b> Fonts: normal <font size="2"> tiny <font size="+9"> bigger
+<p>
+</font></font> as before 
+</b>
+<font size="+5">
+very big
+<font size="-8">
+smaller again
+</font> <a href="...">...</a></font>
+</BODY>
+</HTML>

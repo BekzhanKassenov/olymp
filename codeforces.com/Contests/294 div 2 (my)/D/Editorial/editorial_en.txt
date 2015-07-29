@@ -1,0 +1,8 @@
+**Author**: [user: ADJA]
+
+In this problem you were asked to find number of substrings of given string, such that each substring starts and finishes with one and the same letter and sum of weight of letters of that substring without first and last letter is zero.
+
+**Solution**
+Let's denote $sum[i]$ as sum of weights of first $i$ letters. Create 26 $map <long long, int>$'s, 1 for each letter. Suppose we are on position number $i$ and current character's map is $m$. Then add $m[sum[i - 1]]$ to the answer and add $sum[i]$ to the $m$. 
+
+**Complexity**: $O(N * log(N)), where N - the length of input string$

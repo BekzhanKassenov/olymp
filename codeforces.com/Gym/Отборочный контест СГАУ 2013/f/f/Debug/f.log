@@ -1,0 +1,7 @@
+﻿  Main.cpp
+c:\бекжан\программирование\work\codeforces.ru\gym\отборочный контест сгау 2013\f\f\main.cpp(30): warning C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+          c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(233): см. объявление "freopen"
+c:\бекжан\программирование\work\codeforces.ru\gym\отборочный контест сгау 2013\f\f\main.cpp(31): warning C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+          c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(233): см. объявление "freopen"
+c:\бекжан\программирование\work\codeforces.ru\gym\отборочный контест сгау 2013\f\f\main.cpp(48): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+  f.vcxproj -> C:\Бекжан\Программирование\Work\codeforces.ru\Gym\Отборочный контест СГАУ 2013\f\Debug\f.exe

@@ -1,0 +1,12 @@
+pbrain is a procedural dialect of brainfuck programming language
+which, well, supports procedures. commands ( and ) mark start an
+d end of new procedure, indexed by contents of current cell, and
+: calls procedure indexed by contents of current cell. created b
+y paul m. parks in 2004 and implemented "between the hours of 9:
+45 PM and 6:15 AM, in a single session", it is supported by seve
+ral more interpreters and ides. the dialect is criticised for di
+sallowing the reader to figure out which procedure is being call
+ed from reading the code. if this is important (as if it is ever
+important with esoteric languages!), one can use toadskin, yet a
+nother brainfuck variation which allows named procedures. enjoy!
+ 

@@ -1,0 +1,5 @@
+4
+5
+Shift+9
+Ctrl+2
+Ctrl+7

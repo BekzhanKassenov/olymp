@@ -1,0 +1,9 @@
+7
+bee
+fly
+cat
+dog
+ant
+ewe
+gnu
+tancug

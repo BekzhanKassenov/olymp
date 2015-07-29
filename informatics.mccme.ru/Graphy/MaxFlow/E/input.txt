@@ -1,0 +1,13 @@
+7 11 1
+smity grepik
+dop grepik
+smity rojer
+rojer dop
+dop jack
+sanek jack
+dop sanek
+hello sanek
+hello grepik
+dop hello
+rojer jack
+smity sanek

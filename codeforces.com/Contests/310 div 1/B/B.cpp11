@@ -1,0 +1,73 @@
+/****************************************
+**     Solution by Bekzhan Kassenov    **
+****************************************/
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define F first
+#define S second
+#define MP make_pair
+#define all(x) (x).begin(), (x).end()
+
+typedef long long ll;
+typedef unsigned long long ull;
+typedef long double ld;
+
+const double EPS = 1e-9;
+const double PI = acos(-1.0);
+const int MOD = 1000 * 1000 * 1000 + 7;
+const int INF = 2000 * 1000 * 1000;
+const int MAXN = 200010;
+
+template <typename T>
+inline T sqr(T n) {
+    return n * n;
+}
+
+enum TYPE {
+    OPEN,
+    PT,
+    CLOSE
+};
+
+struct Item {
+    int type, coord;
+    int num;
+    
+    bool operator < (const Item& item) const {
+        if (coord != item.coord) {
+            return coord < item.coord;
+        }
+
+        return type < item.type;
+    }
+};
+
+set <Item> Set1;
+int n, m;
+long long l[MAXN], r[MAXN];
+long long l1[MAXN], r1[MAXN];
+long long a[MAXN];
+
+int main() {
+#ifndef ONLINE_JUDGE
+    freopen("in", "r", stdin);
+#endif
+
+    scanf("%d%d", &n, &m);
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d%d", &l[i], &r[i]);
+    }
+
+    for (int i = 0; i + 1 < n; i++) {
+        l1[i] = l[i + 1] - r[i];
+        r1[i] = r[i + 1] - l[i];
+
+        Set1.insert({l1[i], OPEN, });
+    }
+    
+    return 0;
+}

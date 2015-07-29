@@ -1,0 +1,28 @@
+﻿  Main.cpp
+c:\program files (x86)\microsoft visual studio 11.0\vc\include\utility(190): warning C4244: =: преобразование "__int64" в "int", возможна потеря данных
+          c:\бекжан\программирование\work\codeforces.ru\gym\отборочный контест сгау 2013\a\a\main.cpp(18): см. ссылку на создание экземпляров функции шаблон при компиляции "std::pair<_Ty1,_Ty2> &std::pair<_Ty1,_Ty2>::operator =<int,__int64>(std::pair<_Ty1,__int64> &&)"
+          with
+          [
+              _Ty1=int,
+              _Ty2=int
+          ]
+          c:\бекжан\программирование\work\codeforces.ru\gym\отборочный контест сгау 2013\a\a\main.cpp(18): см. ссылку на создание экземпляров функции шаблон при компиляции "std::pair<_Ty1,_Ty2> &std::pair<_Ty1,_Ty2>::operator =<int,__int64>(std::pair<_Ty1,__int64> &&)"
+          with
+          [
+              _Ty1=int,
+              _Ty2=int
+          ]
+c:\program files (x86)\microsoft visual studio 11.0\vc\include\utility(189): warning C4244: =: преобразование "__int64" в "int", возможна потеря данных
+          c:\бекжан\программирование\work\codeforces.ru\gym\отборочный контест сгау 2013\a\a\main.cpp(19): см. ссылку на создание экземпляров функции шаблон при компиляции "std::pair<_Ty1,_Ty2> &std::pair<_Ty1,_Ty2>::operator =<__int64,int>(std::pair<__int64,_Ty2> &&)"
+          with
+          [
+              _Ty1=int,
+              _Ty2=int
+          ]
+          c:\бекжан\программирование\work\codeforces.ru\gym\отборочный контест сгау 2013\a\a\main.cpp(19): см. ссылку на создание экземпляров функции шаблон при компиляции "std::pair<_Ty1,_Ty2> &std::pair<_Ty1,_Ty2>::operator =<__int64,int>(std::pair<__int64,_Ty2> &&)"
+          with
+          [
+              _Ty1=int,
+              _Ty2=int
+          ]
+  A.vcxproj -> C:\Бекжан\Программирование\Work\codeforces.ru\Gym\Отборочный контест СГАУ 2013\A\Debug\A.exe

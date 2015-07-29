@@ -1,0 +1,7 @@
+abka 
+abk 
+a 
+bk 
+k 
+b 
+ENDOFINPUT 

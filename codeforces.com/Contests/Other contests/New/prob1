@@ -1,0 +1,3 @@
+define b_i = |a_(i + 1) - a_i)| where a_i is some permutation
+You are given b_i, find number of posssible a_i
+

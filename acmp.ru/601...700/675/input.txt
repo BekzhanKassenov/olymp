@@ -1,0 +1,5 @@
+4 6
+AA.BBB
+A....B
+AAA..B
+A..BBB

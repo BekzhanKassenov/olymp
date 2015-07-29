@@ -1,0 +1,2 @@
+The fastest train is "Train1".
+It's speed is 27 km/h, approximately.

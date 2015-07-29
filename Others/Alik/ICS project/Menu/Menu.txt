@@ -1,0 +1,109 @@
+		[Main Menu]
+                
+1. Start
+2. Army Editor
+3. Settings // Not Available Yet
+4. Unit List
+5. Tutorial // Not Available Yet
+6. Exit
+
+		[Start]
+
+1. Begin the Battle
+   < Begin the Battle Process >
+
+2. Choose Army
+   1) < Created Variations List >
+      - < Army Choice >
+      - < [Start] Menu >
+
+   2) Back
+      < [Start] Menu >
+
+3. Load Game // Not Available Yet
+   
+   1) < Saved Games List >
+      - < Saved Game Choice >
+      - < Continue Saved Battle Process >
+
+   2) Back
+      < [Start] Menu >
+
+4. Back to Main Menu
+   < [Main] Menu >
+
+		[Army Editor] // Done
+
+1. Create New Variation
+   < Army Creation Process >
+   < [Army Editor] Menu >
+
+2. Edit the Old Variation
+   1) < Created Variations List >
+      - < Army Editing Process > 
+      - < [Army Editor] Menu >
+   
+   2) Back
+      < [Army Editor] Menu >  
+
+3. Back to Main Menu
+   < [Main] Menu >
+
+		[Settings] // Not Available Yet // Done
+
+1. Game Difficulty
+   1) Easy
+      < Switch Game Difficulty to "Easy" >
+      < [Settings] Menu >
+
+   2) Normal
+      < Switch Game Difficulty to "Normal" >
+      < [Settings] Menu >
+
+   3) Hard
+      < Switch Game Difficulty to "Hard" >
+      < [Settings] Menu >
+   
+   4) Back
+      < [Settings] Menu >
+
+2. Game Speed
+   1) Slow (1 week per move)
+      < Switch Game Speed to "Slow" >
+      < [Settings] Menu >
+
+   2) Medium (2 weeks per move)
+      < Switch Game Speed to "Medium" >
+      < [Settings] Menu >
+
+   3) Fast (1 month per move)
+      < Switch Game Speed to "Fast" >
+      < [Settings] Menu >
+
+3. Back to Main Menu
+   < [Main] Menu >
+
+		[Unit List]
+
+1. <Unit List>
+
+2. Back to Main Menu
+   < [Main] Menu >
+
+		[Tutorial] // Not Available Yet //
+
+1. Begin Tutorial
+   < [Tutorial] Process >
+
+2. Back to Main Menu 
+   < [Main] Menu >
+
+		[Exit the Game] // Done
+ 
+{Are You sure?}
+	
+1) Yes
+   < Close Programm >
+	
+2) Back to Main Menu
+   < [Main] Menu >

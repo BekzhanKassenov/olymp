@@ -1,0 +1,10 @@
+put cargo 1 to cell 2
+put cargo 2 to cell 1
+put cargo 3 to cell 3
+move cargo 1 from cell 2 to cell 3
+put cargo 4 to cell 2
+take cargo 3 from cell 3
+take cargo 1 from cell 3
+cargo 5 cannot be stored
+take cargo 2 from cell 1
+take cargo 4 from cell 2
