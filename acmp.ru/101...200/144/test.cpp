@@ -1,7 +1,7 @@
 #ifndef _BIGINT_H_
 #define _BIGINT_H_
-#define _CRT_SECURE_NO_WARNINGS
 
+#include <cstdio>
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -232,26 +232,6 @@ void BigInt::__sum_this(const BigInt& _rhs) {
 
 /*=================================================*
  *                                                 *
- *              Subtraction operators              *
- *                                                 *
- *=================================================*/
-
-// Main algorithm for subtractio of two BigInts
-// Works with assumption that *this > _rhs
-void BigInt::__sub_this(const BigInt& _rhs) {
-	// _rhs._digits.size() is always <= this->_digits.size()
-	// So it is enough to run till _rhs._digits.size()
-	for (size_t i = 0; i < _rhs._digits.size(); i++) {
-		uint32 _digit = _digits[i];
-
-		if (_digit < _rhs._digits[i]) {
-			_digits[i + 1]
-		}
-	}
-}
-
-/*=================================================*
- *                                                 *
  *           Multiplication operators              *
  *                                                 *
  *=================================================*/
@@ -472,3 +452,18 @@ std::istream& operator >> (std::istream& _input_stream, BigInt& _number) {
 	return _input_stream;
 }
 #endif //_BIGINT_H_
+
+using namespace std;
+
+int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+
+    BigInt a, b;
+
+    cin >> a >> b;
+
+    cout << a * b << endl;
+
+    return 0;
+}

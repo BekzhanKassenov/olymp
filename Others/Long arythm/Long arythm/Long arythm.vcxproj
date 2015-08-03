@@ -15,10 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigInt.h" />
-    <ClInclude Include="Tests.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="temp.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4FBD5FF6-592E-4EFD-9438-A359A4AA409C}</ProjectGuid>
