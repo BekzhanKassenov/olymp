@@ -66,6 +66,10 @@ public:
 	friend bool operator == (const BigInt& _lhs, const BigInt& _rhs);
 	friend bool operator != (const BigInt& _lhs, const BigInt& _rhs);
 
+	/* Other arythmetic functions */
+	static BigInt power(BigInt _base, uint64 _power);
+	static BigInt sqrt(const BigInt& _number);
+
 	/* Input-output streams */
 	friend std::ostream& operator << (std::ostream& _output_stream, const BigInt& _number);
 	friend std::istream& operator >> (std::istream& _input_stream, BigInt& _number); // Not implemented
@@ -236,18 +240,34 @@ void BigInt::__sum_this(const BigInt& _rhs) {
  *                                                 *
  *=================================================*/
 
-// Main algorithm for subtractio of two BigInts
-// Works with assumption that *this > _rhs
+// Main algorithm for subtraction of two BigInts
+// Works with assumption that *this >= _rhs
 void BigInt::__sub_this(const BigInt& _rhs) {
 	// _rhs._digits.size() is always <= this->_digits.size()
 	// So it is enough to run till _rhs._digits.size()
+	size_t _last_nonzero = 0;
+
 	for (size_t i = 0; i < _rhs._digits.size(); i++) {
-		uint32 _digit = _digits[i];
+		while (_last_nonzero <= i || 
+			  (_last_nonzero < _digits.size() && _digits[_last_nonzero] == 0u)) {
+			_last_nonzero++;
+		}
+
+		uint32& _digit = _digits[i];
 
 		if (_digit < _rhs._digits[i]) {
-			_digits[i + 1]
+			_digit += BigInt::BASE;
+			_digits[_last_nonzero]--;
+
+			for (size_t j = i + 1; j < _last_nonzero; j++) {
+				_digits[j] = BigInt::BASE - 1;
+			}
 		}
+
+		_digit -= _rhs._digits[i];
 	}
+
+	__trim();
 }
 
 /*=================================================*
@@ -356,6 +376,8 @@ BigInt& operator %= (BigInt& _lhs, BigInt::uint64 _number) {
 	return _lhs;
 }
 
+
+// Does not work when BigInt::BASE * _number > max value of uint64
 void BigInt::__mod_this(BigInt::uint64 _number) {
 	BigInt::uint64 _carry = 0;
 
@@ -387,6 +409,10 @@ BigInt& operator /= (BigInt& _lhs, BigInt::uint64 _number) {
 	return _lhs;
 }
 
+
+// Does not work when BigInt::BASE * _number > max value of uint64
+// _carry / _number < BASE. Proof:
+// ((n - 1) * BASE + BASE - 1) / n = (n * BASE - BASE + BASE - 1) / n = (n * BASE - 1) / n < BASE
 void BigInt::__div_this(BigInt::uint64 _number) {
 	BigInt::uint64 _carry = 0;
 
@@ -401,6 +427,59 @@ void BigInt::__div_this(BigInt::uint64 _number) {
 	}
 
 	__trim();
+}
+
+/*=================================================*
+ *                                                 *
+ *         Some other arythmetic functions         *
+ *                                                 *
+ *=================================================*/
+
+/*
+ * Calculates BigInt ^ _power
+ * Uses fast exponentiation (exponentiation by squaring)
+ * https://en.wikipedia.org/wiki/Exponentiation_by_squaring
+ */
+BigInt BigInt::power(BigInt _base, BigInt::uint64 _power) {
+	BigInt _result(BigInt::ONE);
+
+	while (_power > 0) {
+		_result *= _base;
+		_base *= _base;
+		_power >>= 1;
+	}
+
+	return _result;
+}
+
+/*
+ * Integer part of square root of BigInt
+ * Slow, uses binary search.
+ * Could be optimized using Newton's method or
+ * other methods for finding sqare root of big number
+ */
+BigInt BigInt::sqrt(const BigInt& _number) {
+	if (_number == BigInt::ZERO || _number == BigInt::ONE) {
+		return _number;
+	}
+
+	BigInt _base = BigInt::ONE;
+	BigInt _addend = _number;
+
+	while (_addend > BigInt::ZERO) {
+		// Trying to advance by _addend
+		BigInt _sum = _base + _addend;
+
+		// If success
+		if (_sum * _sum <= _number) {
+			_base += _addend;
+		}
+
+		// Decrease _addend
+		_addend /= 2;
+	}
+
+	return _base;
 }
 
 /*=================================================*
