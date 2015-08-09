@@ -26,15 +26,8 @@ inline T sqr(T n) {
     return n * n;
 }
 
-struct Compare {
-    bool operator () (const pair <int, int>& a, const pair <int, int>& b) const {
-        return a.first > b.first;
-    }
-};
-
-set <pair <int, int>, Compare> Set;
-int n, a[MAXN];
-int ans[MAXN];
+int n;
+int a[MAXN];
 
 int main() {
 #ifndef ONLINE_JUDGE
@@ -45,8 +38,21 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         scanf("%d", &a[i]);
-        Set.insert(make_pair(a[i] - i, i));
-    }2
-    
+        a[i] += i;
+    }
+
+    sort(a, a + n);
+
+    for (int i = 0; i + 1 < n; i++) {
+        if (a[i] == a[i + 1]) {
+            puts(":(");
+            return 0;
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        printf("%d ", a[i] - i);
+    }
+
     return 0;
 }

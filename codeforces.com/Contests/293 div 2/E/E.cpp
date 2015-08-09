@@ -27,28 +27,39 @@ inline T sqr(T n) {
 }
 
 int n, k;
-long long a[MAXN];
-bool used[MAXN];
+char input[MAXN * 11];
+bool bad[MAXN];
+int a[MAXN];
 
-void skipSpaces() {
-    while (isspace(cin.peek())) {
-        cin.get();
+void fill(vector <int>& vec, int l, int r) {
+    if (vec[l] >= vec[r]) {
+        puts("Incorrect sequence");
+        exit(0);
     }
-}
 
-void read() {
-    cin >> n >> k;
-    skipSpaces();
+    if (vec[r] - vec[l] < r - l) {
+        puts("Incorrect sequence");
+        exit(0);
+    }
 
-    for (int i = 0; i < n; i++) {
-        if (cin.peek() == '?') {
-            used[i] = true;
-            cin.get();
-        } else {
-            cin >> a[i];
+    if (vec[l] >= 0 && vec[r] >= 0) {
+        for (int i = l + 1; i < r; i++) {
+            vec[i] = vec[i - 1] + 1;
         }
+    } else if (vec[l] <= 0 && vec[r] <= 0) {
+        for (int i = r - 1; i > l; i--) {
+            vec[i] = vec[i + 1] - 1;
+        }
+    } else {
+        int _left = -1, _right = 1;
+        vector <int> temp;
+        temp.push_back(0);
 
-        skipSpaces();
+        for (int i = 0; i < r - l - 2; i++) {
+            if (_left > vec[l]) {
+
+            }
+        }
     }
 }
 
@@ -57,44 +68,53 @@ int main() {
     freopen("in", "r", stdin);
 #endif
 
-    read();
-    
-    long long cursum = 0;
-    for (int i = 0; i < k; i++) {
-        if (!used[i]) {
-            cursum += a[i];
-        }
-    }
+    scanf("%d %d\n", &n, &k);
+    gets(input);
 
-    for (int i = k; i < n; i++) {
-        int left = i - k;
-        int right = i;
+    int last = 0;
+    bool flag = false;
 
-        if (used[left] && used[right]) {
-            used[left] = false;
-            used[right] = false;
-            a[left] = 0;
-            a[right] = 1;
-        } else if (used[left]) {
-            used[left] = false;
-            a[left] = 0;
-        } else if (used[right]) {
-            used[right] = 0;
-            a[right] = a[left] + 1;
+    for (int i = 0; input[i]; i++) {
+        if (input[i] == '?') {
+            bad[last] = true;
+        } else if (input[i] == '-') {
+            flag = true;
+        } else if (isdigit(input[i])) {
+            a[last] *= 10;
+            a[last] += input[i] - '0';
         } else {
-            if (cursum - a[left] + a[right] <= cursum) {
-                puts("Incorrect sequence");
-                return 0;
+            if (flag) {
+                a[last] *= -1;
             }
 
-            cursum -= a[left];
-            cursum += a[right];
+            last++;
+            flag = false;
         }
     }
 
-    for (int i = 0; i < n; i++) {
-        cout << a[i] << ' ';
+    for (int i = 0; i < k; i++) {
+        vector <int> temp;
+        temp.push_back(-INF);
+
+        for (int j = i; j < n; j += k) {
+            temp.push_back(a[j]);
+        }
+
+        temp.push_back(INF);
+
+        // fill
+
+        for (int j = i; j < n; j += k) {
+            a[j] = temp[j / k];
+        }
     }
+
+
+    for (int i = 0; i < n; i++) {
+        printf("%d ", a[i]);
+    }
+
+    puts("");
 
     return 0;
 }

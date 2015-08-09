@@ -1,95 +1,200 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <map>
+#include <queue>
+#include <cstring>
 
 using namespace std;
 
 const int MAXN = 5 * 100010;
+const int MAXM = 4 * MAXN;
 
-struct Edge {
-    int cap, flow;
-    int to;
+struct MaxFlow {
+    int to[MAXM];
+    int cap[MAXM], flow[MAXM];
+    int lastEdge;
+    int S, T, lim;
 
-    void init(int t, int c, int f) {
-        to = t;
-        cap = c;
-        flow = f;
+    vector <int> g[MAXN];
+    int level[MAXN];
+    size_t ptr[MAXN];
+
+    queue <int> q;
+
+    MaxFlow() : lastEdge(0) { }
+
+    void addEdge(int from, int to, int cap) {
+        this->to[lastEdge] = to;
+        this->cap[lastEdge] = cap;
+        this->flow[lastEdge] = 0;
+        g[from].push_back(lastEdge++);
+
+        this->to[lastEdge] = from;
+        this->cap[lastEdge] = 0;
+        this->flow[lastEdge] = 0;
+        g[to].push_back(lastEdge++);
+    }
+
+    bool bfs() {
+        q.push(S);
+        memset(level, 255, sizeof level);
+        level[S] = 0;
+
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+            
+            for (size_t i = 0; i < g[v].size(); i++) {
+                int idx = g[v][i];
+
+                if (level[to[idx]] == -1 && cap[idx] - flow[idx] >= lim) {
+                    level[to[idx]] = level[v] + 1;
+                    q.push(to[idx]);
+                }
+            }
+        }
+
+        return level[T] != -1;
+    }
+
+    bool dfs(int v) {
+        if (v == T) {
+            return true;
+        }
+
+        for (; ptr[v] < g[v].size(); ptr[v]++) {
+            int idx = g[v][ptr[v]];
+
+            if (level[to[idx]] == level[v] + 1 && 
+                cap[idx] - flow[idx] >= lim &&
+                dfs(to[idx])) {
+
+                flow[idx] += lim;
+                flow[idx ^ 1] -= lim;
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    int getMaxFlow(int x, int y) {
+        S = x, T = y;                                           
+
+        lim = 1;
+        int flow = 0;
+
+        while (lim > 0) {
+            while (bfs()) {
+                memset(ptr, 0, sizeof ptr);
+
+                while (dfs(S)) {
+                    flow += lim;
+                }
+            }
+
+            lim >>= 1;
+        }
+
+        return flow;
+    }   
+};
+
+struct DSU {
+    int parent[MAXN];
+
+    DSU() {
+        for (int i = 0; i < MAXN; i++) {
+            parent[i] = i;
+        }
+    }
+
+    int getParent(int v) {
+        if (v == parent[v]) {
+            return v;
+        }
+
+        return parent[v] = getParent(parent[v]);
+    }
+
+    void unite(int x, int y) {
+        parent[getParent(x)] = getParent(y);
     }
 };
 
-Edge e[4 * MAXN];
-int lastEdge;
-vector <int> g[MAXN];
-map <string, int> num;
-string s, t;
-int n, m, k;
-int parent[MAXN], size[MAXN];
-int curFlow;
+struct Trie {
+    map <char, int> next[10 * MAXN];
+    int num[10 * MAXN];
+    int lastNode;
 
-int get_parent(int a) {
-    if (parent[a] == a)
-        return a;
+    int root;
+    int size;
 
-    return parent[a] = get_parent(parent[a]);
-}
-
-void unite(int a, int b) {
-    a = get_parent(a);
-    b = get_parent(b);
-
-    if (a == b)
-        return;
-
-    if (size[a] < size[b]) {
-        parent[a] = b;
-        size[b] += size[a];
-    } else {
-        parent[b] = a;
-        size[a] += size[b];
+    Trie() {
+        root = 0;
+        size = 0;
+        lastNode = 1;
+        memset(num, 255, sizeof num);
     }
-}
+
+    int getNumber(char *s) {
+        int cur = root;
+
+        for (int i = 0; s[i]; i++) {
+            char let = s[i];
+
+            if (!next[cur].count(let)) {
+                next[cur][let] = lastNode++;
+            }
+
+            cur = next[cur][let];
+        }
+
+        if (num[cur] == -1) {
+            num[cur] = size++;
+        }
+
+        return num[cur];
+    }
+};
+
+int n, m, k;
+char s[15], t[15];
 
 int main() {
-    ios_base :: sync_with_stdio(false);
-
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
 
-    cin >> n >> m >> k;
+    MaxFlow *maxFlow = new MaxFlow();
+    Trie *trie = new Trie();
+    DSU *dsu = new DSU();
 
-    for (int i = 1; i <= n; i++) {
-        parent[i] = i;
-        size[i] = 1;
-    }
+
+    scanf("%d %d %d\n", &n, &m, &k);
 
     for (int i = 0; i < m; i++) {
-        cin >> s >> t;
+        scanf("%s %s\n", s, t);
 
-        if (Map.find(s) == Map.end()) {
-            int sz = Map.size();
-            Map[s] = sz;
-        }
+        int x = trie->getNumber(s);
+        int y = trie->getNumber(t);
 
-        if (Map.find(t) == Map.end()) {
-            int sz = Map.size();
-            Map[t] = sz;
-        }
+        maxFlow->addEdge(x, y, 1);
+        maxFlow->addEdge(y, x, 1);
+        dsu->unite(x, y);
+    }
 
-        int x = Map[s];
-        int y = Map[t];
+    for (int i = 0; i < k; i++) {
+        scanf("%s %s\n", s, t);
 
-        unite(x, y);
+        int x = trie->getNumber(s);
+        int y = trie->getNumber(t);
 
-        for (int j = 0; j < 2; j++) {
-            e[lastEdge].init(y, 1, 0);
-            g[x].push_back(lastEdge);
-            lastEdge++;
-
-            e[lastEdge].init(x, 1, 1);
-            g[y].push_back(lastEdge);
-            lastEdge++;
-
-            swap(x, y);
+        if (dsu->getParent(x) != dsu->getParent(y)) {
+            puts("0");
+        } else {
+            printf("%d\n", maxFlow->getMaxFlow(x, y));
         }
     }
 

@@ -27,40 +27,24 @@ inline T sqr(T n) {
 }
 
 int n, q, x;
-int a[MAXN], cnt[MAXN];
-int parity[MAXN];
-bool take[MAXN];
+int ans, cnt;
+int a[MAXN], dp[MAXN];
+bool taken[MAXN];
+vector <int> fact[MAXN];
 
-int get(int num) {
-    int cur = 0;
+void factorize(int num, vector <int>& vec) {
+    vec.clear();
+    vec.push_back(1);
 
-    if (num != 1) {
-        if (parity[num] == 1) {
-            cur += cnt[num];
-        } else {
-            cur -= cnt[num];
-        }
-    }
+    for (int i = 2; num > 1; i++) {
+        if (num % i == 0) {
+            vec.push_back(i);
 
-    for (int j = 2; j * j <= num; j++) {
-        if (num % j == 0) {
-            if (parity[j] == 1) {
-                cur += cnt[j];
-            } else {
-                cur -= cnt[j];
-            }
-
-            if (j * j != num) {
-                if (parity[num / j] == 1) {
-                    cur += cnt[num / j];
-                } else {
-                    cur -= cnt[num / j];
-                }
+            while (num % i == 0) {
+                num /= i;
             }
         }
     }
-
-    return cur;
 }
 
 int main() {
@@ -72,71 +56,58 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         scanf("%d", &a[i]);
+        factorize(a[i], fact[i]);
     }
-
-    for (int i = 2; i < MAXN; i++) {
-        bool found = false;
-        for (int j = 2; j * j <= i; j++) {
-            if (i % j == 0) {
-                int temp = i;
-
-                while (temp % j == 0) {
-                    temp /= j;
-                }
-                parity[i] = parity[temp] ^ 1;
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            parity[i] = 1;
-        }
-    }
-
-    int ans = 0;
-    int cursize = 0;
 
     while (q--) {
         scanf("%d", &x);
-        x--;
 
-        int num = a[x];
-        if (take[x]) {
-            cursize--;
-            cnt[num]--;
+        vector <int>& vec = fact[x - 1];
 
-            for (int j = 2; j * j <= num; j++) {
-                if (num % j == 0) {
-                    cnt[j]--;
+        int size = vec.size();
 
-                    if (j * j != num) {
-                        cnt[num / j]--;
-                    }
+        int res = 0;
+        for (int mask = 0; mask < (1 << size); mask++) {
+            int sum = 0;
+
+            for (int i = 0; i < size; i++) {
+                if (mask & (1 << i)) {
+                    sum += dp[vec[i]];
                 }
             }
-
-            ans -= cursize - get(num);
-        } else {
-            ans += cursize - get(num);
-                              
-            cursize++;
-            cnt[num]++;
-            for (int j = 2; j * j <= num; j++) {
-                if (num % j == 0) {
-                    cnt[j]++;
-
-                    if (j * j != num) {
-                        cnt[num / j]++;
-                    }
-                }
+        
+            if (__builtin_popcount(mask) & 1) {
+                res += sum;
+            } else {
+                res -= sum;
             }
         }
 
-        take[x] ^= 1;
+        for (int i = 0; i < 6; i++) {
+            cout << dp[i] << ' ';
+        }
+        cout << endl;
+
+        for (int i = 0; i < size; i++) {
+            if (taken[x - 1]) {
+                dp[vec[i]]--;
+            } else {
+                dp[vec[i]]++;
+            }
+        }
+
+        taken[x - 1] ^= 1;
+
+        if (taken[x - 1]) {
+            ans += cnt - res;
+            cnt++;
+        } else {
+            ans -= cnt - res;
+            cnt--;
+        }
 
         printf("%d\n", ans);
     }
-    
+
     return 0;
 }
