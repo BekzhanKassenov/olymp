@@ -19,66 +19,48 @@ const double EPS = 1e-9;
 const double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
-const int MAXN = 5010;
+const int MAXN = 300010;
 
 template <typename T>
 inline T sqr(T n) {
     return n * n;
 }
 
-bool calced[MAXN][MAXN];
-bool good[MAXN][MAXN];
-char s[MAXN];
-int n, k;
-
-bool calc(int l, int r) {
-    if (calced[l][r]) {
-        return good[l][r];
-    }
-
-    if (l >= r) {
-        return true;
-    }
-
-    calced[l][r] = true;
-    bool& ans = good[l][r];
-
-    if (l & 1) {
-        ans = (s[l] == s[r]) && calc(l + 2, r - 2);
-    } else {
-        ans = calc(l + 1, r - 1);
-    }
-
-    return ans;
-}
-
-struct Trie {
-    Trie* next[2];
-
-    Trie() {
-        memset(next, 0, sizeof next);
-    }
-};
-
-Trie *root = new Trie();
-
-
+int n, m, x, res;
+char s[MAXN], c;
 
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("in", "r", stdin);
 #endif
 
+    scanf("%d %d\n", &n, &m);
+
     gets(s + 1);
-    n = strlen(s + 1);
-    
-    scanf("%d", &k);
-    
-    for (int i = 1; i <= n; i++) {
-        add(i);
+
+    for (int i = 1; i + 1 <= n; i++) {
+        if (s[i] == '.' && s[i] == s[i + 1]) {
+            res++;
+        }
     }
 
+    while (m --> 0) {
+        scanf("%d %c\n", &x, &c);
 
+        if (s[x] == '.') {
+            res -= (x > 1 && s[x] == s[x - 1]);
+            res -= (s[x] == s[x + 1]);
+        }
 
+        s[x] = c;
+
+        if (s[x] == '.') {
+            res += (x > 1 && s[x] == s[x - 1]);
+            res += (s[x] == s[x + 1]);
+        }
+
+        printf("%d\n", res);
+    }
+    
     return 0;
 }
