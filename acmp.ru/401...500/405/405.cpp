@@ -1,26 +1,36 @@
 #include <iostream>
+#include <numeric>
 #include <cstdio>
 #include <vector>
 
 using namespace std;
 
-const int MAXN = 20010;
+#define all(x) (x).begin(), (x).end()
 
-vector <int> g[MAXN];
-int tin[MAXN], fup[MAXN], timer;
-int block[MAXN], bsize[MAXM], block_last;
-bool is_cut[MAXN], used[MAXN];
+const int MAXN = 200010;
+
 int n, m, x, y;
+int tin[MAXN], fup[MAXN], timer;
+int size[MAXN], rest[MAXN];
+long long ans[MAXN];
+bool used[MAXN];
+vector <int> g[MAXN];
 
-void dfs(int v, int p = 0) {
+void dfs(int v, int par = -1) {
     used[v] = true;
-    tin[v] = fup[v] = ++timer;
-    int child_num = 0;
+    size[v] = 1;
+    rest[v] = n - 1;
+    ans[v] = n - 1;
+
+    tin[v] = fup[v] = timer++;
+    int chnum = 0;
+    bool cut = false;
+    vector <int> sizes;
 
     for (size_t i = 0; i < g[v].size(); i++) {
         int to = g[v][i];
 
-        if (to == p) {
+        if (to == par) {
             continue;
         }
 
@@ -28,39 +38,24 @@ void dfs(int v, int p = 0) {
             fup[v] = min(fup[v], tin[to]);
         } else {
             dfs(to, v);
+            size[v] += size[to];
             fup[v] = min(fup[v], fup[to]);
-            child_num++;
+            chnum++;
 
-            if (fup[to] >= tin[v] && p != 0) {
-                is_cut[v] = true;
+            if (fup[to] >= tin[v]) {
+                cut = true;
+                sizes.push_back(size[to]);
+                rest[v] -= size[to];
             }
         }
     }
 
-    if (p == 0 && child_num > 1) {
-        is_cut[v] = true;
-    }
-}
-
-void bfs(int s, int bnum) {
-    used[s] = true;
-    block[s] = bnum;
-
-    queue <int> q;
-    q.push(s);
-
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-
-        for (size_t i = 0; i < g[v].size(); i++) {
-            int to = g[v][i];
-
-            if (!used[to] && !is_cut[to]) {
-                used[to] = true;
-                block[to] = bnum;
-                q.push(to);
-            }
+    if (cut) {
+        sizes.push_back(rest[v]);
+        long long sum = accumulate(all(sizes), 0);
+        for (size_t i = 0; i < sizes.size(); i++) {
+            sum -= sizes[i];
+            ans[v] += sum * sizes[i];
         }
     }
 }
@@ -77,26 +72,10 @@ int main() {
         g[y].push_back(x);
     }
 
-    for (int i = 1; i <= n; i++) {
-        if (!used[i]) {
-            dfs(i);
-        }
-    }
-
-    memset(used, false, sizeof used);
+    dfs(1);
 
     for (int i = 1; i <= n; i++) {
-        if (!used[i] && !is_cut[i]) {
-            bfs(i, block_last++);
-        }
-    }
-
-    for (int i = 1; i <= n; i++) {
-        if (is_cut[i]) {
-
-        } else {
-            
-        }
+        printf("%I64d\n", ans[i]);
     }
 
     return 0;
