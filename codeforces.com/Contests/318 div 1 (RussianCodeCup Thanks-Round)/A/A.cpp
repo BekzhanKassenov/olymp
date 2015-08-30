@@ -1,5 +1,5 @@
 /****************************************
-**          Solution by NU #2          **
+**     Solution by Bekzhan Kassenov    **
 ****************************************/
 
 #include <bits/stdc++.h>
@@ -19,43 +19,45 @@ const double EPS = 1e-9;
 const double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
+const int MAXN = 100010;
 
 template <typename T>
 inline T sqr(T n) {
     return n * n;
 }
 
-int a[240][240], n, d[240], cur;
+int n;
+int a[MAXN];
 
 int main() {
-#ifdef Local
+#ifndef ONLINE_JUDGE
     freopen("in", "r", stdin);
 #endif
-    cin >> n;
+
+    scanf("%d", &n);
+
     for (int i = 0; i < n; i++) {
-    	d[i] = i;
-    	for (int j = 0; j < n; j++) {
-    		cin >> a[i][j];
-    	}
-    	cur += a[i][i];    	
+        scanf("%d", &a[i]);
     }
-    bool was = true;
-    while(was) {
-    	was = false;
-    	for (int i = 1; i < n; i++) {
-    		for (int j = 0; j < i; j++) {
-    			int r1 = d[i], r2 = d[j];
-    			if (a[r1][r1] + a[r2][r2] > a[r1][r2] + a[r2][r1]) {
-    				was = true;
-    				cur -= (a[r1][i] + a[r2][j] - a[r1][j] - a[r2][i]);
-    				swap(d[i], d[j]);
-    			}
-    		}
-    	}
-    }
-    cout << cur << endl;
+
     for (int i = 0; i < n; i++) {
-    	cout << d[i]+1 << " " << i+1 << endl;
+        while (a[i] % 2 == 0) {
+            a[i] /= 2;
+        }
+
+        while (a[i] % 3 == 0) {
+            a[i] /= 3;
+        }
     }
+
+    for (int i = 1; i < n; i++) {
+        if (a[i] != a[0]) {
+            puts("No");
+            return 0;
+        }
+    }
+
+    puts("Yes");
+    
     return 0;
 }
