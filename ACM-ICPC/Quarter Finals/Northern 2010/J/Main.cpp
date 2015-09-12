@@ -42,6 +42,7 @@ struct Graph {
 
     vector <int> g[MAXN];
     int color[MAXN];
+    int in[MAXN];
 
     bool used[MAXN];
     long long dist[MAXN];
@@ -52,6 +53,7 @@ struct Graph {
         lastEdge = 0;
         memset(color, 0, sizeof color);
         memset(used, false, sizeof used);
+        memset(in, 0, sizeof in);
 
         for (int i = 0; i < MAXN; i++) {
             dist[i] = INF;
@@ -63,19 +65,17 @@ struct Graph {
         g[from].push_back(lastEdge++);
     }
 
-    bool cycle(int v, int t) {
-        if (v == t || v == t + n) {
-            return false;
-        }
-
+    bool cycle(int v) {
         color[v] = 1;
 
         for (int idx: g[v]) {
-            if (color[e[idx].to] == 0 && cycle(e[idx].to, t)) {
+            if (color[e[idx].to] == 0 && cycle(e[idx].to)) {
                 return true;
             } else if (color[e[idx].to] == 1) {
                 return true;
             }
+
+            in[e[idx].to]++;
         }
 
         color[v] = 2;
@@ -101,6 +101,29 @@ struct Graph {
             for (int idx: g[pos]) {
                 int to = e[idx].to;
                 dist[to] = min(dist[to], dist[pos] + e[idx].cost);
+            }
+        }
+    }
+
+    void runDP(int S) {
+        queue <int> q;
+        memset(dist, 0, sizeof dist);
+
+        q.push(S);
+
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+
+            for (int idx: g[v]) {
+                int to = e[idx].to;
+
+                dist[to] = max(dist[to], dist[v] + e[idx].cost);
+                in[to]--;
+
+                if (in[to] == 0) {
+                    q.push(to);
+                }
             }
         }
     }
@@ -139,7 +162,7 @@ int main() {
         int from = g1.e[i].from;
         int to = g1.e[i].to;
         if (g1.dist[from] > g1.dist[to]) {
-            g3.addEdge(from, to + n, -g1.e[i].cost);
+            g3.addEdge(from, to + n, g1.e[i].cost);
         }
     }
 
@@ -147,18 +170,18 @@ int main() {
         int from = g2.e[i].from;
         int to = g2.e[i].to;
         if (g2.dist[from] > g2.dist[to]) {
-            g3.addEdge(from + n, to, -g2.e[i].cost);
+            g3.addEdge(from + n, to, g2.e[i].cost);
         }
     }
 
-    if (g3.cycle(s, t)) {
+    if (g3.cycle(s)) {
         puts("-1");
         return 0;
     }
 
-    g3.dijkstra(s);
+    g3.runDP(s); //???
 
-    long long ans = max(-g3.dist[t], -g3.dist[t + n]);
+    long long ans = max(g3.dist[t], g3.dist[t + n]);
 
     printf("%I64d\n", ans);
 
