@@ -19,17 +19,19 @@ int main() {
         sum += s[i] - '0';
     }
 
-    bool flag = false;
-
     for (int i = n - 1; i >= 0; i--) {
-        if ((sum >> i) & 1)
-            flag = true;
-
-        if (flag)
-            putchar(((sum >> i) & 1) + '0');    
+        s[i] = (sum & 1) + '0';
+        sum >>= 1;
     }
 
-    putchar('\n');
+    for (int i = 0; i < n; i++) {
+        if (s[i] != '0') {
+            puts(s + i);
+            return 0;
+        }
+    }
+
+    puts("0");
 
     return 0;
 }
