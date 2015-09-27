@@ -29,8 +29,7 @@ inline T sqr(T n) {
 int n, m, k;
 int score[MAXN];
 int mask[MAXN];
-vector <int> v[1 << 11];
-vector<int> z;
+vector <int> ids[1 << 10][1 << 10];
 stringstream ss;
 
 int read_trait() {
@@ -48,6 +47,10 @@ int read_trait() {
     return mask;
 }
 
+bool cmp(int a, int b) {
+    return score[a] > score[b];
+}
+
 int main() {
 #ifdef Local
     freopen("in", "r", stdin);
@@ -58,8 +61,16 @@ int main() {
     for (int i = 1; i <= n; i++) {
         scanf("%d", &score[i]);
         mask[i] = read_trait();
-        z.push_back(score[i]);
-        v[mask[i]].push_back(score[i]);
+
+        for (int mask1 = 0; mask1 < (1 << k); mask1++) {
+            ids[mask1][mask[i] & mask1].push_back(i);
+        }
+    }
+
+    for (int mask1 = 0; mask1 < (1 << k); mask1++) {
+        for (int mask2 = 0; mask2 < (1 << k); mask2++) {
+            sort(all(ids[mask1][mask2]), cmp);
+        }
     }
 
     scanf("%d", &m);
@@ -69,14 +80,9 @@ int main() {
         scanf("%d", &id);
 
         int mask1 = read_trait();
-        if (mask1 == 0) {
-            cout << score[id] << " " << id << endl;
-            cout << upper_bound(all(z), score[id]) - z.begin() << endl;
-        }
-        else {            
-            mask1 |= mask[id];
-            cout << upper_bound(all(v[mask1]), score[id])  - v[mask1].begin() << endl;        
-        }
+        int mask2 = mask[id] & mask1;
+
+        printf("%d\n", lower_bound(all(ids[mask1][mask2]), id, cmp) - ids[mask1][mask2].begin() + 1);
     }
 
     return 0;
