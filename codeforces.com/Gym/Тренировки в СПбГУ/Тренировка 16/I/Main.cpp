@@ -17,8 +17,8 @@ typedef long double ld;
 
 const double EPS = 1e-9;
 const double PI = acos(-1.0);
+const long long INF = (int)1e14;
 const int MOD = 1000 * 1000 * 1000 + 7;
-const int INF = 2000 * 1000 * 1000;
 const int MAXN = 2 * 250 + 10;
 const int MAXM = MAXN * MAXN;
 
@@ -34,8 +34,9 @@ struct MinCostMaxFlow {
 
     vector <int> g[MAXN];
 
-    int dist[MAXN], par[MAXN];
-    bool inque[MAXN], used[MAXN];
+    long long dist[MAXN], phi[MAXN];
+    int par[MAXN];
+    bool used[MAXN];
 
     MinCostMaxFlow() : lastEdge(0) { }
 
@@ -55,65 +56,90 @@ struct MinCostMaxFlow {
         g[t].push_back(lastEdge++);
     }
 
-    // Shortest path
-    bool run(int S, int T, vector <int>& path) {
-        deque <int> q;
-        memset(dist, 255, sizeof dist);
-        memset(par, 255, sizeof par);
-        memset(inque, false, sizeof inque);
-        memset(used, false, sizeof used);
+    void fordBellman(int S) {
+        for (int i = 0; i < MAXN; i++) {
+            dist[i] = INF;
+        }
 
-        q.push_back(S);
         dist[S] = 0;
-        inque[S] = true;
-        used[S] = true;
 
-        while (!q.empty()) {
-            int v = q.front();
-            q.pop_front();
-            inque[v] = false;
+        bool changed = true;
 
-            for (int& idx: g[v]) {
-                if (cap[idx] - flow[idx] <= 0) {
-                    continue;
-                }
+        while (changed) {
+            changed = false;
 
-                int _to = to[idx];
-                if (dist[_to] == -1 || (dist[_to] > dist[v] + cost[idx])) {
-                    dist[_to] = dist[v] + cost[idx];
-                    par[_to] = idx;
-
-                    if (!inque[_to]) {
-                        if (used[_to]) {
-                            q.push_front(_to);
-                        } else {
-                            q.push_back(_to);
-                        }
-
-                        inque[_to] = true;
-                        used[_to] = true;
-                    }
+            for (int i = 0; i < lastEdge; i++) {
+                if (cap[i] - flow[i] > 0 && dist[to[i]] > dist[from[i]] + cost[i]) {
+                    dist[to[i]] = dist[from[i]] + cost[i];
+                    changed = true;
                 }
             }
+        }
+    }
+
+    // Shortest path
+    bool run(int S, int T, vector <int>& path) {
+        memset(used, false, sizeof used);
+        memset(par, -1, sizeof par);
+
+        for (int i = 0; i < MAXN; i++) {
+            dist[i] = INF;
+        }
+
+        dist[S] = 0;
+
+        for (int i = 0; i < MAXN; i++) {
+            int v = -1;
+            for (int j = 0; j < MAXN; j++) {
+                if (!used[j] && (v == -1 || dist[j] < dist[v])) {
+                    v = j;
+                }
+            }
+
+            if (v == -1 || dist[v] == INF) {
+                break;
+            }
+
+            used[v] = true;
+
+            for (auto idx: g[v]) {
+                long long weight = cost[idx] + phi[v] - phi[to[idx]];
+
+                if (cap[idx] - flow[idx] > 0 && dist[to[idx]] > dist[v] + weight) {
+                    dist[to[idx]] = dist[v] + weight;
+                    par[to[idx]] = idx;
+                }
+            }
+        }
+
+        if (dist[T] == INF) {
+            return false;
         }
 
         path.clear();
-        if (par[T] != -1) {
-            for (int v = T; par[v] != -1; v = from[par[v]]) {
-                path.push_back(par[v]);
-            }
 
-            return true;
-        } else {
-            return false;
+        for (int i = T; par[i] != -1; i = from[par[i]]) {
+            path.push_back(par[i]);
         }
+
+        return true;
     }
 
     int getMinCostMaxFlow(int S, int T) {
         int flowCost = 0;
         vector <int> path;
 
+        fordBellman(S);
+
+        for (int i = 0; i < MAXN; i++) {
+            phi[i] = dist[i];
+        }
+
         while (run(S, T, path)) {
+            for (int i = 0; i < MAXN; i++) {
+                phi[i] = min(phi[i] + dist[i], INF);
+            }
+
             int minCap = INF;
 
             for (int idx: path) {
