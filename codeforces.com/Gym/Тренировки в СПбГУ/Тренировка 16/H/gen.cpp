@@ -28,8 +28,8 @@ inline T sqr(T n) {
 
 int main() {
     srand(time(NULL));
-    int n = rand() % 100 + 1;
-    int m = rand() % 100 + 1;
+    int n = rand() % 10 + 1;
+    int m = rand() % 10 + 1;
 
     printf("%d %d\n", n, m);
     for (int i = 0; i < n; i++) {

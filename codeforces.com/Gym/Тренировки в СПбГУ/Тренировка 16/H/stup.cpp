@@ -50,6 +50,7 @@ int main() {
         insert(x, i);
     }
 
+    printf("%d\n", maxpos);
     for (int i = 1; i <= maxpos; i++) {
         printf("%d%c", a[i], " \n"[i == maxpos]);
     }
