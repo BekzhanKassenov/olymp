@@ -18,7 +18,7 @@ typedef long double ld;
 const double EPS = 1e-9;
 const double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
-const int INF = 2000 * 1000 * 1000;
+const int INF = 500 * 1000 * 1000;
 const int MAXN = 110;
 const int di[] = {1, 0, 0, -1};
 const int dj[] = {0, 1, -1, 0};
@@ -33,8 +33,7 @@ int n, m;
 char s[MAXN][MAXN];
 int i1, j1;
 int i2, j2;
-int dist[MAXN][MAXN];
-
+int dist1[MAXN][MAXN], dist2[MAXN][MAXN], dist3[MAXN][MAXN];
 
 bool ok(int i, int j) {
     return 0 <= i && i < n &&
@@ -42,42 +41,53 @@ bool ok(int i, int j) {
            s[i][j] != '*';
 }
 
-void bfs(int si, int sj) {
+void run(int si, int sj, int dist[MAXN][MAXN]) {
+    deque <int> I, J;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             dist[i][j] = INF;
         }
     }
 
-    dist[si][sj] = 0;
+    if (si == -1) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if ((i == 0 || j == 0 || i == n - 1 || j == m - 1) && s[i][j] != '*') {
+                    I.push_back(i);
+                    J.push_back(j);
 
-    queue <int> I, J;
-    I.push(si);
-    J.push(sj);
+                    dist[i][j] = s[i][j] == '#';
+                }
+            }
+        }
+    } else {
+        I.push_back(si);
+        J.push_back(sj);
+        dist[si][sj] = 0;
+    }
 
     while (!I.empty()) {
-        assert(!J.empty());
+        int i = I.front();
+        int j = J.front();
 
-        int ii = I.front();
-        int jj = J.front();
-
-        I.pop();
-        J.pop();
+        I.pop_front();
+        J.pop_front();
 
         for (int k = 0; k < 4; k++) {
-            int ti = ii + di[k];
-            int tj = jj + dj[k];
+            int ti = i + di[k];
+            int tj = j + dj[k];
 
             if (ok(ti, tj)) {
-                int cost = 0;
-                if (s[ti][tj] == '#') {
-                    cost = 1;
-                }
+                int cost = s[ti][tj] == '#';
 
-                if (dist[ti][tj] > dist[ii][jj] + cost) {
-                    dist[ti][tj] = dist[ii][jj] + cost;
-                    I.push(ti);
-                    J.push(tj);
+                if (dist[ti][tj] == INF) {
+                    dist[ti][tj] = dist[i][j] + cost;
+                    I.push_back(ti);
+                    J.push_back(tj);
+                } else if (dist[ti][tj] > dist[i][j] + cost) {
+                    dist[ti][tj] = dist[i][j] + cost;
+                    I.push_front(ti);
+                    J.push_front(tj);
                 }
             }
         }
@@ -111,62 +121,29 @@ int main() {
             }
         }
 
-        int val1 = 0;
-        int ans = INF;
-        bfs(i1, j1);
+        run(i1, j1, dist1);
+        run(i2, j2, dist2);
+        run(-1, -1, dist3);
 
-        int mindist = INF;
+        int val1 = dist3[i1][j1] + dist1[i2][j2]; // exit -> one -> two
+        int val2 = dist3[i2][j2] + dist2[i1][j1]; // exit -> two -> one
+        int val3 = dist3[i1][j1] + dist3[i2][j2]; // exit -> one, exit -> two
+        int val4 = INF;
+
         for (int i = 0; i < n; i++) {
-            if (s[i][0] != '*') {
-                mindist = min(mindist, dist[i][0]);
-            }
+            for (int j = 0; j < m; j++) {
+                int diff = 0;
+                if (s[i][j] == '#') {
+                    diff = 2;
+                }
 
-            if (s[i][m - 1] != '*') {
-                mindist = min(mindist, dist[i][0]);
-            }
-        }
-
-        for (int i = 0; i < m; i++) {
-            if (s[0][i] != '*') {
-                mindist = min(mindist, dist[0][i]);
-            }
-
-            if (s[n - 1][i] != '*') {
-                mindist = min(mindist, dist[n - 1][i]);
+                val4 = min(val4, dist1[i][j] + dist2[i][j] + dist3[i][j] - diff);
             }
         }
 
-        val1 = mindist;
-        ans = min(ans, mindist + dist[i2][j2]);
-
-        bfs(i2, j2);
-        mindist = INF;
-        for (int i = 0; i < n; i++) {
-            if (s[i][0] != '*') {
-                mindist = min(mindist, dist[i][0]);
-            }
-
-            if (s[i][m - 1] != '*') {
-                mindist = min(mindist, dist[i][0]);
-            }
-        }
-
-        for (int i = 0; i < m; i++) {
-            if (s[0][i] != '*') {
-                mindist = min(mindist, dist[0][i]);
-            }
-
-            if (s[n - 1][i] != '*') {
-                mindist = min(mindist, dist[n - 1][i]);
-            }
-        }
-
-        ans = min(ans, mindist + dist[i1][j1]);
-        val1 += mindist;
-        ans = min(ans, val1);
+        int ans = min(min(val1, val2), min(val3, val4));
 
         printf("%d\n", ans);
-
     }
     return 0;
 }
