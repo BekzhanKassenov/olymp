@@ -30,13 +30,42 @@ int T;
 int n, c, m;
 int b[MAXN];
 double p[MAXN];
-double dp[MAXN][MAXN];
+double dp[1 << MAXN][MAXN];
+
+double go(int mask, int cnt, int sum) {
+    if (sum > m) {
+        return 0.0;
+    }
+
+    if (cnt == c) {
+        return 1.0;
+    }
+
+    double& ans = dp[mask][cnt];
+    if (ans == ans) {
+        return ans;
+    }
+
+    ans = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (!(mask & (1 << i))) {
+            int nmask = mask | (1 << i);
+
+            double yes = go(nmask, cnt + 1, sum + b[i]);
+            double no  = go(nmask, cnt, sum + b[i]);
+            
+            ans = max(ans, p[i] * yes + (1 - p[i]) * no);
+        }
+    }
+
+    return ans;
+}
 
 int main() {
 #ifdef Local
     freopen("in", "r", stdin);
 #endif
-
     
     scanf("%d", &T);
 
@@ -49,52 +78,12 @@ int main() {
             p[i] = x / 100.0;
         }
 
-        double ans = 0;
         for (int mask = 0; mask < (1 << n); mask++) {
-            if (__builtin_popcount(mask) >= c) {
-                int sum = 0;
-                for (int i = 0; i < n; i++) {
-                    if (mask & (1 << i)) {
-                        sum += b[i];
-                    }
-                }
-
-                if (m < sum) {
-                    continue;
-                }
-
-                vector <int> a;
-                for (int i = 0; i < n; i++) {
-                    if (mask & (1 << i)) {
-                        a.push_back(i);
-                    }
-                }
-
-
-                dp[0][0] = 1 - p[a[0]];
-                dp[0][1] = p[a[0]];
-
-                for (size_t i = 1; i < a.size(); i++) {
-                    for (size_t j = 0; j <= i + 1; j++) {
-                        dp[i][j] = (1 - p[a[i]]) * dp[i - 1][j];
-
-                        if (j > 0)
-                            dp[i][j] += p[a[i]] * dp[i - 1][j - 1];
-                    }
-                }
-
-                double prob = 0;
-                for (size_t i = c; i < a.size(); i++) {
-                    prob += dp[a.size() - 1][i];
-                }
-
-                ans = max(ans, prob);
-            }
+            memset(dp[mask], 255, sizeof(double) * n);
         }
-    
-        cout << setprecision(16);
-        cout << fixed;
-        cout << ans << endl;
+
+        cout << setprecision(10) << fixed;
+        cout << go(0, 0, 0) << endl;
     }
     return 0;
 }
