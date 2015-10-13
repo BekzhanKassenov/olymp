@@ -27,8 +27,6 @@ inline T sqr(T n) {
 }
 
 int n, m, k;
-double dp[MAXN][MAXN];
-int ans[MAXN][MAXN];
 int cnt[MAXN];
 int fact[MAXN], rfact[MAXN];
 int rev[MAXN];
@@ -41,7 +39,7 @@ int binpow(int base, int p) {
             result = (1ll * result * base) % MOD;
         }
 
-        a = (a * a) % MOD;
+        base = (1ll * base * base) % MOD;
         p >>= 1;
     }
 
@@ -52,7 +50,7 @@ void build() {
     fact[0] = 1;
     rfact[0] = 1;
 
-    for (int i = 1; i <= m; i++) {
+    for (int i = 1; i < MAXN; i++) {
         fact[i] = (1ll * fact[i - 1] * i) % MOD;
         rev[i] = binpow(i, MOD - 2);
         rfact[i] = (1ll * rfact[i - 1] * rev[i]) % MOD;
@@ -82,11 +80,24 @@ int main() {
         cnt[x]++;
     }
 
-    for (int i = 1; i <= m; i++) {
-        for (int j = 0; j <= k; j++) {
-            
+    int ans = 1;
+    for (int i = 1; i <= n; i++) {
+        int num = 0;
+        for (int j = 1; j <= m; j++) {
+            if (cnt[j] == i) {
+                num += i;
+            }
+        }
+
+        if (k >= num) {
+            k -= num;
+        } else {
+            ans = C(num, k);
+            break;
         }
     }
+
+    printf("%d\n", ans);
 
     return 0;
 }
