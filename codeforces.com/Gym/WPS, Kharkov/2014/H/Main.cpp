@@ -25,9 +25,8 @@ inline T sqr(T n) {
     return n * n;
 }
 
-int x;
-long long sum;
-int n, k;
+int n, k, x;
+int bit[30];
 
 int main() {
 #ifdef Local
@@ -36,37 +35,24 @@ int main() {
 
     scanf("%d%d", &n, &k);
 
-    if (k == 2) {
-        int ans = 0;
-        for (int i = 0; i < n; i++) {
-            scanf("%d", &x);
-            ans ^= x;
-        }
-
-        printf("%d\n", ans);
-        return 0;
-    }
-
     for (int i = 0; i < n; i++) {
         scanf("%d", &x);
-        sum += x;
-    }
 
-    long long num = n % k;
-
-    for (int i = 0; i <= sum / k; i++) {
-        long long lhs = sum - k * i;
-
-        if (lhs % num == 0) {                                   
-            long long a = (i + lhs / num) * k;
-            long long b = sum + (lhs / num) * num;
-
-            if (a == b) {
-                printf("%I64d\n", (lhs / (num * num) - 1));
-                return 0;
+        for (int j = 0; j < 30; j++) {
+            if (x & (1 << j)) {
+                bit[j]++;
             }
         }
     }
+
+    int ans = 0;
+    for (int j = 0; j < 30; j++) {
+        if (bit[j] % k != 0) {
+            ans |= 1 << j;
+        }
+    }
+
+    printf("%d\n", ans);
 
     return 0;
 }
