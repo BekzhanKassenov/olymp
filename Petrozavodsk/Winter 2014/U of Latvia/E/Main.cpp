@@ -130,12 +130,19 @@ int main() {
     get_convex(convex);
 
     long long ans = 0;
+
     for (size_t l = 0, r = 0; l < convex.size(); l++) {
         long long area = abs(convex[l].cross(convex[r]));
         ans = max(ans, area);
 
-        while (r + 1 != l && abs(convex[l].cross(convex[(r + 1) % convex.size()])) >= area) {
-            r = (r + 1) % convex.size();
+        while (r + 1 < convex.size() && abs(convex[l].cross(convex[r + 1])) > area) {
+            r++;
+            area = abs(convex[l].cross(convex[r]));
+            ans = max(ans, area);
+        }
+
+        while (r > l && abs(convex[l].cross(convex[r - 1])) > area) {
+            r--;
             area = abs(convex[l].cross(convex[r]));
             ans = max(ans, area);
         }
