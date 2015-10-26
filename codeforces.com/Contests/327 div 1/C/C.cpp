@@ -131,9 +131,9 @@ int main() {
         }
     }
 
-    int min11 = INF, min12 = INF;
-    int min21 = INF, min22 = INF;
-    int min31 = INF, min32 = INF;
+    int min11 = INF - 1, min12 = INF - 1;
+    int min21 = INF - 1, min22 = INF - 1;
+    int min31 = INF - 1, min32 = INF - 1;
 
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
@@ -156,9 +156,17 @@ int main() {
         }
     }
 
-    ans = min(ans, min11 + min12);
-    ans = min(ans, min21 + min22);
-    ans = min(ans, min31 + min32);
+    if (min11 != INF - 1 && min12 != INF - 1) {
+        ans = min(ans, min11 + min12);
+    }
+
+    if (min21 != INF - 1 && min22 != INF - 1) {
+        ans = min(ans, min21 + min22);
+    }
+
+    if (min31 != INF - 1 && min32 != INF - 1) {
+        ans = min(ans, min31 + min32);
+    }
 
     if (ans == INF) {
         puts("-1");
