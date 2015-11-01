@@ -27,8 +27,9 @@ inline T sqr(T n) {
 }
 
 int n, ans;
-int p[MAXN], s[MAXN], pos_s[MAXN];
-vector <pair <int, int> > res;
+int p[MAXN], s[MAXN];
+int pinv[MAXN], sinv[MAXN];
+vector <pair <int, int> > swaps;
 
 int main() {
 #ifndef ONLINE_JUDGE
@@ -39,33 +40,30 @@ int main() {
 
     for (int i = 1; i <= n; i++) {
         scanf("%d", &p[i]);
+        pinv[p[i]] = i;
     }
 
     for (int i = 1; i <= n; i++) {
         scanf("%d", &s[i]);
-        pos_s[s[i]] = i;
+        sinv[s[i]] = i;
     }
 
-    for (int i = n; i > 1; i--) {
-        int v = 1;
-        for (int j = 1; j <= i; j++) {
-            if (pos_s[p[j]] > pos_s[p[v]]) {
-                v = j;
+    for (int i = n; i >= 1; i--) {
+        int pos = pinv[s[i]];
+
+        for (int j = pos + 1; j <= n; j++) {
+            if (sinv[p[j]] <= pos) {
+                ans += abs(j - pos);
+                swaps.emplace_back(pos, j);
+                swap(p[pos], p[j]);
+                pos = j;
             }
         }
-
-        if (i != v) {
-            ans += abs(i - v);
-            res.push_back(make_pair(i, v));
-            swap(p[i], p[v]);
-        }
     }
 
-    printf("%d\n", ans);
-    printf("%u\n", res.size());
-
-    for (auto x: res) {
-        printf("%d %d\n", x.first, x.second);
+    printf("%d\n%u\n", ans, swaps.size());
+    for (auto p: swaps) {
+        printf("%d %d\n", p.first, p.second);
     }
 
     return 0;
