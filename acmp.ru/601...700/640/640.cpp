@@ -1,4 +1,3 @@
-#include <iostream>
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -54,7 +53,7 @@ struct Board {
         }
     }
 
-    void get_first_black(int& i, int& j) const {
+    void first_black(int& i, int& j) const {
         for (i = 0; i < MAXN; i++) {
             for (j = 0; j < MAXN; j++) {
                 if (grid[i][j] == 1) {
@@ -69,8 +68,8 @@ struct Board {
     bool equal(const Board& other) {
         int di, dj, dio, djo;
 
-        get_first_black(di, dj);
-        other.get_first_black(dio, djo);
+        first_black(di, dj);
+        other.first_black(dio, djo);
 
         int b = black;
 
@@ -96,16 +95,6 @@ struct Board {
 
         return b == 0;
     }
-
-    void print() {
-        for (int i = 0; i < MAXN; i++) {
-            for (int j = 0; j < MAXN; j++) {
-                cout << grid[i][j];
-            }
-            cout << endl;
-        }
-        cout << endl;
-    }
 };
 
 Board a, b;
@@ -115,25 +104,6 @@ void check() {
         puts("Yes");
         exit(0);
     }
-}
-
-void solve() {
-    check();
-    a.reflect();
-    check();
-    a.reflect();
-    check();
-
-    for (int i = 0; i < 3; i++) {
-        a.rotate();
-        check();
-        a.reflect();
-        check();
-        a.reflect();
-    }
-
-    //a.rotate();
-    a.rotate();
 }
 
 int main() {
@@ -153,21 +123,21 @@ int main() {
         return 0;
     }
 
-    solve();
-    b.reflect();
-   
-    solve();
-    b.reflect();
-    
-    for (int i = 0; i < 4; i++) {
-        b.rotate();
-        solve();
-        b.reflect();
-        solve();
-        b.reflect();
+    check();
+    a.reflect();
+    check();
+    a.reflect();
+
+    for (int i = 0; i < 3; i++) {
+        a.rotate();
+        check();
+        a.reflect();
+        check();
+        a.reflect();
     }
 
     puts("No");
     
     return 0;
 }
+                
