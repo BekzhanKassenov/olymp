@@ -26,76 +26,51 @@ inline T sqr(T n) {
     return n * n;
 }
 
-struct edge {
-    int from, to;
-    int get(int k) {
-        if (k == from)
-            return to;
-
-        return from;
-    }
-};
-
-edge e[MAXN];
-int cas;
-int n, m, ans;
+int n, m;
+int caseNum;
 vector <int> g[MAXN];
+int par[MAXN];
+bool sure[MAXN];
 bool used[MAXN];
-vector <int> st, pet;
-int x, y;
-int col[MAXN];
 
-void dfs(int v, int gl = 0, int pare = -1) {
-    used[v] = true;
+bool bfs() {
+    queue <int> q;
 
-    for (size_t i = 0; i < g[v].size(); i++) {
-        int to = e[g[v][i]].get(v);
-
-        if (!used[to])
-            dfs(to, gl + 1, g[v][i]);
-        else if (gl > 0 && pare != g[v][i]) {
-            ans = 0;
-        }
-    }
-}
-
-void dfs1(int v, int& cntn, int& cntm, int pare = -1) {
-    st.push_back(v);
-    col[v] = 1;
-    cntn++;
-    cntm += g[v].size();
-
-    for (size_t i = 0; i < g[v].size(); i++) {
-        int to = e[g[v][i]].get(v);
-
-        if (col[to] == 0) {
-            dfs1(to, cntn, cntm, g[v][i]);
-        } else if (col[to] == 1 && g[v][i] != pare) {
-            int pos = st.size() - 1;
-
-            do {
-                used[st[pos]] = true;
-                pos--;
-            } while (pos >= 0 && st[pos] != to);
-
-
-            ans = (ans * 2ll) % MOD;
+    for (int i = 0; i < m; i++) {
+        if (sure[i]) {
+            q.push(i);
         }
     }
 
-    st.pop_back();
-    col[v] = 2;
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+
+        for (int to: g[v]) {
+            if (to != par[v]) {
+                if (sure[to]) {
+                    return false;
+                }
+
+                sure[to] = true;
+                q.push(to);
+                par[to] = v;
+            }
+        }
+    }
+
+    return true;
 }
 
-int dfs2(int v) {
+int dfs(int v, int& edge) {
+    edge += g[v].size();
     used[v] = true;
+
     int ans = 1;
-
-    for (size_t i = 0; i < g[v].size(); i++) {
-        int to = e[g[v][i]].get(v);
-
-        if (!used[to])
-            ans += dfs2(to);
+    for (int to: g[v]) {
+        if (!used[to]) {
+            ans += dfs(to, edge);
+        }
     }
 
     return ans;
@@ -106,48 +81,56 @@ int main() {
     freopen("in", "r", stdin);
 #endif
         
-    while (scanf("%d%d", &m, &n) && (n || m)) {
-        ans = 1;
-        cas++;
-
-        for (int i = 0; i < n; i++) {
-            g[i].clear();
-            col[i] = 0;
-            used[i] = false;
-        }
-
-        pet.clear();
+    while (scanf("%d%d", &n, &m) && (n || m)) {
+        caseNum++;
 
         for (int i = 0; i < m; i++) {
-            scanf("%d%d", &e[i].from, &e[i].to);
-            g[e[i].from].push_back(i);
-            
-            if (e[i].from != e[i].to)
-                g[e[i].to].push_back(i);
-            else
-                pet.push_back(e[i].to);
-        }
-
-        for (size_t i = 0; i < pet.size(); i++) {
-            if (!used[pet[i]])
-                dfs(pet[i]);
-        }
+            g[i].clear();
+            sure[i] = false;
+            par[i] = -1;
+            used[i] = false;
+        }   
 
         for (int i = 0; i < n; i++) {
-            if (!used[i] && !col[i]) {
-                int cntn = 0, cntm = 0;
-                dfs1(i, cntn, cntm);
-                
-                if (cntn + cntn < cntm)
-                    ans = 0;
+            int x, y;
+            scanf("%d%d", &x, &y);
+            if (x == y) {
+                sure[x] = true;
+            } else {
+                g[x].push_back(y);
+                g[y].push_back(x);
             }
         }
 
-        for (int i = 0; i < n; i++)
-            if (!used[i])
-                ans = (1ll * ans * dfs2(i)) % MOD;
+        if (n > m) {
+            printf("Case %d: 0\n", caseNum);
+            continue;
+        }
 
-        printf("Case %d: %d\n", cas, ans);
+        if (!bfs()) {
+            printf("Case %d: 0\n", caseNum);
+            continue;
+        }
+
+        int ans = 1;
+        for (int i = 0; i < m; i++) {
+            if (!sure[i] && !used[i]) {
+                int edgeNum = 0;
+                int nodeNum = dfs(i, edgeNum);
+
+                edgeNum /= 2;
+
+                if (edgeNum > nodeNum) {
+                    ans = 0;
+                } else if (edgeNum == nodeNum) {
+                    ans = (1ll * ans * 2) % MOD;
+                } else {
+                    ans = (1ll * ans * nodeNum) % MOD;
+                }
+            }
+        }
+
+        printf("Case %d: %d\n", caseNum, ans);
     }
     
     return 0;
