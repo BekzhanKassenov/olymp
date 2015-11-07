@@ -10,7 +10,6 @@ using namespace std;
 #define S second
 #define MP make_pair
 #define all(x) (x).begin(), (x).end()
-#define File ""
 
 typedef long long ll;
 typedef unsigned long long ull;
@@ -18,10 +17,10 @@ typedef long double ld;
 
 const double EPS = 1e-9;
 const double PI = acos(-1.0);
-const long long INF = (int)1e14;
+const int INF = 2000 * 1000 * 1000;
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int MAXN = 300;
-const int MAXM = 100 * 100 * 2 + 100;
+const int MAXM = (100 * 100 * 2 + 100) * 2;
 
 template <typename T>
 inline T sqr(T n) {
@@ -29,116 +28,106 @@ inline T sqr(T n) {
 }
 
 struct MinCostMaxFlow {
-    // Edges 
+    // Edges
     int from[MAXM], to[MAXM];
-    int flow[MAXM], cap[MAXM], cost[MAXM];
+    int cost[MAXM], flow[MAXM], cap[MAXM];
     int lastEdge;
 
     vector <int> g[MAXN];
 
-    long long dist[MAXN], phi[MAXN];
-    bool used[MAXN];
-    int minCap[MAXN], par[MAXN];
+    int phi[MAXN], dist[MAXN];
+    int par[MAXN];
+
+    MinCostMaxFlow() : lastEdge(0) { }
 
     void addEdge(int from, int to, int cap, int cost) {
         this->from[lastEdge] = from;
         this->to[lastEdge] = to;
         this->cap[lastEdge] = cap;
-        this->cost[lastEdge] = cost;
         this->flow[lastEdge] = 0;
+        this->cost[lastEdge] = cost;
         g[from].push_back(lastEdge++);
 
         this->from[lastEdge] = to;
         this->to[lastEdge] = from;
         this->cap[lastEdge] = 0;
-        this->cost[lastEdge] = -cost;
         this->flow[lastEdge] = 0;
+        this->cost[lastEdge] = -cost;
         g[to].push_back(lastEdge++);
     }
 
     void fordBellman(int S) {
-        queue <int> q;
-        memset(used, false, sizeof used);
         for (int i = 0; i < MAXN; i++) {
-            dist[i] = INF;
+            phi[i] = INF;
         }
 
-        dist[S] = 0;
-        q.push(S);
-        used[S] = true;
-
-        while (!q.empty()) {
-            int v = q.front();
-            used[v] = false;
-
-            for (int idx: g[v]) {
-                if (cap[idx] - flow[idx] > 0 && dist[to[idx]] > dist[v] + cost[idx]) {
-                    dist[to[idx]] = dist[v] + cost[idx];
-
-                    if (!used[to[idx]]) {
-                        q.push(to[idx]);
-                    }
+        phi[S] = 0;
+        for (int iter = 0; iter < MAXN - 1; iter++) {
+            for (int i = 0; i < lastEdge; i++) {
+                if (phi[from[i]] != INF) {
+                    phi[to[i]] = min(phi[to[i]], phi[from[i]] + cost[i]);
                 }
             }
         }
     }
 
-    long long run(int S, int T) {
-        memset(used, false, sizeof used);
+    bool dijkstra(int S, int T) {
         for (int i = 0; i < MAXN; i++) {
             dist[i] = INF;
-            minCap[i] = INF;
             par[i] = -1;
         }
 
         dist[S] = 0;
+        priority_queue <pair <int, int>,
+                        vector <pair <int, int> >,
+                        greater <pair <int, int> > > q;
 
-        for (int i = 0; i < MAXN; i++) {
-            int v = -1;
-            for (int j = 0; j < MAXN; j++) {
-                if (!used[j] && (v == -1 || dist[j] < dist[v])) {
-                    v = j;
-                }
+        q.emplace(0, S);
+
+        while (!q.empty()) {
+            int d = q.top().first;
+            int v = q.top().second;
+
+            q.pop();
+
+            if (dist[v] != d) {
+                continue;
             }
-
-            used[v] = true;
 
             for (int idx: g[v]) {
-                long long weight = cost[idx] + phi[v] - phi[to[idx]];
-                if (cap[idx] - flow[idx] > 0 && dist[to[idx]] > dist[v] + weight) {
+                if (cap[idx] <= flow[idx]) {
+                    continue;
+                }
+
+                int weight = cost[idx] + phi[v] - phi[to[idx]];
+                if (dist[to[idx]] > dist[v] + weight) {
                     dist[to[idx]] = dist[v] + weight;
-                    minCap[to[idx]] = min(cap[idx] - flow[idx], minCap[v]);
                     par[to[idx]] = idx;
+                    q.emplace(dist[to[idx]], to[idx]);
                 }
             }
         }
 
-        if (dist[T] == INF) {
-            return INF;
-        }
-
-        return minCap[T];
+        return par[T] != -1;
     }
 
-    long long getMinCostMaxFlow(int S, int T) {
-        long long result = 0;
-        long long pushed;
+    int getMinCostMaxFlow(int S, int T) {
+        fordBellman(S);
 
-        fordBellman();
+        int result = 0;
 
-        for (int i = 0; i < MAXN; i++) {
-            phi[i] = dist[i];
-        }
+        while (dijkstra(S, T)) {
+            int pushFlow = INF;
 
-        while ((pushed = run(S, T)) != INF) {
-            
-            for (int i = par[T]; i != -1; i = par[from[i]]) {
-                result += cost[idx] * pushed;
-                flow[i] += pushed;
+            for (int i = T; par[i] != -1; i = from[par[i]]) {
+                pushFlow = min(pushFlow, cap[par[i]] - flow[par[i]]);
             }
 
-            for (int i = 0; i < MAXN; i++) {
-                phi[i] = min(phi[i] + dist[i], INF);
+            for (int i = T; par[i] != -1; i = from[par[i]]) {
+                flow[par[i]] += pushFlow;
+                flow[par[i] ^ 1] -= pushFlow;
+
+                result += 1ll * cost[par[i]] * pushFlow;
             }
         }
 
@@ -158,17 +147,18 @@ struct Place {
 MinCostMaxFlow minCostMaxFlow;
 int n, m;
 Place a[MAXN], b[MAXN];
+int plan[MAXN][MAXN];
 
 int main() {
-    freopen(File".in", "r", stdin);
-    freopen(File".out", "w", stdout);
-    
-    scanf("%d", &n);
+#ifdef Local
+    freopen("in", "r", stdin);
+#endif
+
+    scanf("%d%d", &n, &m);
     for (int i = 0; i < n; i++) {
         a[i].read();
     }
 
-    scanf("%d", &m);
     for (int i = 0; i < m; i++) {
         b[i].read();
     }
@@ -184,11 +174,51 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            minCostMaxFlow.addEdge(i + 1, n + j + 1, INF, abs(a[i].x - b[j].x) + abs(a[i].y - b[j].y));
+            minCostMaxFlow.addEdge(i + 1, n + j + 1, INF, abs(a[i].x - b[j].x) + abs(a[i].y - b[j].y) + 1);
         }
     }
 
+    int ansOld = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            int x;
+            scanf("%d", &x);
 
+            ansOld += 1ll * x * (abs(a[i].x - b[j].x) + abs(a[i].y - b[j].y) + 1);
+        }
+    }
+
+    int ansNew = minCostMaxFlow.getMinCostMaxFlow(S, T);
+
+    /*
+    for (int i = 0; i < minCostMaxFlow.lastEdge; i += 2) {
+        if (minCostMaxFlow.flow[i] != 0) 
+        cout << minCostMaxFlow.from[i] << ' ' << minCostMaxFlow.to[i] << ' ' << minCostMaxFlow.cost[i] << ' ' << minCostMaxFlow.flow[i] << endl;
+    }
+    cout << endl;
+    */
+
+    if (ansNew < ansOld) {
+        puts("SUBOPTIMAL");
+
+        for (int i = 0; i < minCostMaxFlow.lastEdge; i += 2) {
+            int aa = minCostMaxFlow.from[i];
+            int bb = minCostMaxFlow.to[i];
+
+            if (1 <= aa && aa <= n && n + 1 <= bb && bb <= n + m) {
+                plan[aa - 1][bb - (n + 1)] = minCostMaxFlow.flow[i];
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                printf("%d ", plan[i][j]);
+            }
+            puts("");
+        }
+    } else {
+        puts("OPTIMAL");
+    }
 
     return 0;
 }
