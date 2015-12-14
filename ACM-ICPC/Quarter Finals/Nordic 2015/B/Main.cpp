@@ -27,43 +27,10 @@ inline T sqr(T n) {
     return n * n;
 }
 
-int fact(int n) {
-    if (n == 0) {
-        return 1;
-    }
-
-    return n * fact(n - 1);
-}
-
 int n;
-vector <int> a;
-set <vector <int> > used;
-vector <int> masks;
-
-bool has(int mask, int bit) {
-    return (mask & (1 << bit)) > 0;
-}
-
-bool ok(int mask) {
-    for (int i = 0; i < n; i++) {
-        if (has(mask, i)) {
-            if (i + 1 >= n) {
-                return false;
-            }
-
-            if (has(mask, i + 1)) {
-                return false;
-            }
-
-            if (i > 0 && has(mask, i - 1)) {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
+vector <vector <int> > res = {
+    {1},
+};
 
 int main() {
 #ifdef Local
@@ -72,53 +39,32 @@ int main() {
     
     scanf("%d", &n);
 
-    if (n == 2) {
-        puts("1 2");
-        puts("2 1");
+    for (int num = 2; num <= n; num++) {
+        vector <vector <int> > temp;
 
-        return 0;
-    }
-
-    for (int mask = 1; mask < (1 << n); mask++) {
-        if (ok(mask)) {
-            masks.push_back(mask);
-        }
-    }
-   
-    a.resize(n);
-
-    for (int i = 0; i < n; i++) {
-        a[i] = i + 1;
-    }
-
-    int d = fact(n);
-
-    while (d--) {
-        assert(!used.count(a));
-        used.insert(a);
-
-        for (int i = 0; i < n; i++) {
-            printf("%d ", a[i]);
-        }
-        puts("");
-
-        for (int mask: masks) {
-            for (int i = 0; i < n; i++) {
-                if (has(mask, i)) {
-                    swap(a[i], a[i + 1]);
-                }
-            }
-
-            if (used.count(a)) {
-                for (int i = 0; i < n; i++) {
-                   if (has(mask, i)) {
-                        swap(a[i], a[i + 1]);
-                    }
+        for (size_t i = 0; i < res.size(); i++) {
+            if (i % 2 == 0) {
+                for (int j = num - 1; j >= 0; j--) {
+                    temp.push_back(res[i]);
+                    temp.back().insert(temp.back().begin() + j, num);
                 }
             } else {
-                break;
-            }   
+                for (int j = 0; j < num; j++) {
+                    temp.push_back(res[i]);
+                    temp.back().insert(temp.back().begin() + j, num);
+                }
+            }
         }
+
+        res.swap(temp);
+    }
+
+    for (const vector <int>& vec: res) {
+        for (int num: vec) {
+            printf("%d ", num);
+        }
+
+        puts("");
     }
 
     return 0;
