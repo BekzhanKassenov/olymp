@@ -1,118 +1,68 @@
 #include <iostream>
 #include <cstdio>
-#include <stdlib.h>
-#include <time.h>
 
 using namespace std;
 
-typedef struct Tree* PTree;
+const int MAXN = 200010;
 
-struct Tree
-{
-	int key, prior;
+int t[MAXN];
 
-	int next;
+int sum(int pos) {
+    int result = 0;
+    for (int i = pos; i >= 0; i = (i & (i + 1)) - 1) {
+        result += t[i];
+    }
 
-	PTree l, r;
-
-	Tree() {}
-	Tree(int key) : key(key), prior((rand() << 16) + rand()), next(-1), l(NULL), r(NULL) {}
-};
-
-PTree find(PTree t, int key)
-{
-	if (!t)
-		return NULL;
-
-	if (t -> key == key)
-		return t;
-
-	if (key < t -> key)
-		return find(t -> l, key);
-	else
-		return find(t -> r, key);
+    return result;
 }
 
-void split(PTree t, PTree &l, PTree &r, int key)
-{
-	if (!t)
-		{
-			r = l = NULL;
-			return;
-		}	
-
-	if (t -> key >= key)
-		{
-			split(t -> l, l, t -> l, key);
-			r = t;
-		}
-	else
-		{
-			split(t -> r, t -> r, r, key);
-			l = t;
-		}
+int sum(int l, int r) {
+    return sum(r) - sum(l - 1);
 }
 
-PTree merge(PTree l, PTree r)
-{
-	if (!l || !r)
-		{
-			return l ? l : r;
-		}
-
-	if (l -> prior > r -> prior)
-		return merge(l -> r, r);
-	else
-		return merge(l, r -> l);	
+void update(int pos, int val) {
+    for (int i = pos; i < MAXN; i |= i + 1) {
+        t[i] += val;
+    }
 }
 
-void erase(PTree &t, int key)
-{
-	PTree tmp = find(t, key);
+int main() {
+    freopen("floor4.in", "r", stdin);
+    freopen("floor4.out", "w", stdout);
 
-	PTree k = merge(tmp -> l, tmp -> r);
+    int n;
+    scanf("%d", &n);
 
-	*tmp = *k;
-}
+    for (int i = 0; i < n; i++) {
+        int x;
+        scanf("%d", &x);
 
-void insert(PTree &t, PTree it)
-{
-	if (!t)
-		t = it;
-	else
-		{
-			if (it -> prior > t -> prior)
-				{
-					split(t, it -> l, it -> r, it -> key);
-					t = it;
-				}
-			else
-				{
-					if (it -> key < t -> key)
-						insert(t -> l, it);
-					else
-						insert(t -> r, it);	
-				}
-		}
-}
+        if (x < 0) {
+            update(-x, -1);
+        } else {
+            if (sum(x, x) == 0) {
+                printf("%d\n", x);
+                update(x, 1);
+            } else {
+                int l = x, r = MAXN - 1;
 
-int main()
-{	
-	freopen("floor4.in", "r", stdin);
-	freopen("floor4.out", "w", stdout);
+                int ans = -1;
+                while (l <= r) {
+                    int mid = (l + r) / 2;
+                    if (sum(x, mid) == mid - x + 1) {
+                        ans = mid;
+                        l = mid + 1;
+                    } else {
+                        r = mid - 1;
+                    }
+                }
 
+                ans++;
+                printf("%d\n", ans);
+                update(ans, 1);
+            }
+        }
+    }
 
-	int n;
-
-	scanf("%d", &n);
-
-	for (int i = 0; i < n; i++)
-		{
-			int x;
-
-			scanf("%d", &x);
-
-			
-		}
-
+    return 0;
 }
