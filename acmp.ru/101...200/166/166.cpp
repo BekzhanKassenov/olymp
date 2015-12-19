@@ -19,11 +19,17 @@ int robots(int year) {
 
 int new_generation(int current) {
 	int result = 0;
+    int iter = 0;
 
-	for (int multiple5 = 0; multiple5 * 5 <= current; multiple5++) {
+	for (int multiple5 = current / 5; multiple5 >= 0; multiple5--) {
 	 	int multiple3 = (current - multiple5 * 5) / 3;
 
 		result = max(result, multiple3 * 5 + multiple5 * 9);
+
+        iter++;
+        if (iter > 50) {
+            break;
+        }
 	}
 
 	return result;
