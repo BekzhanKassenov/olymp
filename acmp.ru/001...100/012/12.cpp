@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ int main()
 	freopen("input.txt","r",stdin);
 	freopen("output.txt","w",stdout);
 	ui n=0;
-	scanf("%d",&n);
+	scanf("%I64d",&n);
 	ui x,y,x1,y1,x2,y2,x3,y3,x4,y4;
 	ui sum=0;
 	for (int i=1;i<=n;i++)
@@ -30,7 +31,7 @@ int main()
 			y3=0;
 			x4=0;
 			y4=0;
-			scanf("%d%d%d%d%d%d%d%d%d%d",&x,&y,&x1,&y1,&x2,&y2,&x3,&y3,&x4,&y4);
+			scanf("%I64d%I64d%I64d%I64d%I64d%I64d%I64d%I64d%I64d%I64d",&x,&y,&x1,&y1,&x2,&y2,&x3,&y3,&x4,&y4);
 			if ((x1==y1) && (y1==x2) && (x2==x3) && (x3==x4) && (x4==y2) && (y2==y3) && (y3==y4))
 				{
 					if ((x==x1) && (y==x1))
