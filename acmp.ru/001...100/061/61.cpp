@@ -1,15 +1,13 @@
-#include <fstream>
-
+#include <iostream>
+ 
 int s, a, z;
-
+ 
 main() {
-    std :: ofstream q("output.txt");
-    
-    for (std :: ifstream f("input.txt"); f >> a >> z;)
+    for (; std::cin >> a >> z;)
         s += a - z;
-    
+     
     if (s) 
-        q << 2 - (s > 0);
+        std::cout << 2 - (s > 0);
     else
-        q << "DRAW";
+        std::cout << "DRAW";
 }
