@@ -6,155 +6,63 @@
 
 using namespace std;
 
-vector <int> b;
-
 int n, m;
+int a[15];
 
-struct triple
-{
-	int a[16];
+long long cursum;
+int curcnt;
 
-	int sz;
-	
-	triple()
-		{
-			sz = 0;
-		}
+int ans = 100;
 
-	triple(int n)
-		{
-			sz = 0;
-			
-			for (int i = 0; i < 16; i++)
-				a[i] = 0;
+void go(int pos) {
+    if (cursum == m) {
+        ans = min(ans, curcnt);
+        return;
+    }
 
-			if (n == 0)
-				{
-					a[sz++] = 0;
-					return;
-				}
+    if (pos == n) {
+        return;
+    }
 
-			while (n)
-				{
-					a[sz++] = n % 3;
-					n /= 3;
-				}
-		}
+    go(pos + 1);
 
-	void inc()
-		{
-			a[0]++;
+    for (int i = 0; i < 2; i++) {
+        cursum += a[pos];
+        curcnt++;
+        go(pos + 1);
+    }
 
-			int pos = 0;
+    cursum -= 2 * a[pos];
+    curcnt -= 2;
+}
 
-			while (pos < sz && a[pos] == 3)
-				{
-					a[pos++] = 0;
-					a[pos] ++;
-				}
-
-
-			if (a[sz] != 0)
-				sz++;
-		}
-
-  	void print()
-  		{
-  			for (int i = sz - 1; i >= 0; i--)
-  				cout << a[i];
-
-  			cout << endl;
-  		}
-
-	bool operator < (const triple &t)
-		{
-			if (sz < t.sz)
-				return true;
-
-			if (sz > t.sz)
-				return false;
-
-			for (int i = sz - 1; i >= 0; i--)
-				{
-					if (a[i] < t.a[i])
-						return true;
-
-					if (a[i] > t.a[i])
-						return false;
-				}
-
-			return false;
-		}
-
-	void get(int &sum, int &cnt)
-		{
-			for (int i = 0; i < sz; i++)
-				{
-					sum += b[i] * a[i];
-					
-					if (sum > n)
-						{
-							sum = n + 1;
-							return;
-						}
-
-					cnt += a[i];
-				}
-		}
-}; 
-
-int main()
-{
+int main() {
 	freopen("input.txt", "r", stdin);
 	freopen("output.txt", "w", stdout);
-	
-	scanf("%d%d", &n, &m);
 
-	b.resize(m);
+    scanf("%d%d", &m, &n);
 
-	for (int i = 0; i < m; i++)
-		scanf("%d", &b[i]);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+    }
 
-	int tre = 3;
+    long long total = 0;
+    for (int i = 0; i < n; i++) {
+        total += a[i] * 2;
+    }
 
-	for (int i = 1; i < m; i++)
-		tre *= 3;
+    if (total < m) {
+        puts("-1");
+        return 0;
+    }
 
-	bool flag1 = false;
+    go(0);
 
-	int ans = 10000;
-
-	int sum;
-
-	int cnt;
-
-	triple mask = triple(0);
-
-	for (int i = 0; i < tre; i++)
-		{
-			sum = 0; 
-			cnt = 0;
-
-			mask.get(sum, cnt);
-			
-			if (sum == n)
-				ans = min(ans, cnt);
-
-			if (sum >= n)
-				flag1 = true;
-
-			mask.inc();
-		}
-
-	if (flag1)
-		{
-			if (ans != 10000)
-				printf("%d", ans);
-			else
-				puts("0");
-		}	
-	else
-		puts("-1");
+    if (ans == 100) {
+        puts("0");
+    } else {
+        printf("%d\n", ans);
+    }
 
 	return 0;
 }
