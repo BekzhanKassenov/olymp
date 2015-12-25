@@ -26,81 +26,175 @@ inline T sqr(T n) {
     return n * n;
 }
 
-struct Node {
-    int key, val;
-    int prior;
-
-    Node *left, *right;
-
-    Node(int key = 0, int val = 0) :
-        key(key),
-        val(val),
-        prior((rand() << 16) ^ rand()),
-        left(NULL),
-        right(NULL) { }
-};
+struct Node;
 
 typedef Node* pNode;
 
-void split(pNode v, pNode& l, pNode &r, int key) {
+struct Node {
+    int pos, val;
+    int flag;
+    int size, prior;
+
+    pNode left, right;
+
+    Node(int pos, int val) :
+        pos(pos),
+        val(val),
+        flag(0),
+        size(1),
+        prior((rand() << 16) ^ rand()),
+        left(NULL),
+        right(NULL) { } 
+};
+
+int getSize(pNode v) {
+    return v == NULL ? 0 : v->size;
+}
+
+void push(pNode v) {
+    if (v != NULL && v->flag != 0) {
+        v->pos += v->flag;
+
+        if (v->left != NULL) {
+            v->left->flag += v->flag;
+        }
+
+        if (v->right != NULL) {
+            v->right->flag += v->flag;
+        }
+
+        v->flag = 0;
+    }
+}
+
+void update(pNode v) {
+    if (v != NULL) {
+        v->size = getSize(v->left) + getSize(v->right) + 1;
+    }
+}
+
+void split(pNode v, pNode& l, pNode& r, int key) {
+    push(v);
+
     if (v == NULL) {
         l = r = NULL;
         return;
     }
 
-    if (key <= v->key) {
-        split(v->left, l, v->left, key);
-        r = v;
-    } else {
+    if (v->pos < key) {
         split(v->right, v->right, r, key);
         l = v;
+    } else {
+        split(v->left, l, v->left, key);
+        r = v;
     }
+
+    update(l);
+    update(r);
 }
 
 pNode merge(pNode l, pNode r) {
+    push(l);
+    push(r);
+
     if (l == NULL || r == NULL) {
-        return (l == NULL) ? r : l;
+        return l == NULL ? r : l;
     }
 
-    pNode result = NULL;
+    pNode ans = NULL;
 
     if (l->prior > r->prior) {
         l->right = merge(l->right, r);
-        result = l;
+        ans = l;
     } else {
         r->left = merge(l, r->left);
-        result = r;
+        ans = r;
     }
 
-    return result;
+    update(l);
+    update(r);
+    update(ans);
+
+    return ans;
+}
+
+pNode getMin(pNode v) {
+    if (v == NULL) {
+        return NULL;
+    }
+
+    if (v->left != NULL) {
+        return getMin(v->left);
+    }
+
+    return v;
+}
+
+pNode getFirst(pNode v, int start, int add = 0) {
+    push(v);
+
+    if (v == NULL) {
+        return NULL;
+    }
+
+    int pos = getSize(v->left) + add;
+
+    if (v->pos - start != pos) {
+        pNode temp = getFirst(v->left, start, add);
+
+        return temp == NULL? v : temp;
+    }
+
+    return getFirst(v->right, start, pos + 1);
 }
 
 pNode root = NULL;
+int n, m, x;
 
-void insert(int key, int val) {
-    pNode node = new Node(key, val);
-
+void insert(int to, int val) {
     pNode tree1, tree2;
+    split(root, tree1, tree2, to);
 
-    split(root, tree1, tree2, key);
+    pNode mn = getMin(tree2);
 
-    root = merge(tree1, merge(node, tree2));
+    if (mn != NULL && mn->pos == to) {
+        pNode temp = getFirst(tree2, to);
+
+        if (temp != NULL) {
+            pNode temp1, temp2;
+            split(tree2, temp1, temp2, temp->pos);
+
+            if (temp1 != NULL) {
+                temp1->flag = 1;
+            }
+
+            tree2 = merge(temp1, temp2);
+        } else {
+            if (tree2 != NULL) {
+                tree2->flag = 1;
+            }
+        }
+    }
+
+    pNode nitem = new Node(to, val);
+    root = merge(merge(tree1, nitem), tree2);
 }
 
-int n, m, x;
-int a[MAXN];
-int last = 1;
+int ans[MAXN];
+int maxpos;
 
 void traverse(pNode v) {
     if (v == NULL) {
         return;
     }
 
+    push(v);
+
     traverse(v->left);
-
-    last = max(last, v->key);
-    a[last++] = v->val;
-
+    
+    maxpos = max(maxpos, v->pos);
+    ans[v->pos] = v->val;
+    
     traverse(v->right);
 }
 
@@ -118,9 +212,9 @@ int main() {
 
     traverse(root);
 
-    printf("%d\n", last - 1);
-    for (int i = 1; i < last; i++) {
-        printf("%d%c", a[i], " \n"[i == last - 1]);
+    printf("%d\n", maxpos);
+    for (int i = 1; i <= maxpos; i++) {
+        printf("%d%c", ans[i], " \n"[i == maxpos]);
     }
 
     return 0;
