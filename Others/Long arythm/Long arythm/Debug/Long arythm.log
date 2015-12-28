@@ -1,4 +1,0 @@
-﻿  Main.cpp
-c:\бекжан\программирование\olymp\others\long arythm\long arythm\bigint.h(419): warning C4244: =: преобразование "BigInt::uint64" в "unsigned int", возможна потеря данных
-  LINK : не найден или не выполнена сборка C:\Бекжан\Программирование\Olymp\Others\Long arythm\Debug\Long arythm.exe при последней инкрементной компоновке; выполняется полная компоновка
-  Long arythm.vcxproj -> C:\Бекжан\Программирование\Olymp\Others\Long arythm\Debug\Long arythm.exe
