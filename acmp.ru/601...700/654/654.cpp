@@ -1,24 +1,91 @@
 #include <iostream>
-#include <cstdio>
-#include <map>
-#include <set>
-#include <queue>
 #include <algorithm>
+#include <cstdio>
+#include <set>
+#include <list>
+#include <vector>
 
 using namespace std;
 
-const int INF = (int)2e9;
+const int MAXN = 200010;
+const int INF = 2000 * 1000 * 1010;
 
-const int maxn = 200010;
-int n, a[maxn], last, x;
-int next[maxn], prev[maxn];
-long long ans;
+struct Node;
 
-struct cmp {
-    bool operator () (int aa, int bb) {
-        return a[aa] < a[bb];
+typedef Node* pNode;
+
+struct Node {
+    int data;
+    pNode next, prev;
+
+    Node() :
+        data(0),
+        next(NULL),
+        prev(NULL) { }
+};
+
+struct List {
+    pNode head, tail;
+
+    List() :
+        head(NULL),
+        tail(NULL) { }
+
+    void push_back(int data) {
+        pNode node = new Node;
+        node->data = data;
+
+        if (head == NULL && tail == NULL) {
+            head = tail = node;
+        } else {
+            tail->next = node;
+            node->prev = tail;
+            tail = node;
+        }
+    }
+
+    void erase(pNode node) {
+        if (node == head) {
+            head = head->next;
+            if (head != NULL) {
+                head->prev = NULL;
+            }
+
+            delete node;
+
+        } else if (node == tail) {
+            tail = tail->prev;
+            if (tail != NULL) {
+                tail->next = NULL;
+            }
+
+            delete node;
+
+        } else {
+            pNode p = node->prev, n = node->next;
+
+            p->next = n;
+            n->prev = p;
+
+            delete node;
+        }
     }
 };
+
+struct Compare {
+    bool operator() (pNode a, pNode b) const {
+        if (a->data != b->data) {
+            return a->data < b->data;
+        }
+
+        return a < b;
+    }
+};
+
+int n;
+int a[MAXN];
+List l;
+set <pNode, Compare> Set;
 
 int main() {
     freopen("input.txt", "r", stdin);
@@ -26,33 +93,51 @@ int main() {
 
     scanf("%d", &n);
 
-    for (int i = 1; i <= n; i++) {
+    for (int i = 0; i < n; i++) {
         scanf("%d", &a[i]);
-        prev[i] = i - 1;
-        next[i] = i + 1;
+    }
+    
+    n = unique(a, a + n) - a;
+
+    for (int i = 0; i < n; i++) {
+        l.push_back(a[i]);
     }
 
-    a[0] = a[n + 1] = INF;
-    n = unique(a + 1, a + n + 1) - a - 1;
-    multiset <int, cmp, std :: allocator <int> > Set(a + 1, a + n + 1);
+    for (pNode it = l.head; it != NULL; it = it->next) {
+        Set.insert(it);
+    }
 
+    long long ans = 0;
     while (!Set.empty()) {
-        int pos = *Set.begin();
+        pNode it = *Set.begin();
         Set.erase(Set.begin());
 
-        int diff = min(a[prev[pos]] - a[pos], a[next[pos] - a[pos]]);;
-        ans += diff;
+        pNode next = it->next;
+        pNode prev = it->prev;
 
-        if (a[prev[pos]] == a[next[pos]]) {
-            if (prev[pos] == 0)
-                continue;
-
-            next[prev[prev[pos]]] = next[next[pos]];
-            prev[next[next[pos]]] = prev[prev[pos]];
-
-            Set.erase(
+        int diff = INF;
+        if (prev != NULL) {
+            diff = min(diff, prev->data);
         }
+
+        if (next != NULL) {
+            diff = min(diff, next->data);
+        }
+
+        if (diff != INF) {
+            diff = diff - it->data;
+            ans += diff;
+        }
+
+        if (prev != NULL && next != NULL && prev->data == next->data) {
+            Set.erase(Set.find(next));
+            l.erase(next);
+        }
+
+        l.erase(it);
     }
+
+    printf("%I64d\n", ans);
 
     return 0;
 }
