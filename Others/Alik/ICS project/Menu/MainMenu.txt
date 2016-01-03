@@ -1,9 +1,0 @@
-		[Main Menu]
-*********************************
-1. Start
-2. Army Editor
-3. Settings // Not Available Yet
-4. Unit List
-5. Tutorial // Not Available Yet
-6. Exit
-*********************************
