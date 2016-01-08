@@ -4,49 +4,43 @@
 
 using namespace std;
 
-int main()
-{
-	freopen("input.txt", "r", stdin);
-	freopen("output.txt", "w", stdout);
+#define eprintf(...) fprintf(stderr, __VA_ARGS__)
 
-	unsigned int n;
+typedef unsigned int uint;
 
-	cin >> n;
+uint n;
 
-	vector <int> a;
+int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
 
-	while (n)
-		{
-			a.push_back(n & 1);
-			n >>= 1;
-		}
+    scanf("%u", &n);
 
-	bool flag = false;
+    int l = -1, r = -1;
 
-	for (int i = 0; i < (int)a.size() - 1; i++)
-		{
-			if (a[i] == 1 && a[i + 1] == 0)
-				{
-					a[i] = 0;
-					a[i + 1] = 1;
-					flag = true;
-					break;
-				}
-		}
+    for (int i = 0; i <= 31; i++) {
+        if (n & (1u << i)) {
+            if (l == -1) {
+                l = r = i;
+            } else {
+                r++;
+            }
+        } else {
+            if (l != -1) {
+                break;
+            }
+        }   
+    }
 
-	if (!flag)
-		{
-			a[a.size() - 1] = 0;
-			a.push_back(1);
-		}	
+    uint mask = (1u << (r - l + 1)) - 1;
+    mask <<= l;
+    n ^= mask;
+    n |= 1u << (r + 1);
 
-	for (int i = 0; i < (int)a.size(); i++)
-		{
-			if (a[i] == 1)
-				n += (1 << i);
-		}
+    n |= (1u << (r - l)) - 1;
 
-	cout << n;
+//    eprintf("%d %d\n", l, r);
+    printf("%u\n", n);
 
-	return 0;
+    return 0;
 }
