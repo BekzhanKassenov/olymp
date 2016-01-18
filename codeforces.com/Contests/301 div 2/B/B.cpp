@@ -55,12 +55,12 @@ int main() {
     }
 
     vector <int> ans;
-    while (l < mid) {
+    while (l < mid && l <= r) {
         a[l++] = 1;
         ans.push_back(1);
     }
 
-    while (r >= mid) {
+    while (r >= mid && l <= r) {
         a[r--] = y;
         ans.push_back(y);
     }
