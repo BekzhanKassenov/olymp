@@ -36,37 +36,81 @@ int gcd(int a, int b) {
 }
 
 int n;
-int a[MAXN];
-int dp[MAXN][3];
 long long c1, c2;
+int a[MAXN], b[MAXN];
+long long dp[MAXN][3];
 
-long long solve(const vector <int>& pos) {
-    multiset <long long> Set;
+void factorize(int num, vector <int>& d) {
+    int k = sqrt(num);
+    for (int i = 2; i <= k; i++) {
+        if (num % i == 0) {
+            d.push_back(i);
 
-    for (size_t i = 0; i < pos.size(); i++) {
-        long long num = (pos[i] - pos[0] + 1) * c1;
-        num += (pos.size() - i - 1) * c2;
-
-        Set.insert(num);
+            do {
+                num /= i;
+            } while (num % i == 0);
+        }
     }
 
-    long long ans = min(c2 * pos.size(), *Set.begin());
+    if (num > 1) {
+        d.push_back(num);
+    }
+}
 
-    for (size_t i = 0; i < pos.size(); i++) {
-        long long num = *Set.begin();
-        num -= (pos[i] - pos[0]) * c1;
-        num += (i + 1) * c2;
+void update(long long& a, long long val, long long addend) {
+    if (val == -1) {
+        return;
+    }
 
-        ans = min(ans, num);
+    val += addend;
 
-        Set.erase(Set.find((pos[i] - pos[0] + 1) * c1 + (pos.size() - i - 1) * c2));
+    if (a == -1) {
+        a = val;
+    } else {
+        a = min(a, val);
+    }
+}
+
+long long solve(int d, int a[]) {
+    for (int i = 0; i < n; i++) {
+        dp[i][0] = dp[i][1] = dp[i][2] = -1;
+    }
+
+    if (a[0] % d != 0 && a[0] % d != 1 && a[0] % d != d - 1) {
+        return -1;
+    }
+
+    dp[0][0] = (a[0] % d == 0) ? 0 : c2;
+
+    for (int i = 1; i < n; i++) {
+        update(dp[i][1], dp[i - 1][0], c1); // start
+        update(dp[i][1], dp[i - 1][1], c1); // continue
+
+        if (a[i] % d == 0 || a[i] % d == 1 || a[i] % d == d - 1) {
+            int addend = (a[i] % d == 0) ? 0 : c2;
+
+            update(dp[i][0], dp[i - 1][0], addend); // not started
+            update(dp[i][2], dp[i - 1][1], addend); // stop
+            update(dp[i][2], dp[i - 1][2], addend); // stopped
+        }
+    }
+
+    /*
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < 3; j++) {
+            cerr << dp[i][j] << ' ';
+        }
+        cerr << endl;
+    }
+    cerr << endl;
+    */
+
+    long long ans = -1;
+    for (int i = 0; i < 3; i++) {
+        update(ans, dp[n - 1][i], 0);
     }
 
     return ans;
-}
-
-int max(int a, int b, int c) {
-    return max(a, max(b, c));
 }
 
 int main() {
@@ -78,56 +122,25 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         scanf("%d", &a[i]);
+        b[i] = a[i];
     }
 
-    int g = a[0];
-    for (int i = 0; i < n; i++) {
-        g = gcd(g, a[i]);
+    reverse(b, b + n);
+
+    vector <int> g;
+    for (int i = -1; i <= 1; i++) {
+        factorize(a[0] + i, g);
+        factorize(a[n - 1] + i, g);
     }
 
-    if (g != 1) {
-        puts("0");
-        return 0;
+    sort(all(g));
+    g.resize(unique(all(g)) - g.begin());
+
+    long long ans = (n - 1) * c1;
+    for (int d: g) {
+        update(ans, solve(d, a), 0);
+        update(ans, solve(d, b), 0);
     }
-
-    vector <int> pos;
-    for (int i = 0; i < n; i++) {
-        if (a[i] & 1) {
-            pos.push_back(i);
-        }
-    }
-
-    long long ans = solve(pos);
-
-    for (int i = 0; i < n; i++) {
-        dp[i][0] = dp[i][1] = dp[i][2] = 1;
-    }
-
-    dp[0][0] = a[0];
-    dp[0][1] = a[0] + 1;
-    dp[0][2] = a[0] - 1;
-
-    for (int i = 1; i < n; i++) {
-        dp[i][0] = max(gcd(a[i], dp[i - 1][0]), gcd(a[i], dp[i - 1][1]), gcd(a[i], dp[i - 1][2]));
-        dp[i][1] = max(gcd(a[i] + 1, dp[i - 1][0]), gcd(a[i] + 1, dp[i - 1][1]), gcd(a[i] + 1, dp[i - 1][2]));
-        dp[i][2] = max(gcd(a[i] - 1, dp[i - 1][0]), gcd(a[i] - 1, dp[i - 1][1]), gcd(a[i] - 1, dp[i - 1][2]));                
-    }
-
-    int d= max(dp[n - 1][0], dp[n - 1][1], dp[n - 1][2]);
-    
-    if (d == 1 || d == 2) {
-        printf("%I64d\n", ans);
-        return 0;
-    }
-
-    pos.clear();
-    for (int i = 0; i < n; i++) {
-        if (a[i] % d != 0) {
-            pos.push_back(i);
-        }
-    }
-
-    ans = min(ans, solve(pos));
 
     printf("%I64d\n", ans);
 
