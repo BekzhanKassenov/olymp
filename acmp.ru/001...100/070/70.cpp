@@ -4,51 +4,45 @@
 
 using namespace std;
 
-int main()
-{	
-	freopen("input.txt","r",stdin);
-	freopen("output.txt","w",stdout);
-	string s;
-	int n;
-	cin>>s;
-	cin>>n;
-	if (n>0)
-		{
-			int z=0;
-			if (s.length()*n>1023)
-			while (z<=1023)
-				{	
-					for (int i=0;i<s.length();i++,z++)
-						cout<<s[i];
-					return 0;
-				}
-			else
-				for (int i=0;i<n;i++)
-					cout<<s;
-			return 0;
-		}
-	if (n<0)
-		{	
-			int len=s.length();
-			n*=(-1);
-			if (len%n!=0)
-				{
-					cout<<"NO SOLUTION";
-					return 0;
-			  	}
-			int i=0;
-			while (i<len-len/n)
-				{	
-					if (s.substr(i,len/n)!=s.substr(i+len/n,len/n))
-						{
-							cout<<"NO SOLUTION";
-							return 0;
-					   }
-					i+=len/n;
-				}
-			cout<<s.substr(0,len/n);
-			return 0;
-		}
-	cout<<"NO SOLUTION";
-	return 0;
+string s;
+int n;
+
+size_t minim(size_t a, size_t b) {
+    return (a < b) ? a : b;
+}
+
+int main() {    
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+    
+    cin >> s >> n;
+    if (n > 0) {
+        for (size_t i = 0; i < minim(s.length() * n, 1023ul); i++) {
+            cout << s[i % s.length()];
+        }
+
+        cout << endl;
+
+        return 0;
+    }
+    
+    int len = s.length();
+    n *= -1;
+
+    if (len % n != 0) {
+        cout << "NO SOLUTION" << endl;
+        return 0;
+    }
+
+    len /= n;
+    for (size_t i = 0; i < s.length(); i++) {
+        if (s[i] != s[i % len]) {
+            cout << "NO SOLUTION" << endl;
+            return 0;
+        }
+    }
+
+    cout << s.substr(0, minim(len, 1023)) << endl;
+    
+    return 0;
 }
