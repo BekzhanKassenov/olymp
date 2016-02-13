@@ -1,64 +1,73 @@
 #include <iostream>
 #include <cstdio>
-#include <string>
+#include <cmath>
 
 using namespace std;
 
-int cti(char a)
-{
-	switch (a)
-	{
-	case '1': return 1;
-	case '2': return 2;
-	case '3': return 3;
-	case '4': return 4;
-	case '5': return 5;
-	case '6': return 6;
-	case '7': return 7;
-	case '8': return 8;
-	case 'A': return 1;
-	case 'B': return 2;
-	case 'C': return 3;
-	case 'D': return 4;
-	case 'E': return 5;
-	case 'F': return 6;
-	case 'G': return 7;
-	case 'H': return 8;
-	default: return -1;
-	}
+bool letter(char c) {
+    return 'A' <= c && c <= 'H';
 }
 
-int test(string s)
-{
-	bool k=(s.length()==5);
-	k=(k & (s[2]=='-'));
-	k=(k & (s[0]>='A' && s[0]<='H' && s[1]>='1' &&  s[1]<='8'));
-	k=(k & (s[3]>='A' && s[3]<='H' && s[4]>='1' &&  s[4]<='8'));
-	if (k) return 0;
-	return -1;
+bool digit(char c) {
+    return '1' <= c && c <= '8';
 }
 
-int main()
-{
-	freopen("input.txt","r",stdin);
-	freopen("output.txt","w",stdout);
-	string s;
-	cin>>s;
-	if (test(s)==0)
-		{
-			int a=cti(s[0]);
-			int b=cti(s[1]);
-			int c=cti(s[3]);
-			int d=cti(s[4]);
-			a=a-c;
-			if (a<0) a*=(-1);
-			b=b-d;
-			if (b<0) b*=(-1);
-			if ((a==1 && b==2) || (a==2) && b==1)
-			cout<<"YES";
-			else
-			cout<<"NO";
-		}
-   else cout<<"ERROR";
-   return 0;
+bool valid(const string& s) {
+    if (s.length() != 5u) {
+        return false;
+    }
+
+    if (!letter(s[0])) {
+        return false;
+    }
+
+    if (!digit(s[1])) {
+        return false;
+    }
+
+    if (s[2] != '-') {
+        return false;
+    }
+
+    if (!letter(s[3])) {
+        return false;
+    }
+
+    if (!digit(s[4])) {
+        return false;
+    }
+
+    return true;
+}
+
+int main() {
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
+    
+    string s;
+    cin >> s;
+    
+    if (!valid(s)) {
+        cout << "ERROR" << endl;
+        return 0;
+    }
+
+    int xs = s[0] - 'A';
+    int ys = s[1] - '0';
+
+    int xf = s[3] - 'A';
+    int yf = s[4] - '0';
+
+    pair <int, int> diff(abs(xs - xf), abs(ys - yf));
+    if (diff.first > diff.second) {
+        swap(diff.first, diff.second);
+    }
+
+    if (diff == make_pair(1, 2)) {
+        cout << "YES" << endl;
+    } else {
+        cout << "NO" << endl;
+    }
+
+    return 0;
 }
