@@ -1,59 +1,70 @@
 #include <iostream>
+#include <algorithm>
 #include <cstdio>
 #include <string>
 
 using namespace std;
 
-int cifra(char c)
-{
-	if (c >= '0' && c <= '9')
-		return c - '0';
+#define all(x) (x).begin(), (x).end()
 
-	if (c >= 'A' && c <= 'Z')
-		return c - 'A' + 10;
+int to_dec(char c)
+{
+    if (c >= '0' && c <= '9')
+        return c - '0';
+
+    if (c >= 'A' && c <= 'Z')
+        return c - 'A' + 10;
 }
 
-int f(string s, int b)
-{
-	int ans = 0;
+char to_let(int dig) {
+    if (0 <= dig && dig <= 9) {
+        return '0' + dig;
+    }
 
-	for (int i = 0; i < (int)s.length(); i++)
-		{
-			ans *= b;
-			ans += cifra(s[i]);
-		}
-
-	return ans;	
+    return 'A' + dig - 10;
 }
 
-int main()
-{
-	freopen("input.txt", "r", stdin);
-	freopen("output.txt", "w", stdout);
+string f(int n, int b) {
+    if (n == 0) {
+        return "0";
+    }
 
-	string s;
+    string res;
 
-	cin >> s;
+    while (n > 0) {
+        res.append(1, to_let(n % b));
+        n /= b;
+    }
 
-	int n;
+    reverse(all(res));
 
-	cin >> n;
+    return res;
+}
 
-	int b = 0;
+string s;
+int n;
 
-	for (int i = 0; i < (int)s.length(); i++)
-		b = max(b, cifra(s[i]));
+int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
 
-	for (int i = b; i <= 36; i++)
-		{
-			if (f(s, i) == n)
-				{
-					cout << i;
-					return 0;
-				}
-		}
+    cin >> s;
+    cin >> n;
 
-	cout << 0;
+    int b = 0;
 
-	return 0;
+    for (size_t i = 0; i < s.length(); i++) {
+        b = max(b, to_dec(s[i]));
+    }
+
+    for (int i = b + 1; i <= 36; i++) {
+        if (s == f(n, i)) {
+            cout << i << endl;
+            return 0;
+        }
+    }
+
+    cout << 0 << endl;
+
+    return 0;
 }
