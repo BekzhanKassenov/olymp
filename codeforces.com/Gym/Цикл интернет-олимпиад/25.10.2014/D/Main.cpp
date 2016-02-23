@@ -18,10 +18,10 @@ typedef long double ld;
 
 const double EPS = 1e-9;
 const double PI = acos(-1.0);
-const long long MOD = 1000 * 1000 * 1000 + 7;
+const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
 const int MAXP = 1300;
-const int MAXN = 10000;
+const int MAXN = 50010;
 
 template <typename T>
 inline T sqr(T n) {
@@ -38,16 +38,18 @@ bool prime(int n) {
 }
 
 vector <int> primes;
+int ppos[MAXN];
 int tree[MAXP][MAXN];
-int a[MAXP][MAXN];
+int a[MAXN];
 int n, m;
-int d[MAXP];
 int x, pos, type, l, r;
 
 void build() {
     for (int i = 2; i <= 10000; i++) {
-        if (prime(i))
+        if (prime(i)) {
+            ppos[i] = primes.size();
             primes.push_back(i);
+        }
     }
 }
 
@@ -67,32 +69,31 @@ int sum(int *t, int pos) {
 }
 
 int sum(int *t, int l, int r) {
-    int result = sum(t, r);
-
-    if (l != 0)
-        result -= sum(t, l - 1);
-
-    return result;
+    return sum(t, r) - sum(t, l - 1);
 }
 
-void fact(int *divs, int n) {
-    for (size_t i = 0; i < primes.size(); i++) {
-        divs[i] = 0;
-
-        while (n % primes[i] == 0) {
-            divs[i]++;
-            n /= primes[i];
+void fact(int pos, int num, int add) {
+    for (size_t i = 0; i < primes.size() && sqr(primes[i]) <= num && num > 1; i++) {
+        int cnt = 0;
+        while (num % primes[i] == 0) {
+            cnt += add;
+            num /= primes[i];
         }
+
+        if (cnt != 0) {
+            update(tree[i], pos, cnt);
+        }
+    }
+
+    if (num > 1) {
+        update(tree[ppos[num]], pos, add);
     }
 }
 
-void update(int *divs, int pos) {
-    for (size_t i = 0; i < primes.size(); i++) {
-    	if (divs[i] != a[i][pos]) {
-        	update(tree[i], pos, divs[i] - a[i][pos]);
-        	a[i][pos] = divs[i];
-        }
-    }
+void update(int pos, int num) {
+    fact(pos, a[pos], -1);
+    a[pos] = num;
+    fact(pos, a[pos], 1);
 }
 
 int get(int l, int r) {
@@ -115,9 +116,9 @@ int main() {
     scanf("%d", &n);
 
     for (int i = 0; i < n; i++) {
+        int x;
         scanf("%d", &x);
-        fact(d, x);
-        update(d, i);
+        update(i, x);
     }
 
     scanf("%d", &m);
@@ -127,9 +128,7 @@ int main() {
 
         if (type == 0) {
             scanf("%d%d", &pos, &x);
-            pos--;
-            fact(d, x);
-            update(d, pos);
+            update(pos - 1, x);
         } else {
             scanf("%d%d", &l, &r);
             printf("%d\n", get(l - 1, r - 1));
