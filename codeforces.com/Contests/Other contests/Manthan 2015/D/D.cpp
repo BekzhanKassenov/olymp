@@ -38,38 +38,35 @@ int main() {
     scanf("%d", &n);
 
     int cnt0 = 0;
-
     for (int i = 0; i < n; i++) {
         scanf("%d", &a[i]);
         Map[a[i]]++;
         cnt0 += a[i] == 0;
     }
 
-
-    Map[0] = 0;
-
-    int ans = cnt0;
+    int ans = max(2, cnt0);
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (i == j || a[i] == 0 || a[j] == 0) {
+            if (i == j || (a[i] == 0 && a[j] == 0)) {
                 continue;
             }
 
-            map <int, int> temp;
-            temp[a[i]]++;
-            temp[a[j]]++;
+
+            Map[a[i]]--;
+            Map[a[j]]--;
 
             int f1 = a[i], f2 = a[j];
 
             int len = 2;
 
-            for (int k = 3; k <= n; k++) {
+            for (int i = 3; i <= n; i++) {
                 int sum = f1 + f2;
 
-                temp[sum]++;
-                if (Map.count(sum) && temp[sum] <= Map[sum]) {
+                if (Map.count(sum) && Map[sum] != 0) {
+                    Map[sum]--;
                     len++;
+
                     f1 = f2;
                     f2 = sum;
                 } else {
@@ -77,8 +74,18 @@ int main() {
                 }
             }
 
-            len += cnt0;
             ans = max(ans, len);
+
+            Map[a[i]]++;
+            Map[a[j]]++;
+            
+            f1 = a[i], f2 = a[j];
+            for (int i = 3; i <= len; i++) {
+                int sum = f1 + f2;
+                Map[sum]++;
+                f1 = f2;
+                f2 = sum;
+            }
         }
     }
 
