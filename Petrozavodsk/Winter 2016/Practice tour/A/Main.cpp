@@ -10,6 +10,7 @@ using namespace std;
 #define S second
 #define MP make_pair
 #define all(x) (x).begin(), (x).end()
+#define File "sum"
 
 typedef long long ll;
 typedef unsigned long long ull;
@@ -25,12 +26,15 @@ inline T sqr(T n) {
     return n * n;
 }
 
- 
+int a, b;
 
 int main() {
-#ifdef Local
-    freopen("in", "r", stdin);
-#endif
+    freopen(File".in", "r", stdin);
+    freopen(File".out", "w", stdout);
     
+    scanf("%d%d", &a, &b);
+
+    printf("%d\n", a + b);
+
     return 0;
 }

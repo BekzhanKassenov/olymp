@@ -25,12 +25,28 @@ inline T sqr(T n) {
     return n * n;
 }
 
- 
+int l = 1, r;
+char s[5];
 
 int main() {
-#ifdef Local
-    freopen("in", "r", stdin);
-#endif
+    scanf("%d", &r);
+
+    while (l < r) {
+        int mid = (l + r + 1) / 2;
+
+        printf("? %d\n", mid);
+        fflush(stdout);
+
+        scanf("%s", s);
+
+        if (strcmp(s, ">=") == 0) {
+            l = mid;
+        } else {
+            r = mid - 1;
+        }
+    }
+
+    printf("! %d\n", l);
     
     return 0;
 }

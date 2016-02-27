@@ -25,12 +25,41 @@ inline T sqr(T n) {
     return n * n;
 }
 
- 
+int k;
 
 int main() {
 #ifdef Local
     freopen("in", "r", stdin);
 #endif
+
+    scanf("%d", &k);
+
+    printf("%d\n", 2 * k);
+
+    int s1 = 2, s2 = k + 2;
+
+    for (int i = 1; i <= k; i++) {
+        printf("%d %d\n", i, i + k);
+        for (int j = 0; j < k - 1; j++) {
+            int node = s1 + j;
+            if (node > 2 * k) {
+                node -= 2 * k;
+            }
+
+            printf("%d %d\n", node, i);
+        }
+
+        for (int j = 0; j < k - 1; j++) {
+            int node = s2 + j;
+            if (node > 2 * k) {
+                node -= 2 * k;
+            }
+
+            printf("%d %d\n", node, i + k);
+        }
+
+        s1++, s2++;
+    }
     
     return 0;
 }

@@ -6,6 +6,12 @@
 
 using namespace std;
 
+#ifdef Local
+# define I64 "%I64d"
+#else
+# define I64 "%Ld"
+#endif
+
 #define F first
 #define S second
 #define MP make_pair
@@ -25,12 +31,16 @@ inline T sqr(T n) {
     return n * n;
 }
 
- 
+long long a, b;
 
 int main() {
 #ifdef Local
     freopen("in", "r", stdin);
 #endif
-    
+
+    scanf(I64 I64, &a, &b);
+
+    printf(I64, a * b);
+
     return 0;
 }

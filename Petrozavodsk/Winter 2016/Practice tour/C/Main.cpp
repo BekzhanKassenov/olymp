@@ -25,12 +25,16 @@ inline T sqr(T n) {
     return n * n;
 }
 
- 
+double a, b;
 
 int main() {
 #ifdef Local
     freopen("in", "r", stdin);
 #endif
+
+    scanf("%lf %lf", &a, &b);
+
+    printf("%.10f\n", a / b);
     
     return 0;
 }

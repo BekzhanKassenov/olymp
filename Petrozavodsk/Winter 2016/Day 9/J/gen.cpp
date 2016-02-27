@@ -25,12 +25,13 @@ inline T sqr(T n) {
     return n * n;
 }
 
- 
-
 int main() {
-#ifdef Local
-    freopen("in", "r", stdin);
-#endif
+
+    srand(time(NULL));
+    for (int i = 0; i < 6666; i++) {
+        cout << rand() % 2016 + 1 << ' ';;
+    }
+
     
     return 0;
 }
