@@ -1,7 +1,5 @@
-abka 
-abk 
-a 
-bk 
-k 
-b 
-ENDOFINPUT 
+aa
+aaaa
+ab
+abaa
+ENDOFINPUT
