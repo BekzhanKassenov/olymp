@@ -32,28 +32,41 @@ inline T sqr(T n) {
 int n, m;
 long long k;
 int a[MAXN][MAXN];
-vector <int> g[MAXG];
-int size[MAXG], num[MAXG];
-bool used[MAXG];
+int parent[MAXN * MAXN];
+int size[MAXN * MAXN];
+bool added[MAXN][MAXN];
 
 bool ok(int i, int j) {
     return 0 <= i && i < n &&
            0 <= j && j < m;
 }
 
-void dfs(int v, int st, int nver) {
-    used[v] = true;
-    size[nver] += size[v];
+int f(int i, int j) {
+    return i * m + j;
+}
 
-    for (int to: g[v]) {
-        if (!used[to]) {
-            if (num[to] >= num[st]) {
-                dfs(to, st, nver);
-            } else {
-                g[nver].push_back(to);
-                g[to].push_back(nver);
-            }
-        }
+int getParent(int v) {
+    if (parent[v] == v) {
+        return v;
+    }
+
+    return parent[v] = getParent(parent[v]);
+}
+
+void unite(int a, int b) {
+    a = getParent(a);
+    b = getParent(b);
+
+    if (a == b) {
+        return;
+    }
+
+    if (size[a] < size[b]) {
+        parent[a] = b;
+        size[b] += size[a];
+    } else {
+        parent[b] = a;
+        size[a] += size[b];
     }
 }
 
@@ -76,6 +89,19 @@ void dfsAns(int i, int j, int num, int& cnt) {
     }
 }
 
+void print_ans(int i, int j) {
+    int cnt = k / a[i][j];
+    dfsAns(i, j, a[i][j], cnt);
+
+    puts("YES");
+    for (int x = 0; x < n; x++) {
+        for (int y = 0; y < m; y++) {
+            printf("%d ", ans[x][y]);
+        }
+        puts("");
+    }
+}
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("in", "r", stdin);
@@ -90,69 +116,38 @@ int main() {
         }
     }
 
-    vector <int> divs;
+    vector <pair <int, int> > vec;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            if (k % a[i][j] == 0 && k / a[i][j] <= n * m) {
-                divs.push_back(a[i][j]);
-            }
+            vec.emplace_back(i, j);
         }
     }
 
-    sort(all(divs));
-    divs.resize(unique(all(divs)) - divs.begin());
-    reverse(all(divs));
+    sort(all(vec), [&](const pair <int, int>& lhs, const pair <int, int>& rhs) {
+        return a[lhs.first][lhs.second] > a[rhs.first][rhs.second];
+    });
 
-    vector <vector <pair <int, int> > > start(divs.size());
+    for (const auto& p: vec) {
+        added[p.first][p.second] = true;
+        
+        int num = f(p.first, p.second);
+        parent[num] = num;
+        size[num] = 1;
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            if (binary_search(all(divs), a[i][j])) {
-                start[lower_bound(all(divs), a[i][j]) - divs.begin()].emplace_back(i, j);
+        for (int k = 0; k < 4; k++) {
+            int ti = p.first + di[k];
+            int tj = p.second + dj[k];
+
+            if (ok(ti, tj) && added[ti][tj]) {
+                unite(num, f(ti, tj));
             }
         }
-    }
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            size[i * m + j] = 1;
-            num[i * m + j ] = a[i][j];
-            for (int k = 0; k < 4; k++) {
-                int ti = i + di[k];
-                int tj = j + dj[k];
+        int pnum = getParent(num);
 
-                if (ok(ti, tj)) {
-                    g[i * m + j].push_back(ti * m + tj);
-                }
-            }
-        }
-    }
-
-    int last = n * m;
-    for (size_t i = 0; i < divs.size(); i++) {
-        for (const auto& p: start[i]) {
-            int ind = p.first * m + p.second;
-
-            if (!used[ind]) {
-                num[last] = num[ind];
-                dfs(ind, ind, last);
-
-                if (size[last] >= k / divs[i]) {
-                    puts("YES");
-                    int cnt = k / divs[i];
-                    dfsAns(p.first, p.second, a[p.first][p.second], cnt);
-
-                    for (int x = 0; x < n; x++) {
-                        for (int y = 0; y < m; y++) {
-                            printf("%d ", ans[x][y]);
-                        }
-                        puts("");
-                    }
-                    return 0;
-                }
-
-                last++;
-            } 
+        if (k % a[p.first][p.second] == 0 && size[pnum] >= k / a[p.first][p.second]) {
+            print_ans(p.first, p.second);
+            return 0;
         }
     }
 
