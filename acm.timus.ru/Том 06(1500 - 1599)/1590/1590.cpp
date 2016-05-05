@@ -1,45 +1,48 @@
 #include <iostream>
 #include <cstdio>
-#include <set>
-#include <string>
+#include <cstring>
 
 using namespace std;
 
-typedef long long ll;
+const int MAXN = 5010;
 
-const ll base1 = 31;
-const ll MOD1 = (1000 * 1000 * 1000 + 7);
+int n;
+char s[MAXN];
+int lcp[2][MAXN];
 
-const ll base2 = 37;
-const ll MOD2 = (1000 * 1000 * 1000 + 9);
+int f(int n) {
+    return n * (n + 1) / 2;
+}
 
-int main()
-{
-	#ifndef ONLINE_JUDGE
-		freopen("in", "r", stdin);
-  	#endif
+int main() {
+#ifndef ONLINE_JUDGE
+    freopen("in", "r", stdin);
+#endif
 
-  	string s;
+    gets(s);
+    n = strlen(s);
 
-  	cin >> s;
+    int ans = f(n);
+    int idx = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        for (int j = n - 1; j >= 0; j--) {
+            if (s[i] == s[j]) {
+                lcp[idx][j] = lcp[idx ^ 1][j + 1] + 1;
+            } else {
+                lcp[idx][j] = 0;
+            }
+        }
 
-  	set <long long> st;
+        int maxlen = 0;
+        for (int j = i + 1; j < n; j++) {
+            maxlen = max(maxlen, lcp[idx][j]);
+        }
 
-  	int n = s.length();
+        ans -= maxlen;
+        idx ^= 1;
+    }
 
-  	for (int i = 0; i < n; i++)
-  		{
-  			long long hash1 = 0, hash2 = 0;
+    printf("%d\n", ans);
 
-  			for (int j = i; j < n; j++)
-  				{
-  					hash1 = ((hash1 * base1) % MOD1 + s[j]) % MOD1;
-  					hash2 = ((hash2 * base2) % MOD2 + s[j]) % MOD2;
-  					 
-  					st.insert((hash1 << 32) + hash2);
-  				}
-
-  		}
-
-  	cout << st.size() << endl;
+    return 0;
 }
