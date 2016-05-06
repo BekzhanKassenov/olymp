@@ -132,6 +132,7 @@ bool construct(int len) {
         insert(buflen, buf1, buflen, t, m);
     } else {
         insert(0, buf1, buflen, t, m);
+        sort(buf1 + m, buf1 + m + buflen);
     }
 
     strcpy(buf2, buf);
@@ -143,6 +144,9 @@ bool construct(int len) {
         insert(buflen, buf3, buflen, t, m);
     } else {
         insert(p1, buf3, buflen, t, m);
+        if (p1 == 0) {
+            sort(buf3 + m, buf3 + m + buflen);
+        }
     }
 
     strcpy(buf4, buf);
@@ -151,6 +155,9 @@ bool construct(int len) {
         insert(buflen, buf4, buflen, t, m);
     } else {
         insert(p2, buf4, buflen, t, m);
+        if (p2 == 0) {
+            sort(buf4 + m, buf4 + m + buflen);
+        }
     }
     
     strcpy(buf5, buf);
