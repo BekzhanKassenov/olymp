@@ -20,11 +20,12 @@ int main() {
         xx[i] = -1;
     }
 
-    for (int j = 1; j <= k; j++) {
-        y[j] = MAXN + MAXN;
-        yy[j] = -1;
+    for (int i = 1; i <= k; i++) {
+        y[i] = MAXN + MAXN;
+        yy[i] = -1;
     }
     
+    int nnx = -1, nny = -1;
     for (int i = n - 1; i >= 0; i--) {
         for (int j = 0; j < m; j++) {
             scanf("%d", &a[i][j]);
@@ -34,6 +35,17 @@ int main() {
             
             y[a[i][j]] = min(y[a[i][j]], i);
             yy[a[i][j]] = max(yy[a[i][j]], i);
+
+            if (a[i][j] != 0) {
+                nnx = j, nny = i;
+            }
+        }
+    }
+
+    for (int i = 1; i <= k; i++) {
+        if (xx[i] == -1) {
+            xx[i] = x[i] = nnx;
+            yy[i] = y[i] = nny;
         }
     }
 
