@@ -1,72 +1,113 @@
 #include <iostream>
 #include <cstdio>
-#include <string>
+#include <cstring>
+#include <cstdlib>
 
 using namespace std;
 
-int main()
-{
-	freopen("input.txt", "r", stdin);
-	freopen("output.txt", "w", stdout);
+const int MAXN = 110;
 
-	char s[101];
+int pos, len;
+char s[MAXN];
 
-	scanf("%s", s);
+void error() {
+    puts("ERROR");
+    exit(0);
+}
 
-	char s1[1000];
+int parseInt() {
+    if (pos >= len) {
+        error();
+    }
 
-	bool flag = true;
+    bool flag = false;
+    if (s[pos] == '-') {
+        pos++;
+        flag = true;
+    }
 
-	if (scanf("%s", s1) == 1)
-		flag = false;
+    if (pos >= len || !isdigit(s[pos])) {
+        error();
+    }
 
-	int a, b;
+    int num = 0;
+    while (pos < len && isdigit(s[pos])) {
+        num *= 10;
+        num += s[pos] - '0';
+        pos++;
+    }
 
-	double c;
+    if (flag && num == 0) {
+        error();
+    }
 
-	char z, z1;
+    if (flag) {
+        num *= -1;
+    }
 
-	if (sscanf(s, "%d%c%d%c%lf", &a, &z, &b, &z1, &c) != 5)
-	    flag = false;
-		
-	if (z1 != '=')
-		flag = false;
+    return num;
+}
 
-	bool flag1 = false;
+char parseSign() {
+    if (s[pos] != '+' && s[pos] != '-' 
+        && s[pos] != '*' && s[pos] != '/') {
+        error();
+    }
 
-	switch(z)
-		{
-			case '+':
-				if (a + b == c)
-					flag1 = true;
-				break;
-			
-			case '-':
-				if (a - b == c)
-					flag1 = true;
-				break;
+    return s[pos++];
+}
 
-			case '*':
-				if (a * b == c)
-					flag1 = true;
-				break;
+void parseEqual() {
+    if (s[pos] != '=') {
+        error();
+    }
 
-			case '/':
-				if ((a + .0) / (b + .0) == c)
-					flag1 = true;
-				break;
+    pos++;
+}
 
-			default: 
-				flag = false;	
-		}
+int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
 
-   	if (!flag)
-   		cout << "ERROR";
-   	else
-   		if (!flag1)
-   			cout << "NO";
-   		else
-   			cout << "YES";
+    gets(s);
+    len = strlen(s);
 
-   	return 0;	
+    int a = parseInt();
+    char sign = parseSign();
+    int b = parseInt();
+
+    parseEqual();
+
+    int c = parseInt();
+
+    if (pos < len) {
+        error();
+    }
+
+    bool res = false;
+    switch (sign) {
+        case '+':
+            res = (a + b == c);
+            break;
+
+        case '-':
+            res = (a - b == c);
+            break;
+
+        case '*':
+            res = (a * b == c);
+            break;
+
+        case '/':
+            res = (b != 0 && a == b * c);
+            break;
+    }
+
+    if (res) {
+        puts("YES");
+    } else {
+        puts("NO");
+    }
+
+    return 0;
 }
