@@ -1,23 +1,25 @@
 #include <iostream>
 #include <cstdio>
+#include <queue>
 
 using namespace std;
 
-const int MAXPOS = 190;
+const int MAXN = 1010;
+const int INF = (int)1e9;
 
-int sum[MAXPOS][10][1010];
-int par[MAXPOS][10][1010];
-int parm[MAXPOS][10][1010];
 int n, m;
-int ans = -1, anspos, ansdig;
-char res[MAXPOS + 1];
+int dp[MAXN];
+int par[MAXN];
+int digit[MAXN];
+queue <int> q;
 
-inline void update(int pos, int dig) {
-    if (ans == -1 || ans > sum[pos][dig][n]) {
-        ans = sum[pos][dig][n];
-        anspos = pos;
-        ansdig = dig;
+void restore(int num) {
+    if (num == 0) {
+        return;
     }
+
+    restore(par[num]);
+    printf("%d", digit[num]);
 }
 
 int main() {
@@ -26,59 +28,40 @@ int main() {
 
     scanf("%d%d", &n, &m);
 
-    if (n % m == 0) {
+    n %= m;
+
+    if (n == 0) {
         puts("0");
         return 0;
     }
 
-    memset(sum, 255, sizeof sum);
-    n = m - n % m;
-    
-    for (int dig = 1; dig < 10; dig++) {
-        sum[0][dig][dig % m] = dig;
+    n = m - n;
 
-        if (dig % m == n)
-            update(0, dig);
+    for (int i = 0; i < MAXN; i++) {
+        dp[i] = INF;
+        par[i] = -1;
     }
 
-    for (int pos = 0; pos < MAXPOS - 1; pos++) {
+    dp[0] = 0;
+    q.push(0);
+
+    while (!q.empty()) {
+        int num = q.front();
+        q.pop();
+
         for (int dig = 0; dig < 10; dig++) {
-            for (int mod = 0; mod < m; mod++) {
-                if (sum[pos][dig][mod] == -1)
-                    continue;
+            int tnum = (num * 10 + dig) % m;
 
-                for (int next_dig = 0; next_dig < 10; next_dig++) {
-                    int nmod = (mod * 10 + next_dig) % m;
-                    int nsum = sum[pos][dig][mod] + next_dig;
-
-                    int& nxt = sum[pos + 1][next_dig][nmod];
-
-                    if (nxt == -1 || nxt > nsum) {
-                        nxt = nsum;
-                        par[pos + 1][next_dig][nmod] = dig;
-                        parm[pos + 1][next_dig][nmod] = mod;
-                    }
-
-                    if (nmod == n)
-                        update(pos + 1, next_dig);
-                }
+            if (dp[tnum] > dp[num] + dig) {
+                dp[tnum] = dp[num] + dig;
+                par[tnum] = num;
+                digit[tnum] = dig;
+                q.push(tnum);
             }
         }
     }
 
-    int mod = n;
-
-    while (anspos >= 0) {
-        res[anspos] = ansdig + '0';
-        int tmod = mod;
-        int tdig = ansdig;
-
-        mod = parm[anspos][tdig][tmod];
-        ansdig = par[anspos][tdig][tmod];
-        anspos--;
-    }
-
-    printf("%s\n", res);
+    restore(n);
 
     return 0;
 }
