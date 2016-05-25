@@ -1,50 +1,37 @@
 #include <iostream>
 #include <cstdio>
-#include <vector>
 
 using namespace std;
 
-bool check(int l, int k)
-{
-	vector <int> d(k + 1);
+int k;
 
-	d[0] = 0;
-
-	d[1] = 1;
-
-	for (int i = 2; i <= k; i++)
-		{
-			d[i] = 0;
-			for (int j = 1; j <= l; j++)
-				{
-					if (i - j >= 0)
-						if (d[j] == 0)
-							{
-								d[i] = 1;
-								break;
-							}
-
-				}
-		}
-
-	if (d[k] == 1)
-		return false;
-
-	return true;
+bool check(int num) {
+    return 2 <= num && num < k;
 }
 
-int main()
-{
-	int l, k;
+int main() {
+#ifndef ONLINE_JUDGE
+    freopen("in", "r", stdin);
+#endif
 
-	cin >> k;
+    scanf("%d", &k);
 
-	cout << check(2, 12422) << endl;
+    int ans = k - 1;
+    for (int i = 1; i * i <= k; i++) {
+        if (k % i != 0) {
+            continue;
+        }
 
-	/*for (int l = 2; l <= 5; l++)
-		if (check(l, k))
-			cout << l; */
+        if (check(i - 1)) {
+            ans = min(ans, i - 1);
+        }
 
-  	return 0;
+        if (check(k / i - 1)) {
+            ans = min(ans, k / i - 1);
+        }
+    }
+
+    printf("%d\n", ans);
+
+    return 0;
 }
-
