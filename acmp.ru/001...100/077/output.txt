@@ -1,8 +1,1 @@
-GET 3 2
-GET 1 2
-GET 0 2
-GET 0 1
-GET 1 1
-GET 0 1
-GET 0 0
-1
+210

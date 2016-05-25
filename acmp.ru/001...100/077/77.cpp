@@ -1,31 +1,49 @@
 #include <iostream>
+#include <algorithm>
 #include <cstdio>
 #include <vector>
 
 using namespace std;
 
-int n, k, l = 1;
-int C[33][33], dp[33][33];
+const int MAXN = 33;
 
-void show(int n) {
-    while (n) {
-        cout << (n & 1);
-        n >>= 1;
+int n, k, len;
+
+int dp[MAXN][MAXN][2];
+bool calced[MAXN][MAXN][2];
+int d[MAXN];
+
+int f(int pos, int cnt, bool smaller) {
+    if (cnt > k) {
+        return 0;
+    }
+    
+    if (pos == len) {
+        return cnt == k;
     }
 
-    cout << endl;
-}
+    if (calced[pos][cnt][smaller]) {
+        return dp[pos][cnt][smaller];
+    }
+    
+    calced[pos][cnt][smaller] = true;
 
-int get_log(int n) {
-    int result = 0;
+    int upper = 0;
+    if (smaller) {
+        upper = 1;
+    } else {
+        upper = d[pos];
+    }
 
-    for (int i = 0; i < 31; i++) {
-        if ((1 << i) < n) {
-            result = i;
+    for (int dig = 0; dig <= upper; dig++) {
+        if (smaller) {
+            dp[pos][cnt][smaller] += f(pos + 1, cnt + (dig == 0), true);
+        } else {
+            dp[pos][cnt][smaller] += f(pos + 1, cnt + (dig == 0), dig < d[pos]);
         }
     }
 
-    return result;
+    return dp[pos][cnt][smaller];
 }
 
 int main() {
@@ -39,23 +57,19 @@ int main() {
         return 0;
     }
 
-    for (int i = 0; i < 33; i++) {
-        C[i][0] = C[i][i] = 1;
-
-        for (int j = 1; j < i; j++)
-            C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+    for (int i = 0; n > 0; i++, len++) {
+        d[i] = n & 1;
+        n >>= 1;
     }
 
-    memset(dp, 255, sizeof dp);
-    int len = get_log(n);
+    reverse(d, d + len);
 
-    for (int i = len; i >= 0; i--) {
-        for (int j = 0; j <= k; j++) {
-            
-        }
+    int ans = f(1, 0, false);
+    for (int i = 1; i + 1 <= len; i++) {
+        ans += f(i + 1, 0, true);
     }
 
-    printf("%d\n", );
+    printf("%d\n", ans);
 
     return 0;
 }
