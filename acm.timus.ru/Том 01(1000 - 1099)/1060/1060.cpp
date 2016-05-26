@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <queue>
 
 using namespace std;
 
@@ -18,14 +19,16 @@ int checkbit(int mask, int i, int j) {
 }
 
 char s[5][5];
-int dp[1 << 16];
-bool calced[1 << 16];
 
 bool ok(int x, int y) {
  	return x >= 0 && x < 4 && y >= 0 && y < 4;
 }
 
 void hit(int& mask, int x, int y) {
+    int curbit = checkbit(mask, x, y);
+    curbit ^= 1;
+    setbit(mask, x, y, curbit);
+
  	for (int i = 0; i < 4; i++) {
  	 	int tx = x + dx[i];
  	 	int ty = y + dy[i];
@@ -38,28 +41,38 @@ void hit(int& mask, int x, int y) {
  	}
 }
 
-int can(int mask) {
- 	if (mask == 0 || mask == fullmask) {
- 	 	return dp[mask] = 0;
- 	}
+bool used[1 << 16];
+int dist[1 << 16];
 
- 	if (calced[mask])
- 		return dp[mask];
+int bfs(int start) {
+    queue <int> q;
+    q.push(start);
+    used[start] = true;
+    dist[start] = 0;
 
- 	calced[mask] = true;
+    while (!q.empty()) {
+        int mask = q.front();
+        q.pop();
 
- 	for (int i = 0; i < 4; i++) {
- 	 	for (int j = 0; j < 4; j++) {
- 	 	 	hit(mask, i, j);
- 	 	 	int result = can(mask);
- 	 	 	hit(mask, i, j);
+        if (mask == fullmask || mask == 0) {
+            return dist[mask];
+        }
 
- 	 	 	if (result != -1 && (dp[mask] == -1 || dp[mask] > result + 1))
- 	 	 		dp[mask] = result + 1;
- 	 	}
- 	}
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                int tmask = mask;
+                hit(tmask, i, j);
 
- 	return dp[mask];
+                if (!used[tmask]) {
+                    used[tmask] = true;
+                    dist[tmask] = dist[mask] + 1;
+                    q.push(tmask);
+                }
+            }
+        }
+    }
+
+    return -1;
 }
 
 int main() {
@@ -67,9 +80,9 @@ int main() {
 	freopen("in", "r", stdin);
 #endif
 
-    memset(dp, 255, sizeof dp);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) {
     	gets(s[i]);
+    }
 	
 	int mask = 0;
 	for (int i = 0; i < 4; i++) {
@@ -78,12 +91,12 @@ int main() {
 	 	}
 	}
 
-	int result = can(mask);
-	if (result != -1) {
-	 	printf("%d\n", result);
-	} else {
-	 	puts("Impossible");
-	}
+    int ans = bfs(mask);
+    if (ans != -1) {
+        printf("%d\n", ans);
+    } else {
+        puts("Impossible");
+    }
 	
 	return 0;
 }
