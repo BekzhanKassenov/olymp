@@ -30,8 +30,8 @@ int n;
 char s[MAXN][MAXN];
 
 bool isGreater(int a, int b, int c, int d) {
-    double lhs = (a - c) * log(2);
-    double rhs = (d - b) * log(3);
+    double lhs = a * log(2) + b * log(3);
+    double rhs = c * log(2) + d * log(3);
 
     return lhs > rhs;
 }
@@ -239,6 +239,7 @@ int main() {
             }
 
             int d, cnt2, cnt3;
+            found = true;
 
             /* ================================================
                 Normal
@@ -262,7 +263,6 @@ int main() {
             if (isGreater(cnt2, cnt3, ans2, ans3)) {
                 ans2 = cnt2;
                 ans3 = cnt3;
-                found = true;
             }
             
             /* ================================================
@@ -289,7 +289,6 @@ int main() {
             if (isGreater(cnt2, cnt3, ans2, ans3)) {
                 ans2 = cnt2;
                 ans3 = cnt3;
-                found = true;
             }
         }
     }
