@@ -1,91 +1,187 @@
-#include <iostream>
+#include <cstring>
 #include <cstdio>
-#include <string>
-#include <set>
+#include <bitset>
+#include <vector>
 
 using namespace std;
 
-const int MOD = 1000 * 1000 * 1000 + 7;
-const int base = 107;
+typedef int node;
+typedef unsigned char uchar;
 
-string get_next(string &s, int &pos)
-{
-	string ans;
+const int INF = (int)1e9;
+const int MAXN = 100 * 1024 + 10;
+const node ROOT = 0;
 
-	while (pos < (int)s.length() && s[pos] != 0 && s[pos] != 13 && s[pos] != 10 && s[pos] != ' ')
-		ans += s[pos++];
+#pragma pack(push, 1)
+template <class T, class V>
+class Pair {
+public:
+    T first;
+    V second;
 
-	return ans;
+    Pair(T first = T(), V second = V()) : first(first), second(second) { }
+};
+#pragma pack(pop)
+
+template <class Key, class Val>
+class map {
+  public:
+    bool count(const Key& key) const {
+        for (const auto& it: data) {
+            if (it.first == key) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    Val& operator [] (const Key& key) {
+        for (auto& it: data) {
+            if (it.first == key) {
+                return it.second;
+            }
+        }
+
+        data.emplace_back(key, Val());
+
+        if (data.capacity() > 256) {
+            data.resize(256);
+        }
+
+        return data.back().second;
+    }
+
+    const Val& operator [] (const Key& key) const {
+        for (const auto& it: data) {
+            if (it.first == key) {
+                return it.second;
+            }
+        }
+
+        return Val(0);
+    }
+  private:
+    vector <Pair <Key, Val> > data;
+};
+
+map <uchar, node> anext[MAXN]; // edges in automata
+map <uchar, node> tnext[MAXN]; // edges in trie
+node link[MAXN];
+uchar parentChar[MAXN];
+node parent[MAXN];
+short len[MAXN];
+int new_node = 1;
+
+int n, m;
+
+void addString() {
+    node cur = ROOT;
+
+    int l = 0;
+    for (uchar c = getchar(); c != '\n'; c = getchar()) {
+        if (!tnext[cur].count(c)) {
+            tnext[cur][c] = new_node;
+
+            link[new_node] = -1;
+            parentChar[new_node] = c;
+            parent[new_node] = cur;
+            len[new_node] = -1;
+
+            new_node++;
+        }
+
+        cur = tnext[cur][c];
+        l++;
+    }
+
+    len[cur] = l;
 }
-	
-int hash_function(const string &s)
-{
-	long long hash = 0;
 
-	for (int i = 0; i < (int)s.length(); i++)
-		{
-			hash *= base;
-			hash += s[i];
-			hash %= MOD;
-			if (hash < 0)
-				hash += MOD;
-		}
+node go(node cur, uchar c);
+node getLink(node cur);
 
-	return  (int)hash;
+node go(node cur, uchar c) {
+    if (anext[cur].count(c)) {
+        return anext[cur][c];
+    }
+
+    if (tnext[cur].count(c)) {
+        return anext[cur][c] = tnext[cur][c];
+    }
+
+    if (cur == ROOT) {
+        return anext[cur][c] = ROOT;
+    }
+
+    return anext[cur][c] = go(getLink(cur), c);
 }
 
-int main()
-{
-	#ifndef ONLINE_JUDGE
-		freopen("in", "r", stdin);
-	#endif
+node getLink(node cur) {
+    if (link[cur] != -1) {
+        return link[cur];
+    }
 
-	int n;
+    if (cur == ROOT || parent[cur] == ROOT) {
+        return link[cur] = ROOT;
+    }
 
-	cin >> n;
+    link[cur] = go(getLink(parent[cur]), parentChar[cur]);
 
-	string s;
+    return link[cur];
+}
 
-	getline(cin , s);
+short getLen(node cur) {
+    if (len[cur] != -1) {
+        return len[cur];
+    }
 
-	set <int> mats;
+    if (cur == ROOT) {
+        return len[cur] = 0;
+    }
 
-	for (int i = 0; i < n; i++)
-		{
-		   getline(cin, s);
+    return len[cur] = getLen(getLink(cur));
+}
 
-		   cout << s << endl;
+int main() {
+#ifndef ONLINE_JUDGE
+	freopen("in", "r", stdin);
+#endif
 
-			mats.insert(hash_function(s));
-		}
+    scanf("%d", &n);
+    getchar();
 
-	cin >> n;
+    for (int i = 0; i < n; i++) {
+        addString();
+    }
 
-	for (int i = 0; i < n; i++)
-		{
-			getline(cin, s);
+    scanf("%d", &m);
+    getchar();
 
-			int pos = 0;
+    for (int i = 0; i < m; i++) {
+        node cur = ROOT;
 
-			while (pos < (int)s.length())
-				{
-					int ps = pos;
+        int ans = INF;
+        int c = getchar();
+        for (int j = 0; c != '\n' && c != EOF; j++) {
+            cur = go(cur, c);
 
-					string tmp = get_next(s, ps);
+            int l = getLen(cur);
+            if (l != 0) {
+                int pos = j - l + 1;
+                ans = min(ans, pos);
+            }
+            
+            c = getchar();
+        }
 
-					cout << tmp << endl;
+        if (ans != INF) {
+            printf("%d %d\n", i + 1, ans + 1);
+            return 0;
+        }
+    }
 
-					int h = hash_function(tmp);
+    puts("Passed");
 
-					if (mats.find(h) != mats.end())
-						{
-							cout << i + 1 << ' ' << pos + 1;
-							return 0;
-						}
-
-					else
-						pos = ++ps;
-			   }
-		}
-	cout << "Passed" << endl;
+    return 0;
 }
