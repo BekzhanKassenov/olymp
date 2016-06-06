@@ -8,14 +8,14 @@ inline int sqr(int n) {
 }
 
 struct Point {
-    int x, y;
+    long long x, y;
 
-    int dist_to(const Point& p) const {
+    long long dist_to(const Point& p) const {
         return sqr(x - p.x) + sqr(y - p.y);
     }
     
     void read() {
-        scanf("%d%d", &x, &y);
+        scanf("%lld%lld", &x, &y);
     }
 };
 
@@ -34,7 +34,7 @@ int main() {
     for (int i = 0; i < n; i++) {
         nor.read();
 
-        if (sus.dist_to(nor) * 4 < dog.dist_to(nor)) {
+        if (sus.dist_to(nor) * 4 <= dog.dist_to(nor)) {
             printf("%d\n", i + 1);
             return 0;
         }
