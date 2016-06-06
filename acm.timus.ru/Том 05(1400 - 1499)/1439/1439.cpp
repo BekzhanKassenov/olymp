@@ -1,94 +1,76 @@
 #include <iostream>
 #include <cstdio>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
+#include <cassert>
+#include <unordered_map>
+#include <set>
 
 using namespace std;
 
-typedef struct Node* pNode;
+int n, m;
+unordered_map <int, int> tree;
+char type;
+int num;
 
-struct Node {
- 	int x, y, cnt;
- 	pNode l, r;
-
- 	Node() {}
-
- 	Node(int x) : x(x), y((rand() << 16) + rand()), cnt(0), l(NULL), r(NULL) {}
-};
-
-int cnt(pNode v) {
-	return (v ? v -> cnt : 0);
+void update(int pos) {
+    for (int i = pos; i <= n; i |= i + 1) {
+        tree[i]++;
+    }
 }
 
-void upd_cnt(pNode v) {
-	if (v)
-		v -> cnt = cnt(v -> l) + cnt(v -> r) + 1;
+int sum(int pos) {
+    int ans = 0;
+    for (int i = pos; i >= 0; i = (i & (i + 1)) - 1) {
+        if (tree.count(i)) {
+            ans += tree[i];
+        }
+    }
+
+    return ans;
 }
 
-void split(pNode v, pNode& l, pNode& r, int key) {
-	if (!v) {
-		l = r = NULL;
-		return;
-	}
+set <int> erased;
 
-	if (v -> x <= key) {
-		split(v -> r, v -> r, r, key);
-		l = v;
-	} else {
-		split(v -> l, l, v -> l, key);
-		r = v;
-	}
+int query(int num) {
+    int l = 1, r = n;
 
-	upd_cnt(v);
-}
+    while (l <= r) {
+        int mid = (l + r) / 2;
 
-pNode merge(pNode l, pNode r) {
-	if (!l || !r)
-		return (l ? l : r);
+        int f = mid - sum(mid - 1);
 
-	pNode ans;
+        if (f == num && !erased.count(mid)) {
+            return mid;
+        }
 
-	if (l -> y > r -> y) 
-		ans = merge(l -> r, r);
-	else
-		ans = merge(l, r -> l);
+        if (f <= num) {
+            l = mid + 1;
+        } else {
+            r = mid - 1;
+        }
+    }
 
-	upd_cnt(ans);
-	return ans;
-}
-
-void insert(pNode& v, pNode it) {
-	if (!v) {
-		v = it;
-		return;
-	}
-
-	if (it -> y > v -> y) {
-		split(v, it -> l, it -> r, it -> x);
-		v = it;
-	} else 
-		insert(it -> x < v -> x ? v -> l : v -> r, it);
-}
-
-pNode find(pNode root, int key) {
-	int cur = cnt(root -> l) + 1;
-
-	int mn = min(root -> r);
-
-	if (key + cur <= mn && key + cur >= root -> x)
-		return root;
-
-	if (key + cur > mn)
-		return find(root -> l);
-
-	return find(root -> r);
+    assert(false);
+    return -1;
 }
 
 int main() {
-	#ifndef ONLINE_JUDGE
-		freopen("in", "r", stdin);
-	#endif
+#ifndef ONLINE_JUDGE        
+	freopen("in", "r", stdin);
+#endif
+
+    scanf("%d %d\n", &n, &m);
+
+    while (m--) {
+        scanf("%c %d\n", &type, &num);
+
+        if (type == 'D') {
+            int val = query(num);
+            update(val);
+            erased.insert(val);
+        } else {
+            printf("%d\n", query(num));
+        }
+    }
 
 	return 0;
 }
