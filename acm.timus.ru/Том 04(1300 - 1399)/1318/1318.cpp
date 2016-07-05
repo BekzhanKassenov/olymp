@@ -1,58 +1,128 @@
 #include <iostream>
+#include <algorithm>
 #include <cstdio>
-#include <cmath>
-#include <ctime>
 
 using namespace std;
 
-struct nmb {
- 	unsigned int a[4];
+const int MAXN = 5010;
 
- 	nmb() {}
+using uint = unsigned int;
+using ulong = unsigned long long;
 
- 	void read() {
- 		scanf("%u%u%u%u", &a[0], &a[1], &a[2], &a[3]);
- 	}
+struct LongInt {
+    ulong first, second;
 
- 	int operator ^ (const nmb& n) const {
- 		double res = 0;
+    LongInt(ulong first, ulong second) : first(first), second(second) {}
 
- 		for (int i = 3; i >= 0; i--) {
- 			if (a[i] ^ n.a[i]) {
- 				res += (log(a[i] ^ n.a[i]) + 32.0 * i * (log(2))) / log(10);
- 			}
- 		}	
+    LongInt(ulong num) : LongInt(0, num) {}
 
- 		return (int)res;
- 	}
+    LongInt(uint a = 0, uint b = 0, uint c = 0, uint d = 0) :
+        LongInt((ulong(a) << 32) ^ b, (ulong(c) << 32) ^ d) {}
+};
 
-} a[5010];
+LongInt operator << (const LongInt& num, int shift) {
+    if (shift >= 128) {
+        return LongInt();
+    }
+
+    if (shift >= 64) {
+        return LongInt(num.second << (shift - 64), 0);
+    }
+
+    ulong first = (num.first << shift) | (num.second >> (64 - shift));
+    ulong second = num.second << shift;
+
+    return LongInt(first, second);
+}
+
+LongInt operator + (const LongInt& a, const LongInt& b) {
+    ulong first = 0, second = 0;
+    bool carry = false;
+
+    for (int i = 0; i < 64; i++) {
+        bool bita = a.second & (1ull << i);
+        bool bitb = b.second & (1ull << i);   
+        
+        ulong num = bita ^ bitb ^ carry;
+        second |= num << i;
+        
+        carry ^= (bita ^ carry) & (bitb ^ carry);
+    }
+
+    for (int i = 0; i < 64; i++) {
+        bool bita = a.first & (1ull << i);
+        bool bitb = b.first & (1ull << i);   
+        
+        ulong num = bita ^ bitb ^ carry;
+        first |= num << i;
+
+        carry ^= (bita ^ carry) & (bitb ^ carry);
+    }
+
+    return LongInt(first, second);
+}
+
+LongInt mul10(const LongInt& a) {
+    return (a << 3) + (a << 1);
+}
+
+bool operator < (const LongInt& a, const LongInt& b) {
+    if (a.first != b.first) {
+        return a.first < b.first;
+    }
+
+    return a.second < b.second;
+}
+
+int n, len = 1;
+LongInt num[MAXN];
+LongInt power[MAXN];
+
+int get(int i, int j) {
+    LongInt val(num[i].first ^ num[j].first, num[i].second ^ num[j].second);
+
+    if (val.first == 0 && val.second == 0) {
+        return 0;
+    }
+
+    if (power[len - 1] < val) {
+        return len - 1;
+    }
+
+    int pos = upper_bound(power, power + len, val) - power;
+    return pos - 1;
+}
 
 int main() {
-	#ifndef ONLINE_JUDGE
-		freopen("in", "r", stdin);
-	#endif
+#ifndef ONLINE_JUDGE
+    freopen("in", "r", stdin);
+#endif
 
-	int n;
+    scanf("%d", &n);
 
-	scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        uint a, b, c, d;
+        scanf("%u%u%u%u", &a, &b, &c, &d);
 
-	for (int i = 0; i < n; i++)
-		a[i].read();
+        num[i] = LongInt(a, b, c, d);
+    }
 
-	int ans = 0;
+    power[0] = LongInt(1ull);
 
-	double kt = clock();
+    for (int i = 0; i < 38; i++) {
+        LongInt val = mul10(power[len - 1]);
+        power[len] = val;
+        len++;
+    }
 
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			ans += a[i] ^ a[j];
-		}
-	}
+    long long ans = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            ans += 2 * get(i, j);
+        }
+    }
 
-	cout << (int)ans;	
+    printf("%lld\n", ans);
 
-	cerr << endl << ((clock() - kt) / CLOCKS_PER_SEC);
-
-	return 0;
+    return 0;
 }
