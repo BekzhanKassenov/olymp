@@ -1,0 +1,13 @@
+2
+2 1
+cross 0
+polygonArea 1 cross
+polygonArea
+6 2
+intersect 0
+circlePoint 0
+intLines 1 intersect
+circleThree 1 intersect
+circleTwo 0
+mec 3 circlePoint circleTwo mec
+intersect mec
