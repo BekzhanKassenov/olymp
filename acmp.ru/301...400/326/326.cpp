@@ -28,7 +28,7 @@ int main()
 					k++;
 					i++;
 				}
-			while (b[i]==b[i-1] && i<n);
+			while (i<n && b[i]==b[i-1]);
 			if (k>mx || (k==mx && b[i-1]<c)) 
 				{
 					c=b[i-1];
