@@ -1,41 +1,43 @@
 #include <iostream>
 #include <cstdio>
-#include <vector>
+#include <cassert>
 
 using namespace std;
 
-int main()
-{
-	freopen("input.txt", "r", stdin);
-	freopen("output.txt", "w", stdout);
+typedef pair <long long, long long> coeff;
 
-	int x, y;
+coeff operator + (const coeff& a, const coeff& b) {
+    return coeff(a.first + b.first, a.second + b.second);
+}
 
-	cin >> x >> y;
+int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
 
-	int f1 = 0, f2 = 1, f3;
+    long long x, y;
+    cin >> x >> y;
 
-	f3 = f1 + f2;
+    coeff f1(1, 0);
+    coeff f2(0, 1);
 
-	for (int i = 3; i <= x; i++)
-		{
-			f1 = f2;
-			f2 = f3;
-			f3 = f1 + f2;
-		}
+    for (int i = 3; i <= x; i++) {
+        coeff f3 = f1 + f2;
+        f1 = f2;
+        f2 = f3;
+    }
 
-	for (int ans = 0; ans < y; ans++)
-		{
-			int t = y - f2 * ans;
-			if (t % f1 == 0)
-				{
-					t /= f1;
+    for (long long firstDay = 1; firstDay * f2.first <= y; firstDay++) {
+        long long temp = y - firstDay * f2.first;
+        if (temp % f2.second == 0) {
+            long long secondDay = temp / f2.second;
+            if (secondDay < firstDay) {
+                cout << firstDay << ' ' << secondDay << endl;
+                return 0;
+            }
+        }
+    }
 
-					if (t > ans && ans > 0)
-						{
-							cout << t << ' ' << ans;
-							return 0;
-						}
-				}
-		}
+    assert(false);
+
+    return 0;
 }
