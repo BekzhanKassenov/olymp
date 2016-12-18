@@ -28,34 +28,9 @@ inline T sqr(T n) {
 
 int n, t, k;
 int a[MAXN];
+bool used[MAXN];
 vector <int> nonleaf[MAXN], leaf[MAXN];
 vector <pair <int, int> > g;
-
-void print(const vector <int>& a) {
-    for (int x : a) {
-        cout << x << ' ';
-    }
-    cout << endl;
-}
-
-bool doEdges(const vector <int>& par, const vector <int>& a, const vector <int>& b) {
-    if (par.size() > a.size() + b.size()) {
-        return false;
-    }
-
-    int ptr = 0;
-    for (int v : a) {
-        g.emplace_back(par[ptr], v);
-        ptr = (ptr + 1) % par.size();
-    }
-
-    for (int v : b) {
-        g.emplace_back(par[ptr], v);
-        ptr = (ptr + 1) % par.size();
-    }
-
-    return true;
-}
 
 int main() {
 #ifndef ONLINE_JUDGE
@@ -86,7 +61,28 @@ int main() {
     k -= a[t];
 
     for (int i = t - 1; i >= 1; i--) {
-        int cnt = min(a[i] - 1, k);
+        int children = leaf[i + 1].size() + nonleaf[i + 1].size();
+        int cur = nonleaf[i].size();
+
+        if (cur <= children) {
+            continue;
+        }
+
+        int cnt = cur - children;
+        if (cnt > k) {
+            puts("-1");
+            return 0;
+        }
+
+        while (cnt --> 0) {
+            leaf[i].push_back(nonleaf[i].back());
+            nonleaf[i].pop_back();
+            k--;
+        }
+    }
+
+    for (int i = t - 1; i >= 1; i--) {
+        int cnt = min((int)nonleaf[i].size() - 1, k);
         while (cnt --> 0) {
             leaf[i].push_back(nonleaf[i].back());
             nonleaf[i].pop_back();
@@ -100,10 +96,15 @@ int main() {
     }
 
     for (int i = t - 1; i >= 0; i--) {
-        cerr << i << ' ' << nonleaf[i].size() << ' ' << leaf[i + 1].size() + nonleaf[i + 1].size() << endl;
-        if (!doEdges(nonleaf[i], leaf[i + 1], nonleaf[i + 1])) {
-            puts("-1");
-            return 0;
+        int ptr = 0;
+        for (int v : leaf[i + 1]) {
+            g.emplace_back(nonleaf[i][ptr], v);
+            ptr = (ptr + 1) % nonleaf[i].size();
+        }
+
+        for (int v : nonleaf[i + 1]) {
+            g.emplace_back(nonleaf[i][ptr], v);
+            ptr = (ptr + 1) % nonleaf[i].size();
         }
     }
 
