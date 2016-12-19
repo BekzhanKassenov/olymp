@@ -19,7 +19,7 @@ const double EPS = 1e-9;
 const double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
-const int MAXN = 100010;
+const int MAXN = 300010;
 
 template <typename T>
 inline T sqr(T n) {
