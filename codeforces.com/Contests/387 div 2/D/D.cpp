@@ -60,7 +60,7 @@ int main() {
     if (cnt == 1) {
         for (int i = 1; i <= n; i++) {
             if (t[i] == -1) {
-                if (n - i + 1 <= k) {
+                if (n - i <= k) {
                     puts("1");
                 } else {
                     puts("2");
