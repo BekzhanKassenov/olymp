@@ -4,88 +4,30 @@
 
 using namespace std;
 
-#define F first
-#define S second
-#define MP make_pair
+const int MAXN = 110;
 
-struct _time {
+int read() {
     int h, m, s;
-
-    _time() : h(0), m(0), s(0) { }
-
-    _time(int h, int m, int s) : h(h), m(m), s(s) { }
-
-    void read() {
-        scanf("%d:%d:%d", &h, &m, &s);
-    }
-
-    void print() const {
-        printf("%02d:%02d:%02d", h, m, s);
-    }
-
-    void advance(int sec) {
-        int all_in_sec = h * 3600 + m * 60 + s + sec;
-        h = all_in_sec / 3600;
-        all_in_sec %= 3600;
-
-        m = all_in_sec / 60;
-        all_in_sec %= 60;
-
-        s = all_in_sec;
-    }
-
-    bool operator < (const _time& _t) const {
-        int all_in_sec = h * 3600 + m * 60 + s;
-        int all_in_sec1 = _t.h * 3600 + _t.m * 60 + _t.s;
-
-        return all_in_sec < all_in_sec1;
-    }
-};
-
-int n, k, arr[110];
-_time start[110], end[110];
-
-void print_ans(const _time& st) {
-    queue <pair <int, int> > q;
-
-    int cur = 0;
-
-    for (int i = 0; i < k; i++) {
-        start[i] = st;
-        start[i].advance(cur);
-        
-        if (arr[i] > 10) {
-            q.push(MP(i, arr[i] - 10));
-            cur += 10;
-        } else {
-            cur += arr[i];
-            end[i] = st;
-            end[i].advance(cur);
-        }
-    }
-
-    while (!q.empty()) {
-        pair <int, int> p = q.front();
-        q.pop();
-
-        if (p.S <= 10) {
-            cur += p.S;
-            end[p.F] = st;
-            end[p.F].advance(cur);
-        } else {
-            p.S -= 10;
-            q.push(p);
-            cur += 10;
-        }
-    }
-
-    for (int i = 0; i < k; i++) {
-        start[i].print();
-        printf(" ");
-        end[i].print();
-        printf("\n");
-    }
+    scanf("%d:%d:%d", &h, &m, &s);
+    return h * 3600 + m * 60 + s;
 }
+
+void print(int _time) {
+    int h = _time / 3600;
+    _time %= 3600;
+    h %= 24;
+
+    int m = _time / 60;
+    _time %= 60;
+
+    int s = _time;
+
+    printf("%02d:%02d:%02d", h, m, s);
+}
+
+int n, k;
+int dur[MAXN];
+int start[MAXN], _end[MAXN];
 
 int main() {
     freopen("input.txt", "r", stdin);
@@ -93,19 +35,46 @@ int main() {
 
     scanf("%d%d", &n, &k);
 
-    _time temp;
+    queue <int> q;
+    int cur = 0;
+
+    auto process = [&cur, &q](int i) {
+        if (dur[i] <= 10) {
+            cur += dur[i];
+            _end[i] = cur;
+        } else {
+            cur += 10;
+            dur[i] -= 10;
+            q.push(i);
+        }
+    };
 
     for (int i = 0; i < n / k; i++) {
         for (int j = 0; j < k; j++) {
-            temp.read();
-            scanf("%d", &arr[j]);
+            start[j] = read();
+            if (start[j] > cur) {
+                cur = start[j];
+            }
+            scanf("%d", &dur[j]);
         }
 
-        for (int j = 0; j < k; j++)
-            if (temp < end[j])
-                temp = end[j];
+        for (int i = 0; i < k; i++) {
+            start[i] = cur;
+            process(i);
+        }
 
-        print_ans(temp);
+        while (!q.empty()) {
+            int idx = q.front();
+            q.pop();
+            process(idx);
+        }
+
+        for (int i = 0; i < k; i++) {
+            print(start[i]);
+            putchar(' ');
+            print(_end[i]);
+            putchar('\n');
+        }
     }
 
     return 0;
