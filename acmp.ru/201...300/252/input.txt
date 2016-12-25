@@ -1,6 +1,16 @@
-5
-234 g
-4576 mp
-2 t
-32 mg
-2 Mg
+15 
+1 mg 
+1 g 
+1 kg 
+1 Mg 
+1 mp 
+1 p 
+1 kp 
+1 Mp 
+1 Gp 
+1 mt 
+1 t 
+1 kt 
+1 Gg 
+1 Mt 
+1 Gt 
