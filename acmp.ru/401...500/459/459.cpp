@@ -1,131 +1,110 @@
 #include <iostream>
 #include <cstdio>
-#include <string>
-#include <vector>
-#include <queue>
 #include <algorithm>
+#include <map>
+#include <set>
+#include <queue>
+#include <cassert>
 
 using namespace std;
 
-#define PII pair <int, int>
-#define F first
-#define S second
-#define MP make_pair
+#define all(x) (x).begin(), (x).end()
 
-int u[4] = {1, 0, -1, 0};
-int d[4] = {0, 1, 0, -1};
+const int MAXN = 210;
 
-int zn(char c)
-{
-	switch (c)
-		{
-			case 'N':
-				return 0;
-			case 'E':
-				return 1;
-			case 'S':
-				return 2;
-			case 'W':
-				return 3;
-		}
+const char N = 'N';
+const char S = 'S';
+const char W = 'W';
+const char E = 'E';
+
+typedef pair <int, int> Pair;
+
+char getLetter(const Pair& delta) {
+    static map <Pair, char> Map = {
+        {{-1,  0}, N},
+        {{ 1,  0}, S},
+        {{ 0, -1}, W},
+        {{ 0,  1}, E}
+    };
+
+    return Map[delta];
 }
 
-char obr(int n)
-{
-	switch (n)
-		{
-			case 0:
-				return 'S';
-			case 1:
-				return 'W';
-			case 2:
-				return 'N';
-			case 3:
-				return 'E';
-		}
+Pair getDelta(char letter) {
+    static map <char, Pair> Map = {
+        {N, {-1,  0}},
+        {S, { 1,  0}},
+        {W, { 0, -1}},
+        {E, { 0,  1}}
+    };
+
+    return Map[letter];
 }
 
-int g[600][600], dst[600][600], used[600][600];
+Pair& operator += (Pair& a, const Pair& b) {
+    a.first += b.first;
+    a.second += b.second;
+    return a;
+}
 
-int main()
-{
-	freopen("input.txt","r",stdin);
-	freopen("output.txt","w",stdout);
+Pair& operator -= (Pair& a, const Pair& b) {
+    a.first -= b.first;
+    a.second -= b.second;
+    return a;
+}
 
-	string s;
+char s[MAXN];
+map <Pair, set <Pair> > g;
+set <Pair> used;
+map <Pair, char> par;
+Pair start(0, 0);
 
-	cin >> s;
+int main() {
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
 
-	int cur_x = 280, cur_y = 280;
+    gets(s);
 
-	g[cur_x][cur_y] = true;
+    Pair cur(start);
+    for (char c : s) {
+        Pair temp(cur);
+        temp += getDelta(c);
+        g[cur].emplace(temp);
+        g[temp].emplace(cur);
+        cur = temp;
+    }
 
-	for (int i = 0; i < (int) s.length(); i++)
-		{
-			cur_x += u[zn(s[i])];
-			cur_y += d[zn(s[i])];
-			g[cur_x][cur_y] = 1;
-		}
+    queue <Pair> q;
+    q.push(cur);
+    used.insert(cur);
 
-	queue <PII> q;
+    while (!q.empty()) {
+        Pair v(q.front());
+        q.pop();
 
-	q.push(MP(cur_x, cur_y));
+        for (char dir : {N, E, S, W}) {
+            Pair other(v);
+            other += getDelta(dir);
 
-	used[cur_x][cur_y] = true;
+            if (g[v].count(other) && !used.count(other)) {
+                used.insert(other);
+                par[other] = dir;
+                q.push(other);
+            }
+        }
+    }
 
-	while (!q.empty())
-		{
-			PII cur = q.front();
-			q.pop();
+    Pair temp(start);
+    string ans;
+    while (temp != cur) {
+        char dir = par[temp];
+        ans.push_back(dir);
+        temp -= getDelta(dir);
+    }
 
-			for (int i = 0; i < 4; i++)
-				{
-					PII tmp = cur;
+    reverse(all(ans));
 
-					tmp.F += u[i];
-					tmp.S += d[i];
+    puts(ans.c_str());
 
-					if (g[tmp.F][tmp.S] == 1 && !used[tmp.F][tmp.S])
-						{
-							dst[tmp.F][tmp.S] = dst[cur.F][cur.S] + 1;
-							used[tmp.F][tmp.S] = true;
-							q.push(tmp);
-						}
-				}
-		}
-
-	string ans;               
-
-	PII cur = MP(280, 280);
-
-	for (;;)
-		{
-			bool flag = false;
-			
-			for (int i = 0; i < 4; i++)
-				{
-					PII tmp = cur;
-
-					tmp.F -= u[(i + 2) % 4];
-					tmp.S -= d[(i + 2) % 4];
-
-					if (dst[tmp.F][tmp.S] + 1 == dst[cur.F][cur.S] && used[tmp.F][tmp.S])
-						{
-						   ans += obr(i);
-
-							flag = true;
-							
-							cur = tmp;
-							
-							break;
-						}
-				}
-			if (!flag)
-				break;
-		}
-
-	reverse(ans.begin(), ans.end());
-
-	cout << ans;
-	return 0;
+    return 0;
 }
