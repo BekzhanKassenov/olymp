@@ -42,13 +42,13 @@ bool ok(int x, int y) {
 bool dfs(int x, int y) {
     used[x][y] = true;
 
-    if (x == xf && y == yf) {
-        return true;
-    }
-
     for (int k = 0; k < 4; k++) {
         int xx = x + dx[k];
         int yy = y + dy[k];
+
+        if (xx == xf && yy == yf) {
+            return true;
+        }   
 
         if (ok(xx, yy) && !used[xx][yy] &&
             s[xx][yy] == '.' && dfs(xx, yy)) {
@@ -58,6 +58,28 @@ bool dfs(int x, int y) {
     }
 
     return false;
+}
+
+int neighbors(int x, int y) {
+    int ans = 0;
+    for (int k = 0; k < 4; k++) {
+        int xx = x + dx[k];
+        int yy = y + dy[k];
+        if (ok(xx, yy) && s[xx][yy] == '.') {
+            ans++;
+        }
+    }
+
+    return ans;
+}
+
+void need(int k) {
+    if (neighbors(xf, yf) >= k) {
+        puts("YES");
+    } else {
+        puts("NO");
+    }
+    exit(0);
 }
 
 int main() {
@@ -74,31 +96,24 @@ int main() {
     scanf("%d%d", &xs, &ys);
     scanf("%d%d", &xf, &yf);
 
-    if (s[xf][yf] == 'X') {
-        s[xf][yf] = '.';
-        if (dfs(xs, ys)) {
-            puts("YES");
-        } else {
-            puts("NO");
-        }
+    if (xs == xf && ys == yf) {
+        need(1);
+    }
 
+    if (abs(xs - xf) + abs(ys - yf) == 1) {
+        if (s[xf][yf] == '.') {
+            need(1);
+        } else {
+            puts("YES");
+        }
         return 0;
     }
 
-    for (int k = 0; k < 4; k++) {
-        int xx = xf + dx[k];
-        int yy = yf + dy[k];
-
-        if (ok(xx, yy) && s[xx][yy] == '.') {
-            s[xx][yy] = 'X';
-
-            if (dfs(xs, ys)) {
-                puts("YES");
-                return 0;
-            }
-
-            memset(used, false, sizeof(used));
-            s[xx][yy] = '.';
+    if (dfs(xs, ys)) {
+        if (s[xf][yf] == '.') {
+            need(2);
+        } else {
+            need(1);
         }
     }
 
