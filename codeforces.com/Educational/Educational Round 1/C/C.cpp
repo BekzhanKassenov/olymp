@@ -16,7 +16,7 @@ typedef unsigned long long ull;
 typedef long double ld;
 
 const double EPS = 1e-9;
-const double PI = acos(-1.0);
+const long double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
 const int MAXN = 100010;
@@ -29,34 +29,25 @@ inline T sqr(T n) {
 struct Point {
     int x, y;
     int idx;
+
+    long double angle() const {
+        long double ans = atan2(y, x);
+        if (ans < 0) {
+            ans += 2 * PI;
+        }
+
+        return ans;
+    }
+    
+    bool operator < (const Point& p) const {
+        return angle() < p.angle();
+    }
 };
-
-Point OX = {1, 0, 0};
-
-Point operator - (const Point& lhs, const Point& rhs) {
-    Point result = {lhs.x - rhs.x, lhs.y - rhs.y, 0};
-
-    return result;
-}
 
 int n;
 Point p[MAXN];
-double ans = 10000;
-int ansi, ansj = 1;
-
-double angle(const Point& b) {
-    double ans = atan2(b.y, b.x);
-
-    if (ans < 0) {
-        ans += 2 * PI;
-    }
-
-    return ans;
-}
-
-bool compare(const Point& lhs, const Point& rhs) {
-    return angle(lhs) < angle(rhs);
-}
+long double ans = 10000;
+int ansi;
 
 int main() {
 #ifndef ONLINE_JUDGE
@@ -69,17 +60,21 @@ int main() {
         p[i].idx = i + 1;
     }
 
-    sort(p, p + n, compare);
+    sort(p, p + n);
 
     for (int i = 0; i < n; i++) {
-        if (abs(angle(p[i]) - angle(p[(i + 1) % n])) < ans) {
-            ans = abs(angle(p[i]) - angle(p[(i + 1) % n]));
+        long double ang = abs(p[i].angle() - p[(i + 1) % n].angle());
+        if (ang > PI) {
+            ang = 2 * PI - ang;
+        }
+
+        if (ang < ans) {
+            ans = ang;
             ansi = i;
-            ansj = (i + 1) % n;
         }
     }
 
-    printf("%d %d\n", p[ansi].idx, p[ansj].idx);
+    printf("%d %d\n", p[ansi].idx, p[(ansi + 1) % n].idx);
 
     return 0;
 }
