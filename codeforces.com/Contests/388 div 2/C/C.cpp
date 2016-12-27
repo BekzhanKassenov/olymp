@@ -31,16 +31,10 @@ char s[MAXN];
 bool dead[MAXN];
 queue <int> d, r, all;
 
-int get(queue <int>& q) {
-    while (!q.empty()) {
-        int p = q.front();
+void removeDead(queue <int>& q) {
+    while (!q.empty() && dead[q.front()]) {
         q.pop();
-        if (!dead[p]) {
-            return p;
-        }
     }
-
-    return -1;
 }
 
 int main() {
@@ -63,20 +57,25 @@ int main() {
     while ((int)all.size() > 1) {
         int p = all.front();
         all.pop();
-        if (dead[p]) {
-            continue;
-        }
 
-        int o = get(s[p] == 'R' ? d : r);
-        if (o == -1) {
+        queue<int>& enemyQ = (s[p] == 'R' ? d : r);
+        if (enemyQ.empty()) {
             putchar(s[p]);
             putchar('\n');
             return 0;
         }
 
-        dead[o] = true;
+        dead[enemyQ.front()] = true;
+
+        queue<int>& myQ = (s[p] == 'R' ? r : d);
+        myQ.push(myQ.front());
+        myQ.pop();
+
         all.push(p);
         
+        removeDead(all);
+        removeDead(d);
+        removeDead(r);
     }
 
     int p = all.front();
