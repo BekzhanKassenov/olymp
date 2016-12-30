@@ -28,29 +28,52 @@ inline T sqr(T n) {
 
 int n, x, y;
 vector <int> g[MAXN];
-int degree[MAXN];
 char color[MAXN];
+int size[MAXN];
+bool used[MAXN];
 
-void bfs() {
-    queue <int> q;
-    for (int i = 1; i <= n; i++) {
-        if (degree[i] == 1) {
-            q.push(i);
-            color[i] = 'Z';
+void dfs(int v, int par = -1) {
+    size[v] = 1;
+    for (int to : g[v]) {
+        if (to != par && !used[to]) {
+            dfs(to, v);
+            size[v] += size[to];
+        }
+    }
+}
+
+int getCentroid(int v, vector <int>& roots, int treeSize, int par = -1) {
+    int mx = -1;
+    for (int to : g[v]) {
+        if (to != par && !used[to] && (mx == - 1 || size[to] > size[mx])) {
+            mx = to;
         }
     }
 
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-
-        for (size_t i = 0; i < g[v].size(); i++) {
-            int to = g[v][i];
-            if (!color[to] || color[to] == color[v]) {
-                q.push(to);
-                color[to] = color[v] - 1;
+    if (mx == -1 || size[mx] * 2 < treeSize) {
+        for (int to: g[v]) {
+            if (!used[to]) {
+                roots.push_back(to);
             }
         }
+        return v;
+    }
+
+    return getCentroid(mx, roots, treeSize, v);
+}
+
+
+void build(int root, char c) {
+    dfs(root);
+
+    vector <int> vec;
+    int r = getCentroid(root, vec, size[root]);
+    color[r] = c;
+    used[r] = true;
+    
+    for (int v : vec) {
+        dfs(v);
+        build(v, c + 1);
     }
 }
 
@@ -65,15 +88,15 @@ int main() {
         scanf("%d%d", &x, &y);
         g[x].push_back(y);
         g[y].push_back(x);
-        degree[x]++;
-        degree[y]++;
     }
 
-    bfs();
+    build(1, 'A');
 
+    for (int i = 1; i <= n; i++) {
+        putchar(color[i]);
+        putchar(" \n"[i == n]);
+    }
 
-    for (int i = 1; i <= n; i++)
-        printf("%c ", color[i]);
 
     return 0;
 }
