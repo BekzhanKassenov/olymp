@@ -27,39 +27,37 @@ inline T sqr(T n) {
 }
 
 int n, m, k, s;
-int mindollar = INF, mineuro = INF;
+int conv[2][MAXN];
+int pref[2][MAXN];
+vector <pair <int, int> > gadget[2];
+vector <pair <int, int> > res;
 
-struct Gadget {
-    int type;
-    long long price;
-    int num;
+bool check(int day) {
+    res.clear();
 
-    bool operator < (const Gadget& g) const {
-        return price < g.price;
-    }
-};
+    size_t ptr[2] = {0, 0};
+    auto burl = [day, &ptr](int idx) {
+        return 1ll * conv[idx][pref[idx][day]] * gadget[idx][ptr[idx]].first;
+    };
 
-Gadget g[MAXN];
-int dollar[MAXN], pound[MAXN];
+    long long total = 0;
+    auto use = [day, &total, &burl, &ptr](int idx) {
+        total += burl(idx);
+        res.emplace_back(gadget[idx][ptr[idx]].second, pref[idx][day]);
+        ptr[idx]++;
+    };
 
-bool check(int mind, int minp, int dayd, int dayp) {
-    int mintype = 1;
-    if (dayp < dayd) {
-        mintype = 2;
-    }
-
-    int cnt = 0;
-    long long sum = 0;
-    for (int i = 0; i < m && cnt < k; i++) {
-        if (g[i].type == mintype) {
-            cnt++;
-            sum += g[i].price;
+    for (int i = 0; i < k && total <= s; i++) {
+        if (ptr[0] == gadget[0].size()) {
+            use(1);
+        } else if (ptr[1] == gadget[1].size()) {
+            use(0);
+        } else {
+            use(burl(0) < burl(1) ? 0 : 1);
         }
     }
 
-    if (sum <= s && cnt == k) {
-        return true;
-    }
+    return total <= s;
 }
 
 int main() {
@@ -69,58 +67,48 @@ int main() {
 
     scanf("%d%d%d%d", &n, &m, &k, &s);
 
-    for (int i = 1; i <= n; i++) {
-        scanf("%d", &dollar[i]);
-    }
-
-    for (int i = 1; i <= n; i++) {
-        scanf("%d", &pound[i]);
+    for (int i = 0; i < 2; i++) {
+        for (int j = 1; j <= n; j++) {
+            scanf("%d", &conv[i][j]);
+        }
     }
 
     for (int i = 0; i < m; i++) {
-        scanf("%d%I64d", &g[i].type, &g[i].price);
-        g[i].num = i + 1;
+        int type, cost;
+        scanf("%d%d", &type, &cost);
+        gadget[type - 1].emplace_back(cost, i + 1);
+    }
 
-        if (g[i].type == 1) {
-            g[i].price *= mindollar;
-        } else {
-            g[i].price *= mineuro;
+    sort(all(gadget[0]));
+    sort(all(gadget[1]));
+
+    for (int i = 0; i < 2; i++) {
+        pref[i][1] = 1;
+        for (int j = 2; j <= n; j++) {
+            pref[i][j] = j;
+            if (conv[i][pref[i][j - 1]] < conv[i][j]) {
+                pref[i][j] = pref[i][j - 1];
+            }
         }
     }
 
-    sort(g, g + m);
-
     int l = 1, r = n;
-
     int ans = -1;
-    int ansd, anse;
+    vector <pair <int, int> > result;
     while (l <= r) {
         int mid = (l + r) / 2;
-
-        int mind = INF, minp = INF;
-        int dayd, daye;
-
-        for (int i = 1; i <= mid; i++) {
-            if (dollar[i] < mind) {
-                mind = dollar[i];
-                dayd = i;
-            }
-
-            if (pound[i] < minp) {
-                minp = pound[i];
-                dayp = i;
-            }
-        }
-
-        if (check(mind, minp, dayd, dayp)) {
+        if (check(mid)) {
             ans = mid;
-            ansd = dayd;
-            ansp = dayp;
-
-            l = mid - 1;
+            result = res;
+            r = mid - 1;
         } else {
-            r = mid + 1;
+            l = mid + 1;
         }
+    }
+
+    printf("%d\n", ans);
+    for (const auto& p : result) {
+        printf("%d %d\n", p.first, p.second);
     }
 
     return 0;
