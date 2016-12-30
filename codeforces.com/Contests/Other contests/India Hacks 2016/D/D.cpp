@@ -101,16 +101,15 @@ MaxFlow maxFlow;
 int n, m, x;
 int a[MAXE], b[MAXE], c[MAXE];
 
-bool check(double mid) {
+int flow(double mid) {
     maxFlow.clear();
 
     for (int i = 0; i < m; i++) {
-        maxFlow.addEdge(a[i], b[i], int(c[i] / mid));
+        double val = c[i] / mid;
+        maxFlow.addEdge(a[i], b[i], val > x ? x : int(val));
     }
 
-    int cnt = maxFlow.getMaxFlow(1, n);
-
-    return cnt >= x;
+    return maxFlow.getMaxFlow(1, n);
 }
 
 int main() {
@@ -124,19 +123,20 @@ int main() {
         scanf("%d%d%d", &a[i], &b[i], &c[i]);
     }
 
-    double l = 0, r = 1000000;
+    double l = 0, r = 1e12;
     double ans = 0;
     for (int i = 0; i < 100; i++) {
         double mid = (l + r) / 2;
         
-        if (check(mid)) {
+
+        if (flow(mid) >= x) {
             ans = mid;
             l = mid;
         } else {
             r = mid;
         }
     }
-    
+
     printf("%.10lf\n", ans * x);
 
     return 0;
