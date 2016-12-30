@@ -1,64 +1,97 @@
-#include <cstdio>
-#include <cmath>
-#include <queue>
-#include <map>
+#include <bits/stdc++.h>
 
 using namespace std;
-
-#define MP make_pair
 
 int dx[] = {-2, -1, 1, -1,  1, 2};
 int dy[] = { 0, 1,  1, -1, -1, 0};
 
+struct Que {
+    static const int MAXN = 200010;
+
+    int arr[MAXN];
+    int head, tail, size;
+
+    Que() {
+        clear();
+    }
+
+    void clear() {
+        size = 0;
+        head = 0, tail = 0;
+    }
+
+    bool empty() const {
+        return size == 0;
+    }
+
+    void push(int n) {
+        arr[tail] = n;
+        tail = (tail + 1) % MAXN;
+        size++;
+    }
+
+    int pop() {
+        int ret = arr[head];
+        head = (head + 1) % MAXN;
+        size--;
+        return ret;
+    }
+};
+
 int n, x, y, cnt;
 char c;
 
-map <long long, int> dist;
+namespace std {
+    template <>
+    struct hash <pair <int, int> > {
+        size_t operator () (const pair <int, int>& p) const {
+            size_t res = p.first;
+            res <<= 32;
 
-int sqr(int n) {
+            return res ^ p.second;
+        }
+    };
+}
+
+unordered_map <pair <int, int>, int> dist;
+priority_queue <pair <long long, pair <int, int> >,
+                vector <pair <long long, pair <int, int> > >,
+                greater <pair <long long, pair <int, int> > > > q; 
+
+inline long long sqr(int n) {
     return n * n;
 }
 
-long long hash(int a, int b) {
-    long long res = a;
-    res <<= 32;
-    res ^= b;
-
-    return res;
-}
-
 int bfs(int x, int y) {
-    vector <int> X, Y;
+    dist.emplace(make_pair(x, y), 0);
 
-    dist[hash(x, y)] = 0;
+    q.emplace(sqr(x) + sqr(y), make_pair(x, y));
 
-    X.push_back(x);
-    Y.push_back(y);
+    while (!q.empty()) {
+        int xx = q.top().second.first;
+        int yy = q.top().second.second;
+        long long roughdist = q.top().first;
+        q.pop();
 
-    for (size_t i = 0; i < X.size(); i++) {
-        int xx = X[i];
-        int yy = Y[i];
-
-        int d = dist[hash(xx, yy)];
+        int d = dist[make_pair(xx, yy)];
 
         if (xx == 0 && yy == 0)
             return d;
-
-        int roughdist = sqrt(sqr(xx) + sqr(yy) + .0);
 
         for (int i = 0; i < 6; i++) {
             int tx = xx + dx[i];
             int ty = yy + dy[i];
 
-            int roughdist1 = sqrt(sqr(tx) + sqr(ty) + .0);
+            long long roughdist1 = sqr(tx) + sqr(ty);
 
-            if (!dist.count(hash(tx, ty))) {
-                if (roughdist1 > roughdist + 2)
+            pair <int, int> np{tx, ty};
+            if (!dist.count(np)) {
+                if (roughdist1 > roughdist) {
                     continue;
+                }
 
-                X.push_back(tx);
-                Y.push_back(ty);
-                dist[hash(tx, ty)] = d + 1;
+                q.emplace(roughdist1, np);
+                dist.emplace(np, d + 1);
             }
         }
     }
