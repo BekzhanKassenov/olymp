@@ -59,11 +59,6 @@ int main() {
         return 0;
     }
 
-    if (!has1 && has2) {
-        printf("%d\n", 1899 + c[n]);
-        return 0;
-    }
-
     for (int i = 1; i <= n; i++) {
         r[i] = r[i - 1] + c[i - 1];
     }
