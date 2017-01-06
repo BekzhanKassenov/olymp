@@ -42,7 +42,7 @@ void get_options(int pos) {
 
     auto doerase = [&](const string& s) {
         options[pos].erase(lower_bound(names, names + n, s) - names);
-    }
+    };
 
     string token;
     for (size_t i = 0; i < msgs[pos].size(); i++) {
@@ -108,7 +108,7 @@ bool model(queue <int>& q) {
         }
 
         if (num + 1 < m) {
-            if (!doit(num - 1)) {
+            if (!doit(num + 1)) {
                 return false;
             }
         }
@@ -151,19 +151,19 @@ void solve() {
     }
 
     if (!model(q)) {
-        puts("Impossible");
+        cout << "Impossible" << endl;
         return;
     }
 
     for (int i = 0; i < m; i++) {
-        if (!used[i]) {
+        if (!used[i] && senders[i] == "?") {
             q.push(i);
             used[i] = true;
         }
     }
 
     if (!model(q)) {
-        puts("Impossible");
+        cout << "Impossible" << endl;
         return;
     }
 
