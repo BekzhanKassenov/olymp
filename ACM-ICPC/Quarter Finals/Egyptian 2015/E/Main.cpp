@@ -27,32 +27,23 @@ inline T sqr(T n) {
 }
 
 int T;
-int n, m, ans, ans2, ans3;
-int power2[MAXN][MAXN], power3[MAXN][MAXN];
-
-void dfs(int row, int col, int p2, int p3) {
-    p2 += power2[row][col];
-    p3 += power3[row][col];
-
-    if (row < n - 1) {
-        dfs(row + 1, col, p2, p3);
-    }
-
-    if (col < m - 1) {
-        dfs(row, col + 1, p2, p3);
-    }
-
-    if (row == n - 1 && col == m - 1 && min(p2, p3) > ans) {
-        ans = min(p2, p3);
-        ans2 = p2, ans3 = p3;
-    }
-}   
+int n, m, upper;
+int p2[MAXN][MAXN], p3[MAXN][MAXN];
+int dp[MAXN][MAXN][2 * MAXN * 6 + 10];
 
 void clear() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            power2[i][j] = 0;
-            power3[i][j] = 0;
+            p2[i][j] = 0;
+            p3[i][j] = 0;
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            for (int p = 0; p < upper; p++) {
+                dp[i][j][p] = -INF;
+            }
         }
     }
 }
@@ -66,6 +57,7 @@ int main() {
     
     while (T--) {
         scanf("%d%d", &n, &m);
+        upper = (n + m + 1) * 6 + 10;
         clear();
         
         for (int i = 0; i < n; i++) {
@@ -74,19 +66,45 @@ int main() {
                 scanf("%d", &x);
 
                 while (x % 2 == 0) {
-                    power2[i][j]++;
+                    p2[i][j]++;
                     x /= 2;
                 }
 
                 while (x % 3 == 0) {
-                    power3[i][j]++;
+                    p3[i][j]++;
                     x /= 3;
                 }
             }
         }
 
-        ans = ans2 = ans3 = 0;
-        dfs(0, 0, 0, 0);
+        auto update_dp = [](int pi, int pj, int i, int j) {
+            for (int ps = 0; ps + p3[i][j] < upper; ps++) {
+                int s = ps + p3[i][j];
+
+                if (dp[pi][pj][ps] != -INF) {
+                    dp[i][j][s] = max(dp[i][j][s], dp[pi][pj][ps] + p2[i][j]);
+                }
+            }
+        };
+
+        dp[0][0][p3[0][0]] = p2[0][0];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (i > 0) {
+                    update_dp(i - 1, j, i, j);
+                }
+                if (j > 0) {
+                    update_dp(i, j - 1, i, j);
+                }
+            }
+        }
+
+        int ans = 0;
+        for (int s = 0; s < upper; s++) {
+            if (dp[n - 1][m - 1][s] != -INF) {
+                ans = max(ans, min(s, dp[n - 1][m - 1][s]));
+            }
+        }
 
         printf("%d\n", ans);
     }
