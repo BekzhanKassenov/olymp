@@ -4,95 +4,95 @@
 
 using namespace std;
 
-void print(const vector <int> &a)
-{
-	for (int i = a.size() - 1; i >= 0; i--)
-		cout << a[i];
+struct Num {
+    static long long mod;
+    long long n;
 
-	cout << endl;
+    Num(long long k = 0) {
+        n = k % mod;
+    }
+
+    Num& operator += (const Num& k) { n += k.n; n %= mod; return *this; }
+
+    Num& operator *= (Num k) {
+        Num res = 0;
+
+        for (long long p = n; p > 0; p >>= 1) {
+            if (p & 1) {
+                res += k;
+            }
+
+            k += k;
+        }
+
+        return *this = res;
+    }
+};
+
+#define defop1(x, y) Num operator x (Num a, const Num& k) { return a y k; }
+defop1(+, +=);
+defop1(*, *=);
+
+long long Num::mod = 0;
+
+void muleq(Num a[2][2], Num b[2][2]) {
+    Num c[2][2];
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            for (int k = 0; k < 2; k++) {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            a[i][j] = c[i][j];
+        }
+    }
 }
 
-vector <int> operator + (const vector <int> &a, const vector <int> &b)
-{
-	int flag = 0;
+void binpow(Num a[2][2], long long p) {
+    Num res[2][2] = {
+        { Num(1), Num(0) },
+        { Num(0), Num(1) }
+    };
 
-	int lena = a.size();	
-	int lenb = b.size();
+    for (; p > 0; p >>= 1) {
+        if (p & 1) {
+            muleq(res, a);
+        }
 
-	vector <int> ans;
+        muleq(a, a);
+    }
 
-	for (int i = 0; i < (min(lena, lenb)); i++)
-		{
-			flag += a[i] + b[i];
-			ans.push_back(flag % 10);
-			flag /= 10;
-		}	
-
-	for (int i = min(lena, lenb); i < max(lena, lenb); i++)
-		{
-			if (lena < lenb)
-				flag += b[i];
-			else
-				flag += a[i];
-
-			ans.push_back(flag % 10);
-			flag /= 10;
-		}
-
-	while (flag)
-		{
-			ans.push_back(flag % 10);
-			flag /= 10;
-		}
-
-	return ans;	
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            a[i][j] = res[i][j];
+        }
+    }
 }
 
-vector <int> operator * (const vector <int> &a, int k)
-{
-	long long flag = 0;
+long long n, k, m;
 
-	int lena = a.size();
+int main() {
+#ifndef ONLINE_JUDGE
+    freopen("in", "r", stdin);
+#endif
 
-	vector <int> ans;
+    cin >> n >> k >> m;
 
-	for (int i = 0; i < lena; i++)
-		{
-			flag += a[i] * k;
+    Num::mod = m;
 
-			ans.push_back(flag % 10);
-			
-			flag /= 10;
-		}
+    Num a[2][2] = {
+         { Num(k - 1), Num(k - 1) },
+         { Num(1), Num(0) }
+    };
+    
+    binpow(a, n - 1);
 
-	while (flag)
-		{
-			ans.push_back(flag % 10);
-			flag /= 10;
-		}
+    cout << (a[0][0] * Num(k - 1) + a[1][0] * Num(k - 1)).n << endl;
 
-	return ans;	
-}
-
-int main()
-{
-	#ifndef ONLINE_JUDGE
-		freopen("in", "r", stdin);
-	#endif
-
-	int n, k;
-
-	cin >> n >> k;
-
-	vector <vector <int> > dp(n + 1);
-
-	dp[0].push_back(0);
-	dp[1].push_back(k - 1);
-
-	for (int i = 2; i <= n; i++)
-		dp[i] = dp[i - 2] * (k - 1) + dp[i - 1] * (k - 1);
-
-	print(dp[n] + dp[n - 1]);
-
-	return 0;
+    return 0;
 }
