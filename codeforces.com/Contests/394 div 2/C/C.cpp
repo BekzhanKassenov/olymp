@@ -32,7 +32,7 @@ char s[MAXN][MAXN];
 template <typename Predicate>
 int getAns(int pos, Predicate pred) {
     int ansl = -1;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < m; i++) {
         if (pred(s[pos][i])) {
             ansl = i;
             break;
