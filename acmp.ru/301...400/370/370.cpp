@@ -18,7 +18,7 @@ struct point
 			return point(x - a.x, y - a.y);
 		}
 
-	int operator * (point a)
+	long long operator * (point a)
 		{
 			return x * a.y - y * a.x;
 		}
@@ -43,7 +43,7 @@ int main()
 	for (int i = 0; i < n; i++)
 		a[i].read();
 
-	int ans = 0;
+	long long ans = 0;
 
 	for (int i = 1; i < n - 1; i++)
 		{
@@ -52,10 +52,10 @@ int main()
 
 	ans = abs(ans);
 
-	if (ans % 2)
-		printf("%d.5", ans >> 1);
+	if (ans & 1)
+		printf("%lld.5", ans >> 1);
 	else
-		printf("%d.0", ans >> 1);
+		printf("%lld.0", ans >> 1);
 
 	return 0;	
 }
