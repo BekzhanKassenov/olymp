@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cctype>
+#include <cassert>
 
 using namespace std;
 
@@ -10,18 +11,18 @@ int lhs, n;
 char s[100], buf[100];
 int pos;
 
-int term();
-int expr();
-int eval();
+long long term();
+long long expr();
+long long eval();
 
-int term() {
-    int res = 0;
+long long term() {
+    long long res = 0;
     //int temp = pos;
 
     if (s[pos] == '(') {
-        pos++;
+        pos++; // (
         res = expr();
-        pos++;
+        pos++; // )
     } else {
         while (pos < n && isdigit(s[pos])) {
             res *= 10;
@@ -36,21 +37,25 @@ int term() {
 }
 
 
-int expr() {
+long long expr() {
     //int temp = pos;
 
-    int res = term();
+    long long res = term();
 
     while (pos < n && s[pos] != ')') {
         char sign = s[pos];
         pos++;
 
-        if (sign == '*') {
-            res *= term();
-        } else if (sign == '+') {
-            res += term();
-        } else {
-            res -= term();
+        switch (sign) {
+            case '*':
+                res *= term();
+                break;
+            case '+':
+                res += term();
+                break;
+            case '-':
+                res -= term();
+                break;
         }
     }
 
@@ -59,10 +64,10 @@ int expr() {
     return res;
 }
 
-int eval() {
+long long eval() {
     pos = 0;
     //puts(s);
-    int res = expr();
+    long long res = expr();
     //puts("");
 
     return res;
@@ -70,7 +75,7 @@ int eval() {
 
 bool go(int i) {
     if (i == n) {
-        int res = eval();
+        long long res = eval();
 
         if (res == lhs) {
             printf("%d=%s\n", lhs, s);
@@ -95,6 +100,26 @@ bool go(int i) {
     return res;
 }
 
+bool verify(char s[]) {
+    for (int i = 0; s[i]; i++) {
+        if (s[i] == ' ') {
+            if (i == 0 || !s[i + 1]) {
+                return false;
+            }
+
+            if (s[i - 1] != ')' && !isdigit(s[i - 1])) {
+                return false;
+            }
+
+            if (s[i + 1] != '(' && !isdigit(s[i + 1])) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 int main() {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
@@ -108,17 +133,19 @@ int main() {
                 n--;
             }
 
-            s[n++] = buf[i];
+            s[n++] = ')';
         } else if (buf[i] != ' ') {
             s[n++] = buf[i];
         } else {
             if (isdigit(s[n - 1]) || s[n - 1] == ')') {
-                s[n++] = buf[i];
+                s[n++] = ' ';
             }
         }
     }
 
     s[n] = '\0';
+
+    assert(verify(s));
 
     if (!go(0)) {
         puts("-1");
