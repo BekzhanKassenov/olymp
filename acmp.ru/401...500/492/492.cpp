@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const double EPS = 1e-9;
+const double EPS = 1e-10;
 
 template <typename T>
 inline T sqr(T n) {
@@ -37,10 +37,6 @@ struct Point {
         return Point(x * k, y * k);
     }
 
-    Point operator - (const Point& p) const {
-        return Point(x - p.x, y - p.y);
-    }
-
     Point operator + (const Point& p) const {
         return Point(x + p.x, y + p.y);
     }
@@ -49,20 +45,8 @@ struct Point {
         return sqrt(sqr(x) + sqr(y));
     }
 
-    void make_len(double nlen) {
-        double l = len();
-
-        if (comp(l, 0) != 0) {
-            x /= l;
-            y /= l;
-        } 
-
-        x *= nlen;
-        y *= nlen;
-    } 
-
     void read() {
-        scanf("%lf%lf", &x, &y);
+        cin >> x >> y;
     } 
 };
 
@@ -77,25 +61,15 @@ int main() {
     vec.read();
 
     double v, t, d;
-    scanf("%lf%lf%lf", &v, &t, &d);
+    cin >> v >> t >> d;
 
     p = p + vec * t;
 
-    Point zero(Point(0, 0) - p);
-
-    if (comp(p.len(), d) <= 0) {
-        zero.make_len(d - zero.len());
+    double sqd = abs(p.len() - d);
+    if (comp(sqd, t * v) <= 0) {
+        cout << "YES" << endl;
     } else {
-        zero.make_len(d);
-        zero = p + zero;
-    }
-
-    if (comp(zero.len(), t * v) <= 0) {
-        cout << "YES";
-        return 0;
-    } else {
-        cout << "NO";
-        return 0;
+        cout << "NO" << endl;
     }
                                     
     return 0;
