@@ -1,22 +1,18 @@
-/****************************************
-**     Solution by Bekzhan Kassenov    **
-****************************************/
+/*****************************************
+**     Solution by Bekzhan Kassenov     **
+*****************************************/
 
 #include <bits/stdc++.h>
 
 using namespace std;
 
-#define F first
-#define S second
-#define MP make_pair
+#define by(T, x) [](const T& a, const T& b) { return a.x < b.x; }
 #define all(x) (x).begin(), (x).end()
 
-typedef long long ll;
-typedef unsigned long long ull;
-typedef long double ld;
+const int dx[] = {1, 0, -1, 0};
+const int dy[] = {0, 1, 0, -1};
 
 const double EPS = 1e-9;
-const double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
 
