@@ -60,7 +60,7 @@ int main() {
     long long ans = 0;
     for (int i = l; i <= r; i++) {
         ans += f[i] * p;
-        if (ans > MOD) {
+        if (ans >= MOD) {
             ans %= MOD;
         }
 
