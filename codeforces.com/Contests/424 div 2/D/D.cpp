@@ -23,30 +23,31 @@ inline T sqr(T n) {
 }
 
 int n, k, p;
-int a[MAXN], b[MAXN];
+long long a[MAXN], b[MAXN];
 bool dp[MAXN][MAXN];
 bool can[MAXN][MAXN];
 
-bool check(int lim) {
-    for (int i = 0; i <= n; i++) {
-        for (int j = 0; j <= k; j++) {
-            can[i][j] = false;
+bool check(long long lim) {
+    for (int i = 1; i <= k; i++) {
+        dp[1][i] = ((abs(a[1] - b[i]) + abs(b[i] - p)) <= lim);
+        can[1][i] = can[1][i - 1] || dp[1][i];
+    }
+
+    for (int i = 2; i <= n; i++) {
+        for (int j = 1; j <= k; j++) {
+            long long dist = abs(a[i] - b[j]) + abs(p - b[j]);
+            dp[i][j] = can[i - 1][j - 1] && dist <= lim;
+            can[i][j] = can[i][j - 1] || dp[i][j];
         }
     }
 
     for (int i = 1; i <= k; i++) {
-        dp[1][i] = can[1][i] = abs(a[1] - b[i]) + abs(b[i] - p) <= lim;
-    }
-
-    for (int i = 2; i <= n; i++) {
-        for (int j = i; j <= k; j++) {
-            long long dist = abs(a[i] - b[j]) + abs(p - b[j]);
-            dp[i][j] = can[i - 1][j - 1] && dist <= lim;
-            can[i][j] = can[i][j - 1] | dp[i][j];
+        if (dp[n][i]) {
+            return true;
         }
     }
 
-    return can[n][k];
+    return false;
 }
 
 int main() {
@@ -56,18 +57,21 @@ int main() {
 
     cin >> n >> k >> p;
     for (int i = 1; i <= n; i++) {
-        cin >> a[i];
+        cin >> a[i];        
     }
 
     for (int i = 1; i <= k; i++) {
         cin >> b[i];
     }
 
+    sort(a + 1, a + n + 1);
+    sort(b + 1, b + k + 1);
+
     long long l = 0, r = INF;
-    int ans = -1;
+    long long ans = -1;
 
     while (l <= r) {
-        int mid = (l + r) / 2;
+        long long mid = (l + r) / 2;
         if (check(mid)) {
             ans = mid;
             r = mid - 1;
@@ -77,6 +81,5 @@ int main() {
     }
 
     cout << ans << endl;
-
     return 0;
 }
