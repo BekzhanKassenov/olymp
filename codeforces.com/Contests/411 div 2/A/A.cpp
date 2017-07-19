@@ -30,24 +30,7 @@ int main() {
     cin >> l >> r;
 
     if (l == r) {
-        map <int, int> cnt;
-        for (int i = 2; i * i <= l; i++) {
-            if (l % i == 0) {
-                cnt[i]++;
-                if (i * i != l) {
-                    cnt[l / i]++;
-                }
-            }
-        }
-
-        int ans = 2;
-        for (const auto& x : cnt) {
-            if (x.second > cnt[ans]) {
-                ans = x.first;
-            }
-        }
-
-        cout << ans << endl;
+        cout << l << endl;
     } else {
         cout << 2 << endl;
     }
