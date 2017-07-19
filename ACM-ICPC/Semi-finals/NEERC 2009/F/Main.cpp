@@ -21,7 +21,6 @@ const double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
 const int MAXM = 1010;
-const int BASE = 27;
 
 template <typename T>
 inline T sqr(T n) {
@@ -31,33 +30,12 @@ inline T sqr(T n) {
 int n, m;
 int cnt[MAXM][26];
 string input[MAXM];
-priority_queue <pair <int, int>,
-                vector <pair <int, int> >,
-                greater <pair <int, int> > > q;
 
-string unhash(int h) {
-    string result;
-    while (h > 0) {
-        result.append(1, h % BASE + 'A' - 1);
-        h /= BASE;
-    }
+priority_queue <pair <int, string> > q;
 
-    reverse(all(result));
-
-    return result;
-}
-
-bool check(const string& s, int cnt[]) {
-    static int scnt[26];
-    memset(scnt, 0, sizeof scnt);
-
-    for (size_t i = 0; i < s.size(); i++) {
-        char c = s[i];
-        scnt[c - 'A']++;
-    }
-
+bool subword(int c[], int w) {
     for (int i = 0; i < 26; i++) {
-        if (scnt[i] > cnt[i]) {
+        if (c[i] > cnt[w][i]) {
             return false;
         }
     }
@@ -65,22 +43,22 @@ bool check(const string& s, int cnt[]) {
     return true;
 }
 
-void add(const string &s, int h) {
-    pair <int, int> res;
-    res.second = h;
+void enqueue(const string& s) {
+    static int cnt[26];
+    for (int i = 0; i < 26; i++) {
+        cnt[i] = 0;
+    }
 
+    for (char c : s) {
+        cnt[c - 'A']++;
+    }
+
+    int score = 0;
     for (int i = 0; i < m; i++) {
-        if (s == input[i]) {
-            return;
-        }
-
-        res.first += check(s, cnt[i]);
+        score += subword(cnt, i);
     }
 
-    q.push(res);
-    while ((int)q.size() > n) {
-        q.pop();
-    }
+    q.emplace(score, s);
 }
 
 int main() {
@@ -101,33 +79,33 @@ int main() {
         }
     }
 
-    string s = "   ";
+    for (char c = 'A'; c <= 'Z'; c++) {
+        enqueue(string(1, c));
+    }
 
-    for (s[0] = 'A'; s[0] <= 'Z'; s[0]++) {
-        int h1 = s[0] - 'A' + 1;
-        add(s.substr(0, 1), h1);
-
-        for (s[1] = 'A'; s[1] <= 'Z'; s[1]++) {
-            int h2 = h1 * BASE + s[1] - 'A' + 1;
-            add(s.substr(0, 2), h2);
-
-            for (s[2] = 'A'; s[2] <= 'Z'; s[2]++) {
-                int h3 = h2 * BASE + s[2] - 'A' + 1;
-                add(s, h3);
-
-                /*
-                for (s[3] = 'A'; s[3] <= 'Z'; s[3]++) {
-                    int h4 = h3 * BASE + s[3] - 'A' + 1;
-                    add(s, h4);
-                }
-                */
+    vector <string> res;
+    while (n) {
+        string cur = q.top().second;
+        q.pop();
+        bool add = true;
+        for (int i = 0; i < m; i++) {
+            if (input[i] == cur) {
+                add = false;
             }
+        }
+
+        if (add) {
+            res.emplace_back(cur);
+            n--;
+        }
+
+        for (char c = 'A'; c <= 'Z'; c++) {
+            enqueue(cur + c);
         }
     }
 
-    while (!q.empty()) {
-        cout << unhash(q.top().second) << endl;
-        q.pop();
+    for (const string& s : res) {
+        cout << s << endl;
     }
 
     return 0;
