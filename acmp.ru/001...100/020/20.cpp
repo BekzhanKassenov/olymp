@@ -1,63 +1,57 @@
-#include <iostream>
-#include <cstdio>
-#include <vector>
+#include <stdio.h>
+#include <algorithm>
 
 using namespace std;
 
-int main()
-{
+const int MAXN = 1000010;
+
+int n;
+int a[MAXN];
+
+int main() {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
 
-    int n;
-
     scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+    }
 
-    vector <int> a(n - 1);
-
-    int f1;
-
-    scanf("%d", &f1);
-
-    int f2;
-
-    bool flag = false;
-
-    for (int i = 0; i < n - 1; i++)
-        {
-            scanf("%d", &f2);
-            if (f2 > f1)
-                a[i] = 1;
-            else
-                if (f2 < f1)
-                    a[i] = -1;
-                else
-                    a[i] = 0;
-            if (f2 != f1)
-                flag = true;    
-
-            f1 = f2;
-        }
+    if (n == 1) {
+        puts("1");
+        return 0;
+    }
 
     int ans = 0;
-    
-    int tmp = 1;
+    int len = 0;
 
-    for (int i = 0; i < n - 1; i++)
-        {
-            if (i == 0 || a[i] != a[i - 1] && a[i] != 0 && a[i - 1] != 0)
-                tmp ++;
-            else
-                {
-                    ans = max(ans, tmp);
-                    tmp = 2;
-                }
-            //cout << i << ' ' << tmp << endl;
+    auto start_new = [&] (int pos) {
+        if (a[pos] == a[pos - 1]) {
+            len = 1;
+        } else {
+            len = 2;
+        }
+    };
+
+    start_new(1);
+    ans = max(ans, len);
+
+    for (int i = 2; i < n; i++) {
+        if (a[i - 2] == a[i - 1] || a[i - 1] == a[i]) {
+            start_new(i);
+        } else if ((a[i - 2] > a[i - 1]) == (a[i - 1] < a[i])) {
+            len++;
+        } else {
+            start_new(i);
         }
 
-    ans = max(ans, tmp);    
+        //fprintf(stderr, "%d\n", len);
 
-    cout << ans;
+        ans = max(ans, len);
+    }
+
+    printf("%d\n", ans);
+
     return 0;    
 }
 
