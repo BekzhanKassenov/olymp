@@ -20,10 +20,10 @@ int parseInt() {
         error();
     }
 
-    bool flag = false;
+    bool negative = false;
     if (s[pos] == '-') {
         pos++;
-        flag = true;
+        negative = true;
     }
 
     if (pos >= len || !isdigit(s[pos])) {
@@ -37,12 +37,8 @@ int parseInt() {
         pos++;
     }
 
-    if (flag && num == 0) {
-        error();
-    }
-
-    if (flag) {
-        num *= -1;
+    if (negative) {
+        num *= -1;        
     }
 
     return num;
@@ -69,7 +65,13 @@ int main() {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
 
-    gets(s);
+    fgets(s, MAXN, stdin);
+    if (strlen(s) == 0) {
+        error();
+    }
+    if (s[strlen(s) - 1] == '\n') {
+        s[strlen(s) - 1] = '\0';
+    }
     len = strlen(s);
 
     int a = parseInt();
