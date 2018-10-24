@@ -18,7 +18,7 @@ struct Point
 		}
 };
 
-bool in(Point a, struct pr b);
+inline bool intersects(int x1, int x2, int x3, int x4);
 
 struct pr
 {
@@ -28,23 +28,11 @@ struct pr
 
 	bool intersects(pr a) const
 		{
-			if (in(first, a))	
-				return true;
+            if (::intersects(first.x, second.x, a.first.x, a.second.x))
+                if (::intersects(first.y, second.y, a.first.y, a.second.y))
+                    return true;
 
-			if (in(second, a))	
-				return true;
-
-			Point tmp = Point(first.x, second.y);
-
-			if (in(tmp, a))	
-				return true;
-
-			tmp = Point(second.x, first.y);
-
-			if (in(tmp, a))	
-				return true;
-
-			return false;
+            return false;
 		}
 
  	void increase(int n)
@@ -54,14 +42,11 @@ struct pr
  		}
 };
 
-inline bool in(Point a, pr b)
+inline bool intersects(int x1, int x2, int x3, int x4) 
 {
-	if (a.x >= b.first.x && a.x <= b.second.x)
-		if (a.y >= b.first.y && a.y <= b.second.y)
-			return true;
-
-	return false;
+    return x2 >= x3 && x4 >= x1;
 }
+
 
 istream& operator >> (istream& c, Point& p)
 {
@@ -119,7 +104,7 @@ int main()
 	for (int i = 0; i < n; i++)
 		color[i] = i;
 
-	int r;
+	int r;     
 
 	for (int i = 0; i < n; i++)
 		{
