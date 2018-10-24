@@ -29,9 +29,8 @@ int main()
 	freopen("output.txt","w",stdout);
 	int n;
 	cin>>n;
-	int k=int(sqrt(double(n)));
 	int ans=1;
-	for (int i=1;i<=k;i++)
+	for (int i=1;i*i<=n;i++)
 		{
 			if ((n%i)==0)
 				{
