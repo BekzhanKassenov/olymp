@@ -16,7 +16,7 @@ int main() {
     scanf("%d\n", &n);
 
     for (int i = 0; i < n; i++)
-        gets(a[i]);
+        fgets(a[i], MAXN, stdin);
 
     for (int i = 0; i < n; i++) {
         dp[i][0] = a[i][0] - '0';
