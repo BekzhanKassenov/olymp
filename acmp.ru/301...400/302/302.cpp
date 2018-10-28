@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#define all(x) (x).begin(), (x).end()
 #define PII pair <double, double>
 #define MP make_pair
 #define F first
@@ -68,18 +69,18 @@ int main()
 	for (int i = 0; i < n; i++)
 		cin >> a[i].F >> a[i].S;
 
-	set <double> q;
-
+	vector <double> d;
 	for (int i = 0; i < n; i++)
 		{
-			for (int j = 0; j < n; j++)
+			for (int j = i + 1; j < n; j++)
 				{
 					if (dst(a[i], a[j]) != 0)
-						q.insert(dst(a[i], a[j]));
+						d.push_back(dst(a[i], a[j]));
 				}
 		}
 
- 	vector <double> d(q.begin(), q.end());
+    sort(all(d));
+    d.resize(unique(all(d)) - d.begin());
 
 	int l = 0, r = (int)d.size() - 1;
 
