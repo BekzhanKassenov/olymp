@@ -11,30 +11,29 @@ const int maxn = 1000010;
 const ll INF = 2000000ll * 1000000 * 1000000;
  
 int n, m, k, root = 1, last = 2, a[20];
-int lc[maxn], rc[maxn], sib[maxn], size[maxn];
+int lc[maxn], sib[maxn], size[maxn];
 char buf[20], let[maxn];
- 
-int move_next(int current, int letter) {
+
+int read_next(int current, char letter) {
     if (!lc[current]) {
-        let[last] = letter;
-        lc[current] = rc[current] = last++;
-        return lc[current];
+        return -1;
     }
- 
-    if (lc[current] == rc[current]) {
-        if (let[lc[current]] == letter)
-            return lc[current];
-    }
- 
     for (int i = lc[current]; i; i = sib[i]) {
         if (let[i] == letter)
             return i;
     }
- 
-    let[last] = letter;             
-    sib[rc[current]] = last;
-    rc[current] = last++;       
-    return rc[current];         
+    return -1;
+} 
+
+int move_next(int current, int letter) {
+    int nxt = read_next(current, letter);
+    if (nxt == -1) {
+        let[last] = letter;
+        sib[last] = lc[current];
+        lc[current] = last;
+        return last++;
+    }
+    return nxt;
 }
  
 void add(const char s[]) {
@@ -87,7 +86,7 @@ int main() {
         add(buf);
     }
  
-    printf("%I64d", solve(root));
+    printf("%lld", solve(root));
  
     return 0;
 }
