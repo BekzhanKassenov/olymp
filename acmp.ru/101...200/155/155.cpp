@@ -62,13 +62,15 @@ int main() {
         scanf("%lf", &c[i]);
     }
 
-    vector <double> res;
-    go((1 << n) - 1, res);
+    for (int mask = 0; mask < (1 << n); mask++) {
+        vector <double> res;
+        go(mask, res);
 
-    for (size_t i = 0; i < res.size(); i++) {
-        if (fabs(res[i] - C) <= 0.01) {
-            puts("YES");
-            return 0;
+        for (size_t i = 0; i < res.size(); i++) {
+            if (abs(res[i] - C) <= 0.01) {
+                puts("YES");
+                return 0;
+            }
         }
     }
 
