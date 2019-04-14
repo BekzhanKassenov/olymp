@@ -3,32 +3,22 @@
 
 using namespace std;
 
-void relax(int cnt, int sm, int& ans) {
-	if (cnt - 1 <= sm && (sm - cnt + 1) % 2 == 0)
-		ans = max(ans, cnt);
-}
-
 int main() {
 	freopen("input.txt", "r", stdin);
 	freopen("output.txt", "w", stdout);
 
-	int n;
-
+    int n;
 	cin >> n;
+	
+    int ans = 0;
+    for (int cnt = 1; cnt * (cnt - 1) / 2 <= n; cnt++) {
+        int sum = cnt * (cnt - 1) / 2;
+        if (n - sum > 0 && (n - sum) % cnt == 0) {
+            ans = cnt;
+        }
+    }
 
-	n *= 2;
-
-	int ans = 0;
-
-
-	for (int i = 1; i * 1ll * i <= n; i++) {
-		if (n % i == 0) {
-			relax(i, n / i, ans);
-			relax(n / i, i, ans);
-		}
-	}
-
-	cout << ans;
+    cout << ans << endl;
 
 	return 0;
 }
