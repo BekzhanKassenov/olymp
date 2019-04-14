@@ -1,6 +1,6 @@
 #include <fstream>
 
-int d[5000000], k, p, i = 2;
+int d[2000000], k, p, i = 2;
 
 main() {
 	std :: ifstream ("input.txt") >> k >> p;
