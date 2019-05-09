@@ -1,0 +1,9 @@
+2 11.00 2 2
+sugar 0.5 
+qrt 0.5 
+
+sugar 20 
+qrt 3 
+
+sugar 10 
+qrt 0.5 
