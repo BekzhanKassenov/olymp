@@ -14,7 +14,7 @@ const int dy[] = {0, 1, 0, -1};
 
 const double EPS = 1e-9;
 const int MOD = 1000 * 1000 * 1000 + 7;
-const int INF = 2000 * 1000 * 1000;
+const double INF = 1e40;
 
 template <typename T>
 inline T sqr(T n) {
@@ -22,26 +22,28 @@ inline T sqr(T n) {
 }
 
 enum EVENT {
-    OPEN,
-    CLOSE
+    CLOSE,
+    OPEN
 };
 
-bool can_merge(const pair <double, double>& a, const pair <double, double>& b) {
-    return (a.first <= b.first && b.first <= a.second)
-        || (a.first <= b.second && b.second <= a.second);
+void solve(double start0, double start1, double v0, double v1, 
+           double segm0, double segm1_lower, double segm1_upper,
+           vector <double>& times) {
+    if (v0 == 0) {
+        if (start0 == segm0 && segm1_lower <= start1 && start1 <= segm1_upper) {
+            double tL = (segm1_lower - start1) / double(v1);
+            double tU = (segm1_upper - start1) / double(v1);
+            times.push_back(max(tL, tU));
+        }
+    } else {
+        double t = (segm0 - start0) / double(v0);
+        double end1 = start1 + v1 * t;
+        if (segm1_lower <= end1 && end1 <= segm1_upper && t >= 0) {
+            times.push_back(t);
+        }
+    }
 }
 
-pair <double, double> merge(const pair <double, double>& a, const pair <double, double>& b) {
-    if (a.first > b.first) {
-        return merge(b, a);
-    }
-
-    if (b.second > a.second) {
-        return {b.first, a.second};
-    }
-
-    return {b.first, b.second};
-}
 
 int n;
 double l, r, u, d;
@@ -69,67 +71,67 @@ int main() {
         cin >> x >> y >> vx >> vy;
 
         if (vx == 0 && vy == 0) {
-            if (x < l || x > r || y < d || y > u) {
+            if (l < x && x < r && d < y && y < u) {
+                events.emplace_back(0, OPEN);
+                events.emplace_back(INF, CLOSE);
+                continue;
+            } else {
                 cout << -1 << endl;
                 return 0;
             }
         }
 
+        if (vx == 0) {
+            if (!(l < x && x < r)) {
+                cout << -1 << endl;
+                return 0;
+            }
+        }
+        
         if (vy == 0) {
-            double st = (l - x) / double(vx);
-            double ft = (r - x) / double(vx);
-            if (st > ft) {
+            if (!(d < y && y < u)) {
                 cout << -1 << endl;
                 return 0;
             }
-
-            events.emplace_back(st, OPEN);
-            events.emplace_back(ft, CLOSE);
-        } else if (vx == 0) {
-            double st = (d - y) / double(vy);
-            double ft = (u - y) / double(vy);
-
-            if (st > ft) {
-                cout << -1 << endl;
-                return 0;
-            }
-
-            events.emplace_back(st, OPEN);
-            events.emplace_back(ft, CLOSE);
-        } else {
-            double st1 = (l - x) / double(vx);
-            double ft1 = (r - x) / double(vx);
-            double st2 = (d - y) / double(vy);
-            double ft2 = (u - y) / double(vy);
-
-            if (st1 > ft1 || st2 > ft2 || !can_merge(make_pair(st1, ft1), make_pair(st2, ft2))) {
-                cout << -1 << endl;
-                return 0;
-            }
-
-
-            pair <double, double> m{merge(make_pair(st1, ft1), make_pair(st2, ft2))};
-            events.emplace_back(m.first, OPEN);
-            events.emplace_back(m.second, CLOSE);
         }
+
+        vector <double> times;
+        if (l <= x && x <= r && d <= y && y <= u) {
+            times.push_back(0);
+        }
+        solve(x, y, vx, vy, l, d, u, times);
+        solve(x, y, vx, vy, r, d, u, times);
+
+        solve(y, x, vy, vx, d, l, r, times);
+        solve(y, x, vy, vx, u, l, r, times);
+
+        sort(all(times));
+        times.resize(unique(all(times)) - times.begin());
+
+        if (times.size() < 2u) {
+            cout << -1 << endl;
+            return 0;
+        }
+
+        events.emplace_back(times[0], OPEN);
+        events.emplace_back(times.back(), CLOSE);
     }
 
     sort(all(events));
 
     int bal = 0;
     for (const auto& event : events) {
-        cerr << event.first << ' ' << event.second << endl;
         if (event.second == OPEN) {
             bal++;
+        }
+
+        if (event.second == CLOSE) {
+            bal--;
         }
 
         if (bal == n) {
             cout << fixed << setprecision(16) << event.first << endl;
             return 0;
-        }
-
-        if (event.second == CLOSE) {
-            bal--;
         }
     }
 
