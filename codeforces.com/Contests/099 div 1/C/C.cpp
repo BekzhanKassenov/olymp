@@ -37,7 +37,7 @@ struct Event {
     ETYPE type;
 
     int idx;
-    double mul;
+    int prob;
 
     bool operator < (const Event& ev) const {
         if (x != ev.x) {
@@ -51,6 +51,7 @@ struct Event {
 int n, m;
 double power[MAXN];
 double prob[MAXN];
+int cnt[110];
 
 int main() {
 #ifndef ONLINE_JUDGE
@@ -65,11 +66,11 @@ int main() {
         int a, h, l, r;
         scanf("%d%d%d%d", &a, &h, &l, &r);
 
-        vec.push_back({a - h, OPEN, -1, (100.0 - l) / 100});
-        vec.push_back({a - 1, CLOSE, -1, (100.0 - l) / 100});
+        vec.push_back({a - h, OPEN, -1, 100 - l});
+        vec.push_back({a - 1, CLOSE, -1, 100 - l});
 
-        vec.push_back({a + 1, OPEN, -1, (100.0 - r) / 100});
-        vec.push_back({a + h, CLOSE, -1, (100.0 - r) / 100});
+        vec.push_back({a + 1, OPEN, -1, 100 - r});
+        vec.push_back({a + h, CLOSE, -1, 100 - r});
     }
 
     for (int i = 0; i < m; i++) {
@@ -80,19 +81,31 @@ int main() {
     }
 
     sort(all(vec));
-    double mul = 0.0;
     for (const auto& event: vec) {
         switch (event.type) {
             case OPEN:
-                mul += log(event.mul);
+                cnt[event.prob]++;
                 break;
 
             case CLOSE:
-                mul -= log(event.mul);
+                cnt[event.prob]--;
                 break;
 
             case TREE:
-                prob[event.idx] = mul;
+                prob[event.idx] = 1.0;
+                for (int i = 99; i >= 0; i--) {
+                    if (cnt[i] > 0) {
+                        double mul = pow(i * 0.01, cnt[i]);
+                        if (mul < EPS) {
+                            prob[event.idx] = 0;
+                        } else {
+                            prob[event.idx] *= mul;
+                        }
+                    }
+                }
+                if (prob[event.idx] < EPS) {
+                    prob[event.idx] = 0;
+                }
                 break;
 
             default:
@@ -102,7 +115,7 @@ int main() {
 
     double ans = 0;
     for (int i = 0; i < m; i++) {
-        ans += exp(prob[i]) * power[i];
+        ans += prob[i] * power[i];
     }
 
     printf("%.10lf\n", ans);
