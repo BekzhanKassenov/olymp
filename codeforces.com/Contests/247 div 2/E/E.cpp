@@ -20,7 +20,7 @@ typedef unsigned long long ull;
 typedef long double ld;
 
 const int MOD = 1000 * 1000 * 1000 + 7;
-const int INF = 2000 * 1000 * 1000;
+const double INF = 1e50;
 const double EPS = 1e-9;
 const double pi = acos(-1.0);
 const int maxn = 100010;
@@ -30,38 +30,49 @@ inline T sqr(T n) {
     return (n * n);
 }
 
-struct Node {
-    int l, r, key, prior, size;
-    ll sum;
-} t[maxn];
+std::mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
+std::uniform_int_distribution<> dist(0, 2000000000);
 
-inline void init(int it, int x) {
-    t[it].l = 0;   
-    t[it].r = 0;
-    t[it].key = x; 
-    t[it].prior = (rand() << 16) ^ rand();   
-    t[it].size = 1;
-    t[it].sum = x; 
+int next_rnd() {
+    return dist(mt);
 }
 
-inline void update(int v) {
-    if (v) {
-        t[v].sum = t[v].key + t[t[v].l].sum + t[t[v].r].sum;
-        t[v].size = 1 + t[t[v].l].size + t[t[v].r].size; 
+struct Node {
+    Node *l, *r;
+    int key, prior, size, cnt;
+    ll sum;
+};
+
+Node *NULL_NODE;
+
+void init(Node* it, int x) {
+    it->l = NULL_NODE;
+    it->r = NULL_NODE;
+    it->key = x;
+    it->prior = next_rnd();   
+    it->size = 1;
+    it->cnt = 1;
+    it->sum = x;
+}
+
+inline void update(Node* v) {
+    if (v != NULL_NODE) {
+        v->sum = v->key * v->cnt + v->l->sum + v->r->sum;
+        v->size = v->cnt + v->l->size + v->r->size;
     }
 }
 
-void split(int v, int& l, int& r, int key) {
-    if (!v) {
-        l = r = 0;
+void split(Node* v, Node*& l, Node*& r, int key) {
+    if (v == NULL_NODE) {
+        l = r = NULL_NODE;
         return;
     }
 
-    if (t[v].key <= key) {
-        split(t[v].r, t[v].r, r, key);
+    if (v->key < key) {
+        split(v->r, v->r, r, key);
         l = v;
     } else {
-        split(t[v].l, l, t[v].l, key);
+        split(v->l, l, v->l, key);
         r = v;
     }  
 
@@ -69,17 +80,17 @@ void split(int v, int& l, int& r, int key) {
     update(l);
 }
 
-int merge(int l, int r) {
-    if (!l || !r)
-        return l ? l : r;
+Node* merge(Node* l, Node* r) {
+    if (l == NULL_NODE || r == NULL_NODE) 
+        return (l != NULL_NODE) ? l : r;
 
-    int ans;
+    Node* ans;
 
-    if (t[l].prior > t[r].prior) {
-        t[l].r = merge(t[l].r, r);
+    if (l->prior > r->prior) {
+        l->r = merge(l->r, r);
         ans = l;
     } else {
-        t[r].l = merge(l, t[r].l);
+        r->l = merge(l, r->l);
         ans = r;
     }
 
@@ -89,94 +100,120 @@ int merge(int l, int r) {
     return ans;
 }
 
-int erase(int& v, int val) {
-    if (!v)
-        return 0;
+void erase(Node*& v, int val) {
+    if (v == NULL_NODE)
+        return;
 
-    if (t[v].key == val) {
-        int res = v;
-        v = merge(t[v].l, t[v].r);
-        return res;
+    if (v->key == val) {
+        if (v->cnt > 0) {
+            v->cnt--;
+        } else {
+            v = merge(v->l, v->r);
+        }
+        update(v);
     }
     
-    if (t[v].key < val)
-        return erase(t[v].r, val);
-
-    return erase(t[v].l, val);
+    if (v->key < val)
+        erase(v->r, val);
+    else 
+        erase(v->l, val);
+    update(v);
 }
 
-void insert(int& v, int it) {
-    if (!v) {
+void insert_real(Node*& v, Node* it) {
+    if (v == NULL_NODE) {
         v = it;
-    } else if (t[it].prior > t[v].prior) {
-        split(v, t[it].l, t[it].r, t[it].key);
+    } else if (it->prior > v->prior) {
+        split(v, it->l, it->r, it->key);
         v = it;
     } else {
-        if (t[v].key < t[it].key)
-            insert(t[v].r, it);
-        else
-            insert(t[v].l, it);
+        if (v->key <= it->key) {
+            insert_real(v->r, it);
+        } else {
+            insert_real(v->l, it);
+        }
     }
+    update(v);
 }
 
-double solve(int v, ll val, int add = 0, ll sm = 0) {
-    if (!v)
-        return (INF + .0) * INF;
+bool maybe_insert(Node* v, int val) {
+    if (v == NULL_NODE) {
+        return false;
+    }
+    bool res;
+    if (v->key == val) {
+        v->cnt++;
+        res = true;
+    } else {
+        res = maybe_insert(v->key < val ? v->r : v->l, val);
+    }
+    update(v);
+    return res;
+}
 
-    ll sz = add + 1 + t[t[v].l].size;
-    ll _sm = sm + t[t[v].l].sum + t[v].key;
+double solve(Node* v, ll val, int add = 0, ll sm = 0) {
+    if (v == NULL_NODE)
+        return INF;
 
-    if (sz * t[v].key - _sm > val)
-        return solve(t[v].l, val, add, sm);
+    ll sz = add + v->l->size;
+    ll _sm = sm + v->l->sum;
+    ll to_equalize = sz * v->key - _sm;
 
-    double ans = t[v].key + (val - (sz * t[v].key - _sm) + .0) / sz;
+    if (to_equalize > val) {
+        return solve(v->l, val, add, sm);
+    }
 
-    ans = min(ans, solve(t[v].r, val, sz, _sm));
+    double ans = v->key + (val - to_equalize + .0) / (sz + v->cnt);
+
+    ans = min(ans, solve(v->r, val, sz + v->cnt, _sm + v->cnt * v->key));
 
     return ans;
 }
 
-void show(int v) {
-    if (!v)
-        return;
-
-    show(t[v].l);
-    cout << v << ' ' << t[v].key << ' ' << t[v].sum << ' ' << t[v].size << endl;
-    show(t[v].r);
-}
-
 int n, q, h[maxn], p, x, tp;
-int root, last = 1;
+Node* root;
 ll v;           
 
+void insert(int val) {
+    if (maybe_insert(root, val)) {
+        return;
+    }
+    Node* to_insert = new Node();
+    init(to_insert, val);
+    insert_real(root, to_insert);
+}
+
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+
 #ifndef ONLINE_JUDGE
     freopen("in", "r", stdin);
 #endif
-    srand(time(NULL));
-    t[0].size = 0;
 
-    scanf("%d%d", &n, &q);
+    NULL_NODE = new Node({NULL, NULL, 0, 0, 0, 0});
+    root = NULL_NODE;
+
+    cin >> n >> q;
 
     for (int i = 0; i < n; i++) {
-        scanf("%d", &h[i]);
-        init(last, h[i]);
-        insert(root, last);
-        last++;
+        cin >> h[i];
+        insert(h[i]);
     }
 
     while (q --> 0) {
-        scanf("%d", &tp);
+        cin >> tp;
 
         if (tp == 1) {
-            scanf("%d%d", &p, &x);
-            int it = erase(root, h[--p]);
-            init(it, x);
-            insert(root, it);
+            cin >> p >> x;
+            p--;
+            erase(root, h[p]);
             h[p] = x;
-        } else {                        
-            scanf("%I64d", &v);
-            printf("%.12lf\n", solve(root, v));
+
+            insert(h[p]);
+        } else {
+            cin >> v;              
+            cout << fixed << setprecision(8) << solve(root, v) << endl;
         }
     }
 

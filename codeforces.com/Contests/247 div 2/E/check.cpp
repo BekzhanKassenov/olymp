@@ -1,5 +1,6 @@
 #include <fstream>
 #include <cmath>
+#include <iostream>
 
 using namespace std;
 
@@ -15,13 +16,19 @@ int main() {
 
     double a, b;
 
+    int cnt = 1;
     while ((str1 >> a) && (str2 >> b)) {
-        if (!cmp(a, b))
+        if (!cmp(a, b)) {
+            cout << "WA, line " << cnt << endl;
             return 1;
+        }
+        cnt++;
     }
 
-    if (!str1.eof() || !str2.eof())
+    if ((str1 >> a) || (str2 >> b)) {
+        cout << "WA lengths" << endl;
         return 1;
+    }
 
-    return 2;
+    return 0;
 }
