@@ -29,36 +29,32 @@ inline T sqr(T n) {
 
 int n;
 vector <int> g[MAXN];
-vector <int> leafs;
 vector <pair <int, int> > ans;
-bool used[MAXN];
-int par[MAXN];
+vector <int> leafs;
 
 void dfs(int v, int p = -1) {
-    par[v] = p;
-
-    for (int to: g[v]) {
-        if (to != p && !used[to]) {
-            dfs(to, v);
-        }
-    }
-
     if (g[v].size() == 1u) {
         leafs.push_back(v);
+        return;
+    }
+    for (int to : g[v]) {
+        if (to != p) {
+            dfs(to, v);
+        }
     }
 }
 
 int main() {
     freopen(File".in", "r", stdin);
+#ifndef Local
     freopen(File".out", "w", stdout);
+#endif
     
     scanf("%d", &n);
 
     int from, to;
     for (int i = 0; i < n - 1; i++) {
         scanf("%d %d", &from, &to);
-        from--; 
-        to--;
         g[from].push_back(to);
         g[to].push_back(from);
     }
@@ -69,56 +65,27 @@ int main() {
         return 0;
     }
 
-
-    for (int i = 0; i < n; i++) {
+    int root = -1;
+    for (int i = 1; i <= n; i++) {
         if (g[i].size() > 1u) {
-            dfs(i);
+            root = i;
             break;
         }
     }
 
-    int l = 0, r = leafs.size() - 1;
+    dfs(root);
 
-    while (l < r) {
-        ans.emplace_back(leafs[l], leafs[r]);
-        l++, r--;
+    int m = leafs.size() / 2;
+    for (size_t i = 0; i < m; i++) {
+        ans.emplace_back(leafs[i], leafs[i + m]);
     }
-
-    if (l == r) {
-        ans.emplace_back(leafs[l], leafs[0]);
+    if (leafs.size() % 2 == 1) {
+        ans.emplace_back(leafs[0], leafs.back());
     }
-
-    /*
-    vector <pair <int, int > > st;
-
-    st.push_back(make_pair(leafs[0], par[leafs[0]]));
-
-    for (int i = 1; i < (int)leafs.size(); i++) {
-        if (st.empty() || par[leafs[i]] == st.back().second) {
-            st.push_back(make_pair(leafs[i], par[leafs[i]]));
-        } else {
-            ans.emplace_back(st.back().first, leafs[i]);
-            st.pop_back();
-        }
-    }
-
-
-    for (size_t i = 0; i + 1 < st.size(); i += 2) {
-        ans.emplace_back(st[i].first, st[i + 1].first);
-    }
-
-
-    if (st.size() & 1) {
-        for (size_t i = 0; i < leafs.size(); i++) {
-            if (leafs[i] != st.back().first) {
-                ans.emplace_back(st.back().first, leafs[i]);            
-            }
-        }
-    }*/
-
+ 
     printf("%u\n", ans.size());
     for (auto p: ans) {
-        printf("%d %d\n", p.first + 1, p.second + 1);
+        printf("%d %d\n", p.first, p.second);
     }
 
     return 0;
