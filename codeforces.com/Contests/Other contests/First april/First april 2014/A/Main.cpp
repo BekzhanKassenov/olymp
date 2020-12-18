@@ -18,8 +18,8 @@ int main() {
     map <string, int> Map;
 
     Map["()"] = 0;
-    Map["[]"] = 1;
-    Map["8<"] = 2;
+    Map["8<"] = 1;
+    Map["[]"] = 2;
     
     int cnt1 = 0, cnt2 = 0;
     
@@ -27,20 +27,21 @@ int main() {
         string s1 = s.substr(i, 2);
         string t1 = t.substr(i, 2);
         
-        //cout << s1 << ' ' << t1 << ' ' << (Map[s1] < Map[t1]) << endl; 
-        
-        if (Map[s1] < Map[t1])
+        int p1 = Map[s1];
+        int p2 = Map[t1];
+        if ((p1 + 1) % 3 == p2) {
+            cnt1++;
+        } else if ((p2 + 1) % 3 == p1) {
             cnt2++;
-        else if (Map[t1] < Map[s1])
-            cnt1++;  
+        }                    
     }
     
     if (cnt1 > cnt2)
-        cout << "TEAM 1 WINS";
+        cout << "TEAM 1 WINS" << endl;
     else if (cnt2 > cnt1)
-        cout << "TEAM 2 WINS";
+        cout << "TEAM 2 WINS" << endl;
     else
-        cout << "TIE";
+        cout << "TIE" << endl;
     
     return 0;
 }
