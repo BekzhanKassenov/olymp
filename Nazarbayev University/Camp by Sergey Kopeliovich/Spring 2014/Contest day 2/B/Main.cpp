@@ -1,99 +1,79 @@
 /****************************************
 **          Solution by NU #2          **
 ****************************************/
-
 #include <bits/stdc++.h>
 
 using namespace std;
-
+ 
 #define F first
 #define S second
 #define MP make_pair
 #define all(x) (x).begin(), (x).end()
 #define fill(x, y) memset((x), y, sizeof(x))
 #define File "elves"
-
+ 
 typedef pair <int, int> PII;
 typedef vector <int> VI;
 typedef vector <VI> VVI;
 typedef long long ll;
 typedef unsigned long long ull;
 typedef long double ld;
-
+ 
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
 const double EPS = 1e-9;
 const double pi = acos(-1.0);
-const int maxn = 110;
-
+const int MAXN = 100010;
+ 
 template <typename T>
 inline T sqr(T n) {
     return (n * n);
 }
 
-struct triple {
-    int le, re, h;
-
-    triple() { }
-
-    triple(int le, int re, int h) : re(re), le(le), h(h) { } 
-    
-    bool operator < (const triple& rhs) const {
-        if (re != rhs.re)
-            return re < rhs.re;
-            
-        if (le != lhs.le)
-            return le < rhs.le;
-            
-        return h < rhs.h;
-    }
-};
-
-vector <pair <int, bool> > v;
-multiset <int> afree, bfree;
-set <triple> answer;
-
+int n, m;
+pair<int, int> a[MAXN], b[MAXN];
+vector<tuple<int, int, int>> ans;
+ 
 int main() {
     freopen(File".in", "r", stdin);
     freopen(File".out", "w", stdout);
-    
-    int n, m;
-    
-    scanf("%d%d", &m, &n); 
-    
-    for (int i = 0; i < m; ++i){
-        int x;
-        scanf("%d", &x);
-        v.push_back(MP(x, 1));
+   
+    scanf("%d%d", &m, &n);
+   
+    for (int i = 1; i <= m; i++){
+        scanf("%d", &a[i].first);
+        a[i].second = i;
     }
-    
-    for (int i = 0; i < n; ++i){
-        int x;
-        scanf("%d", &x);
-        v.push_back(MP(x, 0));
+   
+    for (int i = 1; i <= n; i++){
+        scanf("%d", &b[i].first);
+        b[i].second = i;
     }
-    
-    sort(v.begin(), v.end());
-    
-    for (int i = 0; i < v.size(); ++i){
-        if (v[i].second){
-            bfree.insert(v[i].F);
-        } else {
-            if (!bfree.empty()) {
-                multiset <int> :: iterator new_b = bfree.lower_bound(v[i].F - 1);
-                
-                if (new_b == bfree.end()) {
-                    afree.insert(v[i].F);
-                } else {
-                    multiset <int> :: iterator new_a = afree.lower_bound(*new_b - 1);
-                    
-                    if (new_a == afree.end()) {
-                        
-                    }
-                }
-            } else {
-            }
+
+    sort(a + 1, a + 1 + m);
+    sort(b + 1, b + 1 + n);
+
+    int other = n / 2 + 1;
+    int deer = 0;
+    for (int i = 1; i <= n; i++) {
+        while (deer <= m && b[i].first >= a[deer].first) {
+            deer++;
         }
+        while (other <= n && a[deer].first >= b[other].first) {
+            other++;
+        }
+
+        if (deer <= m && other <= n) {
+            ans.emplace_back(a[deer].second, b[i].second, b[other].second);
+            deer++;
+            other++;
+        }
+    }   
+
+    cout << ans.size() << endl;
+    for (const auto tup : ans) {
+        cout << get<0>(tup) << ' ' << get<1>(tup) << ' ' << get<2>(tup) << endl;
     }
+   
     return 0;
 }
