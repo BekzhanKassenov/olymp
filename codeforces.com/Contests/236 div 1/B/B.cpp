@@ -24,6 +24,8 @@ const int INF = 2000 * 1000 * 1000;
 const double EPS = 1e-9;
 const double pi = acos(-1.0);
 const int maxn = 5050;
+const int maxa = 1000 * 1000 * 1000;
+const int maxart = 32000;
 
 template <typename T>
 inline T sqr(T n) {
@@ -31,7 +33,9 @@ inline T sqr(T n) {
 }
 
 int a[maxn], b[maxn], n, m;
-int g, ans, cur_l, cur_r, f[maxn];
+int pref[maxn];
+int isprime[maxart];
+vector <int> primes;
 
 int gcd(int a, int b) {
     while (a && b) {
@@ -43,25 +47,26 @@ int gcd(int a, int b) {
 }
 
 int func(int num) {
-    int k = sqrt(num);
-
+    int N = num;
     int res = 0;
     
-    for (int i = 2; i <= k; i++) {
-        bool is_bad = binary_search(b, b + n, i);
-        
-        while (num % i == 0) {
+    for (int p : primes) {
+        if (p * p > N) {
+            break;
+        }
+        bool is_bad = binary_search(b, b + m, p);        
+        while (num % p == 0) {
             if (is_bad)
                 res--;
             else
                 res++;
                 
-            num /= i;
+            num /= p;
         }
     } 
     
-    if (num > 1) {
-        if (binary_search(b, b + n, num))
+    if (num > 1) {               
+        if (binary_search(b, b + m, num))
             res--;
         else
             res++;
@@ -82,26 +87,35 @@ int main() {
         
     for (int i = 0; i < m; i++)
         scanf("%d", b + i);
-    
-    for (int i = 0; i < n; i++) {
-        f[i] = func(a[i]);
-        cur_r += f[i];
+
+    for (int i = 0; i < maxart; i++) {
+        isprime[i] = true;
+    }
+    isprime[0] = false;
+    isprime[1] = false;
+    for (int i = 2; i < maxart; i++) {
+        if (!isprime[i]) {
+            continue;
+        }
+        primes.push_back(i);
+        for (int j = i * i; j < maxart; j += i) {
+            isprime[j] = false;
+        }
     }
     
-    ans = cur_r;
-    
-    for (int i = 0; i < n; i++) {
-        g = gcd(g, a[i]);
-        
-        if (g == 1)
-            break;        
-        
-        cur_l += f[i] - func(g);
-        cur_r -= f[i];
-        
-        ans = max(ans, cur_l + cur_r);
+    pref[0] = a[0];
+    for (int i = 1; i < n; i++) {
+        pref[i] = gcd(pref[i - 1], a[i]);
     }
-    
+
+    int accum = 1;
+    int ans = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        if (func(pref[i] / accum) < 0) {
+            accum = pref[i];
+        }
+        ans += func(a[i] / accum);
+    }
     printf("%d\n", ans);
     
     return 0;
