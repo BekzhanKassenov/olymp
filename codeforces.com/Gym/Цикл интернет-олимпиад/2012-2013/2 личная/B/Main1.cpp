@@ -43,19 +43,25 @@ int solve(int l, int r) {
         return dp[l][r];
         
     calced[l][r] = true;
-    
     int& ans = dp[l][r];
     
     if (l == r) {
         ans = 1;
-    } else {
-        ans = solve(l + 1, r) + 1;
-        
-        for (int i = l; i <= r; i++) {
-            if (a[i] == a[l])       
-                ans = min(ans, solve(l + 1, i - 1) + 1 + solve(i + 1, r));
+        return ans;
+    }
+    ans = min(solve(l + 1, r), solve(l, r - 1)) + 1;
+    for (int i = l + 1; i <= r; i++) {
+        if (a[i] == a[l]) {
+            ans = min(ans, solve(l + 1, i - 1) + solve(i, r));
         }
     }
+
+    for (int i = l; i <= r - 1; i++) {
+        if (a[i] == a[r]) {
+            ans = min(ans, solve(l, i) + solve(i + 1, r - 1));
+        }
+    }
+    
     
     return ans;
 }
@@ -69,8 +75,6 @@ int main() {
     for (int i = 0; i < n; i++)
         scanf("%d", &a[i]);
         
-    n = unique(a, a + n) - a;
-    
     printf("%d\n", solve(0, n - 1));
     
     return 0;
