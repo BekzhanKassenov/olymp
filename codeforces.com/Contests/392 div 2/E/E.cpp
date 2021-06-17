@@ -54,10 +54,9 @@ void merge(vector <pair <int, int> >& a, vector <pair <int, int> >& b) {
         a.swap(b);
     }
 
-    a.reserve(a.size() + b.size());
-    for (const auto& x : b) {
-        a.emplace_back(x);
-    }
+    int oldsize = a.size();
+    a.resize(a.size() + b.size());
+    copy(all(b), a.begin() + oldsize);
 }
 
 bool dfs(int v, int p = -1) {
