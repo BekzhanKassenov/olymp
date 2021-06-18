@@ -26,46 +26,39 @@ inline T sqr(T n) {
     return n * n;
 }
 
-int n, m, l;
-ll k, a[maxn];
-int i = 1, j = 1;
+long long n, m;
+long long k;
+
+long long solve(long long num) {
+    long long ans = 0;
+    for (int i = 1; i <= n; i++) {
+        ans += min(m, (num - 1) / i);
+    }
+    return ans;
+}
 
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("in", "r", stdin);
 #endif
 
-    scanf("%d %d\n", &n, &m);
-    scanf("%I64d\n", &k);
+    cin >> n >> m >> k;
+    if (n > m) swap(n, m);
 
-    if (n > m)                  
-        swap(n, m);
-
-    for (int z = 0; z < n + m - 1; z++) {
-        if (j == 1)
-            l++;
-        else if (j > m - n + 1)
-            l--;
-
-        //cout << i << ' ' << j << ' ' << l << endl;
-
-        if (k <= l) {
-            for (int q = 0; q < l; q++)
-                a[q] = i-- * 1ll * j++;
-
-            sort(a, a + l);
-            printf("%I64d\n", a[k - 1]);
-            
-            return 0;
+    long long l = 1, r = n * m;
+    long long ans = 0;
+    while (l <= r) {
+        long long mid = (l + r) / 2;
+        long long pos = solve(mid);
+        if (pos < k) {
+            ans = mid;
+            l = mid + 1;
+        } else {
+            r = mid - 1;
         }
-        
-        k -= l;
-
-        j += (i == n);
-        i += !(i == n);
     }
 
-    assert(false);
+    cout << ans << endl;
 
     return 0;
 }
