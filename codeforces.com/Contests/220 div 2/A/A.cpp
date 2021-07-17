@@ -29,42 +29,46 @@ inline T sqr(T n) {
 	return (n * n);
 }
 
-int try_(int a, int b) {
-	if (a < 0 || b < 0 || a % 2 != b % 2)
-		return INF;
+int n, m, i, j, a, b;
 
-	return max(a, b);	
+int solve(int ti, int tj) {
+    if (i == ti && j != tj) {
+         if (i - a < 1 && i + a > n) {
+            return INF;
+         }
+    }
+    if (i != ti && j == tj) {
+        if (j - b < 1 && j + b > m) {
+            return INF;
+        }
+    }
+    if (abs(i - ti) % a != 0 || abs(j - tj) % b != 0) {
+        return INF;
+    }
+    int di = abs(i - ti) / a;
+    int dj = abs(j - tj) / b;
+    if (di % 2 != dj % 2) {
+        return INF;
+    }
+    return max(di, dj);
 }
 
 int main() {
-	#ifndef ONLINE_JUDGE
-		freopen("in", "r", stdin);
-	#endif
+#ifndef ONLINE_JUDGE
+	freopen("in", "r", stdin);
+#endif
 
-	int n, m, i, j, a, b;
 
 	cin >> n >> m >> i >> j >> a >> b;
 
-	int res1x = -1, res1y = -1, res2x = -1, res2y = -1;
-
-	if ((i - 1) % a == 0)
-		res1x = (i - 1) / a;
-
-	if ((n - i) % a == 0)
-		res2x = (n - i) / a;
-
-	if ((j - 1) % b == 0)
-		res1y = (j - 1) / b;
-
-	if ((m - j) % b == 0)
-		res2y = (m - j) / b;
-
-	int ans = min(min(try_(res1x, res1y), try_(res1x, res2y)), min(try_(res2x, res1y), try_(res2x, res2y)));
+	int ans = min(
+        min(solve(1, m), solve(n, 1)), 
+        min(solve(n, m), solve(1, 1)));
 
 	if (ans < INF)
-		cout << ans;
+		cout << ans << endl;
 	else
-		cout << "Poor Inna and pony!";
+		cout << "Poor Inna and pony!" << endl;
 
 	return 0;
 }
