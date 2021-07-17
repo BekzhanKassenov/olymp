@@ -19,7 +19,7 @@ const double EPS = 1e-9;
 const double PI = acos(-1.0);
 const int MOD = 1000 * 1000 * 1000 + 7;
 const int INF = 2000 * 1000 * 1000;
-const int lim = 1e5;
+const int lim = 100000;
 
 template <typename T>
 inline T sqr(T n) {
@@ -28,42 +28,49 @@ inline T sqr(T n) {
 
 ll x, k;
 int nb;
-vector <ll> a, b;
-map <ll, vector <ll> > divs;
+vector <ll> ans;
+vector <ll> divs;
 bool flag;
 
-inline void fact(ll n) {
-    if (n == 1) {
-        b.push_back(1);
-        nb++;
+bool prime(ll x) {
+    for (size_t i = 1; i < divs.size() && divs[i] * divs[i] <= x; i++) {
+        if (x % divs[i] == 0 && x != divs[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool add_ans(ll num) {
+    if ((int)ans.size() < lim) {
+        ans.push_back(num);
+        return true;
+    }
+    return false;
+}
+
+void solve(ll x, ll k) {
+    if (k == 0) {
+        add_ans(x);
         return;
     }
-
-    if (!divs.count(n)) {
-        vector <ll>& t = divs[n];
-
-        for (ll i = 1; i * i <= n; i++) {
-            if (n % i == 0) {
-                t.push_back(i);
-
-                if (i * i != n)
-                    t.push_back(n / i);
+    if (x == 1) {
+        add_ans(1);
+        return;
+    }
+    if (prime(x)) {
+        for (ll i = 0; i < k && (int)ans.size() < lim; i++) {
+            if (!add_ans(1)) {
+                break;
             }
         }
-
-        sort(all(t));
+        add_ans(x);
+        return;
     }
-
-    vector <ll>& t = divs[n];
-
-    for (size_t i = 0; i < t.size(); i++) {
-        b.push_back(t[i]);
-        nb++;
-        
-        if (nb > lim)
-            break;
-
-        flag &= ((int)i < lim && t[i] != 1);
+    for (size_t i = 0; i < divs.size() && divs[i] <= x && (int)ans.size() < lim; i++) {
+        if (x % divs[i] == 0) {
+            solve(divs[i], k - 1);
+        }
     }
 }
 
@@ -71,7 +78,7 @@ int main() {
 #ifndef ONLINE_JUDGE
     freopen("in", "r", stdin);
 #endif
-    scanf("%I64d %I64d", &x, &k);
+    scanf("%lld %lld", &x, &k);
 
     if (x == 1) {
         puts("1");
@@ -87,32 +94,27 @@ int main() {
         return 0;
     }
 
-    a.push_back(x);
-
-    while (k--) {
-        cerr << k << endl;
-        flag = true;
-
-        for (size_t i = 0; i < a.size(); i++) {
-            if (nb > lim)
-                break;
-            
-            fact(a[i]);
-        }
-
-        if (nb > lim)
-            b.resize(lim);
-
-        a.swap(b);
-        b.clear();
-        nb = 0;
-
-        if (flag)
-            break;
+    if (k == 0) {
+        printf("%lld\n", x);
+        return 0;
     }
 
-    for (size_t i = 0; i < a.size(); i++)
-        printf("%I64d ", a[i]);
+    for (ll i = 1; i * i <= x; i++) {
+        if (x % i == 0) {
+            divs.push_back(i);
+            if (i * i != x) {
+                divs.push_back(x / i);
+            }
+        }
+    }
+
+    sort(all(divs));
+    solve(x, k);
+
+    for (size_t i = 0; i < ans.size(); i++) {
+        printf("%lld ", ans[i]);
+    }
+    puts("");
 
     return 0;
 }
