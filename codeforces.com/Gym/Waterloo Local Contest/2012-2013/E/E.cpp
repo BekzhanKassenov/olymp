@@ -2,37 +2,65 @@
 #include <cstdio>
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 using namespace std;
 
+#define ll long long
 #define all(x) (x).begin(), (x).end()
 
-bool check_tr(double a, double b, double c) {
-	return (a + b > c && a + c > b && b + c > a);
+double sqr(double a) {
+    return a * a;
 }
 
-double area(double a, double b, double c) {
-	double p = (a + b + c + .0) / 2;
-
-	return sqrt(p * (p - a) * (p - b) * (p - c));
+bool check(ll a, ll b, ll c) {
+	return a + b > c && a + c > b && b + c > a;
 }
 
-double a[6];
-int pos[6];
+double vol(double a, double b, double c, double x, double y, double z) {
+    double X = b * b + c * c - x * x;
+    double Y = a * a + c * c - y * y;
+    double Z = a * a + b * b - z * z;
 
-bool check_edges() {
- 	return (a[pos[0]] * a[pos[5]] < a[pos[1]] * a[pos[3]] + a[pos[2]] * a[pos[4]] && 
- 			a[pos[1]] * a[pos[3]] < a[pos[0]] * a[pos[5]] + a[pos[2]] * a[pos[4]] && 
- 			a[pos[2]] * a[pos[4]] < a[pos[0]] * a[pos[5]] + a[pos[1]] * a[pos[3]]);
+    return sqrt(sqr(2 * a * b * c) - sqr(a * X) - sqr(b * Y) - sqr(c * Z) + X * Y * Z) / 12;
 }
 
+ll a[6];
 
-bool check(double s1, double s2, double s3, double s4) {
-	bool res = (s1 + s2 + s3 > s4 && s2 + s3 + s4 > s1 && s1 + s3 + s4 > s2 && s1 + s2 + s4 > s3);
+void solve() {
+    for (int i = 0; i < 6; i++) {
+        for (int j = i + 1; j < 6; j++) {
+            for (int k = j + 1; k < 6; k++) {
+                vector <ll> tops;
+                for (int l = 0; l < 6; l++) {
+                    if (l != i && l != j && l != k) {
+                        tops.push_back(a[l]);
+                    }
+                }
 
-	res |= check_edges();
+                bool ans = false;
+                ll b1 = a[i], b2 = a[j], b3 = a[k];
+                sort(all(tops));
+                do {
+                    ll t1 = tops[0];
+                    ll t2 = tops[1];
+                    ll t3 = tops[2];
 
-	return res;
+                    bool temp = check(b1, b2, b3) && check(t3, t2, b1) && check(t1, t2, b3) && check(t1, t3, b2);;
+                    temp &= vol(t1, t2, t3, b1, b2, b3) > 0;
+                    ans |= temp;
+                    if (ans) {
+                        cout << "YES" << endl;/*
+                        cout << b1 << ' ' << b2 << ' ' << b3 << endl;
+                        cout << t1 << ' ' << t2 << ' ' << t3 << endl;
+                        */
+                        return;
+                    }
+                } while (next_permutation(all(tops)) && !ans);
+            }
+        }
+    }
+    cout << "NO" << endl;
 }
 
 int main() {
@@ -41,39 +69,14 @@ int main() {
 	#endif
 
 	int n;
-
 	cin >> n;
 
 	while (n --> 0) {
 		for (int i = 0; i < 6; i++) {
 			cin >> a[i];
-			pos[i] = i;
 		}
 
-		bool ans = false;
-
-		do {
-		 	bool flag = true;
-		 	flag &= check_tr(a[pos[0]], a[pos[1]], a[pos[2]]);
-		 	flag &= check_tr(a[pos[0]], a[pos[3]], a[pos[4]]);
-		 	flag &= check_tr(a[pos[1]], a[pos[4]], a[pos[5]]);
-		 	flag &= check_tr(a[pos[2]], a[pos[3]], a[pos[5]]);
-		 	
-		 	if (flag) {
-		 		double s1 = area(a[pos[0]], a[pos[1]], a[pos[2]]);
-		 		double s2 = area(a[pos[0]], a[pos[3]], a[pos[4]]);
-		 		double s3 = area(a[pos[1]], a[pos[4]], a[pos[5]]);
-		 		double s4 = area(a[pos[2]], a[pos[3]], a[pos[5]]);
-
-		 		flag |= check(s1, s2, s3, s4);
-		 	}
-		 	ans |= flag;
-		} while (next_permutation(pos, pos + 6) && !ans);
-
-		if (ans)
-		 	cout << "YES" << endl;
-		else
-		 	cout << "NO" << endl;
+		solve();
 	}
 
 	return 0;
