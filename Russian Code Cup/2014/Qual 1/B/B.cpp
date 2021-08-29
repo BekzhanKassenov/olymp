@@ -20,7 +20,7 @@ typedef unsigned long long ull;
 typedef long double ld;
 
 const int MOD = 1000 * 1000 * 1000 + 7;
-const int INF = 2000 * 1000 * 1000;
+const ll INF = 1e18;
 const double EPS = 1e-9;
 const double pi = acos(-1.0);
 
@@ -29,25 +29,45 @@ inline T sqr(T n) {
     return (n * n);
 }
 
-int x, y, k, t, T;
+ll x, y, k, t, T;
+
+ll jumps(ll x, ll y, ll k, ll t) {
+    ll hops = min(t, k);
+    x += hops * y;
+    t -= hops;
+    x += t;
+    return x;
+}
+
+ll solve1(ll x, ll y, ll k, ll t) {
+    ll a = (y - x % y) % y;
+    if (a > t) {
+        return 0;
+    }
+    t -= a;
+    x += a;
+    return jumps(x, y, k, t);
+}
+
+ll solve2(ll x, ll y, ll k, ll t) {
+    if (x % y == 0) {
+        return 0;
+    }
+    x += (y - x % y) % y;
+    k--;
+    return jumps(x, y, k, t);
+}
 
 ll solve() {
-    ll res = 0;
-
-    if (x % y != 0) {
-        ll res1 = (x / y + 1) * y - x;
-
-
-
-    }
-
-    int cnt = min(t, k);
-    res = x + cnt * 1ll * y;
-
-    t -= cnt;
-    res += t;
-
-    return res;
+    ll ans1 = x + t;
+    ll ans2 = solve1(x, y, k, t);
+    ll ans3 = solve2(x, y, k, t);
+    /*
+    cout << "ans1 " << ans1 << endl;
+    cout << "ans2 " << ans2 << endl;
+    cout << "ans3 " << ans3 << endl;
+    */
+    return max(ans1, max(ans2, ans3));
 }
 
 int main() {
@@ -58,9 +78,9 @@ int main() {
     scanf("%d", &T);
 
     while (T--) {
-        scanf("%d%d%d%d", &x, &y, &k, &t);
+        scanf("%lld%lld%lld%lld", &x, &y, &k, &t);
 
-        printf("%I64d\n", solve());
+        printf("%lld\n", solve());
     }
 
     return 0;
