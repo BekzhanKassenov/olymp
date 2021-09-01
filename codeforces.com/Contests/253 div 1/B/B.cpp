@@ -28,7 +28,6 @@ inline T sqr(T n) {
 
 int n;
 double a[maxn], res;
-double dp[maxn], dp1[maxn], bad[maxn], bad1[maxn];
 
 int cmp(double aa, double bb) {
     if (fabs(aa - bb) < EPS)
@@ -46,45 +45,30 @@ int main() {
 #endif
     
     cin >> n;
+    cout << fixed << setprecision(15);
 
     for (int i = 0; i < n; i++) {
         cin >> a[i];
-        dp[i] = a[i];
-        bad[i] = 1 - a[i];
-        dp1[i] = a[i];
-        bad1[i] = 1 - a[i];
-    }
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < i; j++) {
-            double temp = dp[j] * (1.0 - a[i]) + a[i] * bad[j];
-
-            if (cmp(temp, dp[i]) == 1 || (cmp(temp, dp[i]) == 0 && cmp(bad[i], bad[j] * (1 - a[i])) == -1)) {
-                dp[i] = temp;
-                bad[i] = bad[j] * (1 - a[i]);
-            }
-
-            temp = dp1[j] * (1 - a[i]) + a[i] * bad1[j];
-
-            if (cmp(temp, dp[i]) == 1 || (cmp(temp, dp[i]) == 0 && cmp(bad[i], bad[j] * (1 - a[i]) == -1))) {
-                dp[i] = temp;
-                bad[i] = bad1[j] * (1 - a[i]);
-            }
-
-            temp = bad1[j] * (1 - a[i]);
-
-            if (cmp(temp, bad1[i]) == 1 || (cmp(temp, bad1[i]) == 0 && cmp(dp1[i], dp1[j] * (1 - a[i]) + bad1[j] * a[i]) == -1)) {
-                dp1[i] = dp1[j] * (1 - a[i]) + bad1[j] * a[i];
-                bad1[i] = temp;
-            }
+        if (a[i] == 1.0) {
+            cout << 1.0 << endl;
+            return 0;
         }
-
-
-        if (cmp(dp[i], res) == 1)
-            res = dp[i];
     }
 
-    cout << fixed << setprecision(15) << res;
+    sort(a, a + n);
+    reverse(a, a + n);
 
+    double sum = 0;
+    double neg = 1.0;
+    double total = 0;
+    for (int i = 0; i < n; i++) {
+        total = total * (1.0 - a[i]) + a[i] * neg;
+        neg *= 1.0 - a[i];
+        if (cmp(total, res) > 0) {
+            res = total;
+        }
+    }
+
+    cout << res << endl;
     return 0;
 }
