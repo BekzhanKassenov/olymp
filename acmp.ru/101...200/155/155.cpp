@@ -9,7 +9,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 
 int n;
-double c[10], C;
+long double c[10], C;
 
 int bitcount(int mask) {
     int result = 0;
@@ -22,7 +22,7 @@ int bitcount(int mask) {
     return result;
 }
 
-void go(int mask, vector <double>& res) {
+void go(int mask, vector <long double>& res) {
     if (bitcount(mask) == 1) {
         for (int i = 0; i < n; i++) {
             if (mask & (1 << i)) {
@@ -32,7 +32,7 @@ void go(int mask, vector <double>& res) {
         }
     }
 
-    vector <double> a, b;
+    vector <long double> a, b;
     for (int submask = (mask - 1) & mask; submask > 0; submask = (submask - 1) & mask) {
         a.clear();
         b.clear();
@@ -56,14 +56,14 @@ int main() {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
 
-    scanf("%d %lf", &n, &C);
+    cin >> n >> C;;
 
     for (int i = 0; i < n; i++) {
-        scanf("%lf", &c[i]);
+        cin >> c[i];
     }
 
     for (int mask = 0; mask < (1 << n); mask++) {
-        vector <double> res;
+        vector <long double> res;
         go(mask, res);
 
         for (size_t i = 0; i < res.size(); i++) {
