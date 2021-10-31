@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstdio>
+#include <map>
+#include <vector>
 
 using namespace std;
 
@@ -12,17 +14,43 @@ int main() {
     
     scanf("%d/%d", &a, &b);
 
-    printf("%d", a / b);
-    if (a % b == 0) {
-        putchar('\n');
+    int predot = a / b;
+    a %= b;
+
+    vector <int> postdot;
+    map <int, int> pos;
+
+    while (a != 0 && !pos.count(a)) {
+        pos[a] = postdot.size();
+        cerr << a << endl;
+        a *= 10;
+        postdot.push_back(a / b);
+        a %= b;
+    }
+
+    if (a == 0) {
+        printf("%d", predot);
+        if (!postdot.empty()) {
+            putchar('.');
+            for (auto x: postdot) {
+                printf("%d", x);
+            }
+            puts("");
+        }
         return 0;
     }
 
-    putchar('.');
-
-    while (true) {
-        
+    printf("%d.", predot);
+    size_t period = pos[a];
+    for (size_t i = 0; i < period; i++) {
+        printf("%d", postdot[i]);
     }
+    putchar('(');
+    for (size_t i = period; i < postdot.size(); i++) {
+        printf("%d", postdot[i]);
+    }
+    putchar(')');
+    puts("");
 
     return 0;
 }
