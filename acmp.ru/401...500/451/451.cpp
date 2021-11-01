@@ -34,6 +34,12 @@ void error() {
     exit(0);
 }
 
+void expect(char c) {
+    if (s[pos] != c) {
+        error();
+    }
+}
+
 bool compare(char s[], char t[]) {
     int spos = 0;
     int tpos = 0;
@@ -54,10 +60,31 @@ bool compare(char s[], char t[]) {
     return true;
 }
 
+
+long long parseInt() {
+    long long result = 0;
+    skip_spaces();
+    if (!isdigit(s[pos])) {
+        error();
+    }
+    while (isdigit(s[pos])) {
+        result *= 10;
+        result += s[pos] - '0';
+        pos++;
+    }
+    return result;
+}
+
 double numb() {
     double result = 0;
+    bool neg = false;
 
     skip_spaces();
+    if (s[pos] == '-') {
+        neg = true;
+        pos++;
+        skip_spaces();
+    }
 
     if (!isdigit(s[pos])) {
         error();
@@ -72,16 +99,27 @@ double numb() {
     if (s[pos] == '.') {
         pos++;
         double multiplier = 0.1;
-
-        if (!isdigit(s[pos])) {
-            error();
-        }
-
         while (isdigit(s[pos])) {
             result += multiplier * (s[pos] - '0');
             multiplier /= 10.0;
             pos++;
         }
+    }
+
+    if (s[pos] == 'e' || s[pos] == 'E') {
+        pos++;
+        bool neg = false;
+        if (s[pos] == '-') {
+            neg = true;
+            pos++;
+        } else if (s[pos] == '+') {
+            pos++;
+        }
+        int pw = parseInt();
+        if (neg) {
+            pw *= -1;
+        }
+        result *= pow(10, pw);
     }
 
     return result;
@@ -94,52 +132,34 @@ double term() {
 
     if (compare(s + pos, SIN)) {
         pos += 3;
-        skip_spaces();
+        skip_spaces();        
         
-        if (s[pos] != '(') {
-            error();
-        }
-
+        expect('(');
         pos++;
         
         result = sin(expr());
 
         skip_spaces();
-        
-        if (s[pos] != ')') {
-            error();
-        }
-        
+        expect(')');
         pos++;
     } else if (compare(s + pos, COS)) {
         pos += 3;
         skip_spaces();
         
-        if (s[pos] != '(') {
-            error();
-        }
-
+        expect('(');
         pos++;
 
         result = cos(expr());
         
         skip_spaces();
-        
-        if (s[pos] != ')') {
-            error();
-        }
-
+        expect(')');
         pos++;
     } else if (s[pos] == '(') {
         pos++;
         result = expr();
 
         skip_spaces();
-
-        if (s[pos] != ')') {
-            error();
-        }
-
+        expect(')');
         pos++;
     } else if (isdigit(s[pos])) {
         result = numb();
@@ -156,22 +176,15 @@ double fact() {
     skip_spaces();
 
     while (s[pos] == '*' || s[pos] == '/') {
+        char sign = s[pos];
+        pos++;
         skip_spaces();
-
-        if (s[pos] == '*') {
-            pos++;
-            skip_spaces();
-
-            result *= term();
-            skip_spaces();
-
-        } else if (s[pos] == '/') {
-            pos++;
-            skip_spaces();
-            
+        if (sign == '*') {
+            result *= term();   
+        } else {
             result /= term();
-            skip_spaces();
         }
+        skip_spaces();
     }
 
     return result;
@@ -179,35 +192,23 @@ double fact() {
 
 double expr() {
     skip_spaces();
-
-    if (s[pos] == ')') {
-        error();
-    }
-
+    
     double result = fact();
 
     skip_spaces();
 
     while (s[pos] == '+' || s[pos] == '-') {
+        char sign = s[pos];
+        pos++;
         skip_spaces();
 
-        if (s[pos] == '+') {
-            pos++;
-            skip_spaces();
-
+        if (sign == '+') {
             result += fact();
-            skip_spaces();
-
-        } else if (s[pos] == '-') {
-            pos++;
-            skip_spaces();
-            
+        } else {
             result -= fact();
-            skip_spaces();
         }
+        skip_spaces();
     }
-
-    skip_spaces();
 
     if (s[pos] != '\0' && s[pos] != ')') {
         error();
@@ -220,9 +221,9 @@ int main() {
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
 
-    gets(s);
+    fgets(s, MAXN, stdin);
 
-    printf("%.5lf\n", expr());
+    printf("%.10lf\n", expr());
 
     return 0;
 }
